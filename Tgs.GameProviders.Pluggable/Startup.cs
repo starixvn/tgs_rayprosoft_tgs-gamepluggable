@@ -120,7 +120,7 @@ namespace Tgs.GameProviders.Pluggable
                 c.SwaggerDoc("v1",
                     new OpenApiInfo
                     {
-                        Title = "TGS.GameProviders",
+                        Title = "Tgs.GameProviders.Pluggable",
                         Version = "v1"
                     });
             });

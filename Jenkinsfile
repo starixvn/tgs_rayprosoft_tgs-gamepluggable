@@ -61,6 +61,13 @@ pipeline {
 			}
 		}
 
+        stage('Push packages') {
+			steps {
+				sh 'dotnet pack -c $BuildConfiguration "Tgs.GameProviders.Pluggable.Client/Tgs.GameProviders.Pluggable.Client.csproj" --no-restore'
+				sh 'dotnet nuget push "Tgs.GameProviders.Pluggable.Client/bin/$BuildConfiguration/*.nupkg" --source "raypro-baget" -k admin --skip-duplicate'
+			}
+		}
+
 		stage('Build Docker Image') {
 			steps {
 				sh 'dotnet build "Tgs.GameProviders.Pluggable/Tgs.GameProviders.Pluggable.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageName:${TAG}" --no-restore '

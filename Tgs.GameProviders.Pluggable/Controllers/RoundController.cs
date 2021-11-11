@@ -16,7 +16,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers
         /// Closeds the game round asynchronous.
         /// </summary>
         /// <param name="commandService">The command service.</param>
-        /// <param name="RoundId">The round identifier.</param>
+        /// <param name="roundId">The round identifier.</param>
         /// <param name="viewModel">The view model.</param>
         /// <returns></returns>
         /// <remarks>
@@ -35,14 +35,14 @@ namespace Tgs.GameProviders.Pluggable.Controllers
         ///             "remark": "測試關閉"    \
         ///          }
         /// </remarks>
-        [HttpPut("{RoundId}/ClosedGameRound")]
+        [HttpPut("{roundId}/ClosedGameRound")]
         public ValueTask ClosedGameRoundAsync(
                     [FromServices] ICommandService<ClosedGameRoundCommand> commandService,
-                    Guid RoundId,
+                    Guid roundId,
                     [FromBody] ClosedGameRoundViewModel viewModel)
                     => commandService.ExecuteAsync(new()
                     {
-                        RoundId = RoundId,
+                        RoundId = roundId,
                         BetAmount = viewModel.BetAmount,
                         ValidBetAmount = viewModel.ValidBetAmount,
                         SettleAmount = viewModel.SettleAmount,

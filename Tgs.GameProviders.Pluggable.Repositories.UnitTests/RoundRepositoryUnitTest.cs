@@ -11,15 +11,6 @@ namespace Tgs.GameProviders.Pluggable.Repositories.UnitTests
     public class RoundRepositoryUnitTest
     {
         [Test]
-        public async Task GetAsync()
-        {
-            var fakeRepository = Substitute.For<IRoundRepository>();
-            await fakeRepository.GetAsync(
-               Arg.Any<Guid>()
-               ).ConfigureAwait(false);
-        }
-
-        [Test]
         public async Task ClosedGameRoundAsync()
         {
             var fakeRepository = Substitute.For<IRoundRepository>();
@@ -33,6 +24,15 @@ namespace Tgs.GameProviders.Pluggable.Repositories.UnitTests
                Arg.Any<decimal>(),
                Arg.Any<ClientRoundStatus>(),
                Arg.Any<DateTimeOffset>()
+               ).ConfigureAwait(false);
+        }
+
+        [Test]
+        public async Task GetAsync()
+        {
+            var fakeRepository = Substitute.For<IRoundRepository>();
+            await fakeRepository.GetAsync(
+               Arg.Any<Guid>()
                ).ConfigureAwait(false);
         }
     }
