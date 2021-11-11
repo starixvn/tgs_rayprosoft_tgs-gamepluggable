@@ -7,7 +7,5 @@ namespace Tgs.GameProviders.Pluggable.Repositories
     internal class PlayerRepository : IPlayerRepository
     {
         public ValueTask<PlayerModel> GetAsync(string playerCode) => throw new NotImplementedException();
-
-        public ValueTask<int> GetStatusAsync(string playerCode) => throw new NotImplementedException();
     }
 }
