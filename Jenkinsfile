@@ -6,7 +6,7 @@ pipeline {
 	environment {
 		BuildConfiguration="Debug"
 		ImageName="registry.gitlab.com/rayprosoft/turnkey-gaming-system/game-pluggable-service"
-		ImageTagUrl = "https://gitlab.com/api/v4/projects/20478010/registry/repositories/2355332/tags"
+		ImageTagUrl = "https://gitlab.com/api/v4/projects/20478010/registry/repositories/2466861/tags"
 	}
 
 	stages {
