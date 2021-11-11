@@ -1,0 +1,66 @@
+# Default values for game-pluggable-service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: registry.gitlab.com/rayprosoft/turnkey-gaming-system/game-pluggable-service
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+  
+namespace: dev
+
+imagePullSecrets: 
+  - name: registry-credentials
+nameOverride: "game-pluggable-service"
+fullnameOverride: "game-pluggable-service"
+
+connectionStrings:
+  tgs: Server=pgpool;Port=9999;Database=tgs;User Id=rpdev;Password=abcd1234
+
+nats:
+  urls: nats://nats-client:4222
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources: 
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 200m
+    memory: 400Mi
+  requests:
+    cpu: 200m
+    memory: 400Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

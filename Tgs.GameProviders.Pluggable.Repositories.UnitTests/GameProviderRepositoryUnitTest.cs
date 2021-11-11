@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
@@ -13,20 +10,20 @@ namespace Tgs.GameProviders.Pluggable.Repositories.UnitTests
     public class GameProviderRepositoryUnitTest
     {
         [Test]
-        public async Task Get_GameProviderId_Async()
-        {
-            var fakeRepository = Substitute.For<IGameProviderRepository>();
-            _ = await fakeRepository.GetAsync(
-                Arg.Any<Guid>()
-                ).ConfigureAwait(false);
-        }
-
-        [Test]
         public async Task Get_GameProviderCode_Async()
         {
             var fakeRepository = Substitute.For<IGameProviderRepository>();
             _ = await fakeRepository.GetAsync(
                 Arg.Any<string>()
+                ).ConfigureAwait(false);
+        }
+
+        [Test]
+        public async Task Get_GameProviderId_Async()
+        {
+            var fakeRepository = Substitute.For<IGameProviderRepository>();
+            _ = await fakeRepository.GetAsync(
+                Arg.Any<Guid>()
                 ).ConfigureAwait(false);
         }
 
