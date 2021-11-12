@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -89,7 +86,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
                 GameProviderCode = "KY",
                 Name = "KY"
             };
-
 
             _ = fakePlayerVerifyService.IsPlayerEnableAsync(query.PlayerCode).Returns(ValueTask.FromResult(true));
             _ = fakePlayerVerifyService.IsPlayerGameActiveAsync(playerModel.BrandId, query.GameId).Returns(ValueTask.FromResult(true));

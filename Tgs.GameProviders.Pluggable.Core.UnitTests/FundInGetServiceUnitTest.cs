@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -81,7 +78,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
                 Balance = 10
             };
 
-
             _ = fakePlayerVerifyService.IsPlayerEnableAsync(query.PlayerCode).Returns(ValueTask.FromResult(true));
             _ = fakePlayerRepository.GetAsync(query.PlayerCode).Returns(ValueTask.FromResult(playerModel));
             _ = fakePlayerVerifyService.IsPlayerGameProviderActiveAsync(playerModel.BrandId, query.GameProviderCode).Returns(ValueTask.FromResult(true));
@@ -109,7 +105,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
                 gameProviderFundTransferTransactionId.ToString("N"),
                 query.Amount)
                 .Returns(ValueTask.FromResult(gameProviderTransactionId));
-
 
             _ = fakeCashServiceClient.GameProviderFundInAsync(
                  playerModel.BrandId,
