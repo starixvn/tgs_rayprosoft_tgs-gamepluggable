@@ -139,9 +139,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
                  );
 
             _ = await fakeService.GetAsync(query).ConfigureAwait(false);
-
-
-
         }
     }
 }

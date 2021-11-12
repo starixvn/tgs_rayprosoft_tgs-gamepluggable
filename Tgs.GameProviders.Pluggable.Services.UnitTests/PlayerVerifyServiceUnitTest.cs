@@ -56,7 +56,7 @@ namespace Tgs.GameProviders.Pluggable.Services.UnitTests
                 Status = GameStatus.Active,
                 GameExternalId = "0",
                 GameProviderId = gameProviderId,
-                Type = GameType.LiveDealerLobby,
+                GameType = GameType.LiveDealerLobby,
                 PlatformType = GamePlatformType.DesktopAndMobile,
                 SubGame = false,
                 GameCode = "Lobby",

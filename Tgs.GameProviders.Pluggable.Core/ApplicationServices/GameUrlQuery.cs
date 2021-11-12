@@ -11,5 +11,9 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
         public PlatformType PlatformType { get; init; }
         public int GameId { get; init; }
         public string Language { get; init; } = default!;
+
+        public string IpAddress { get; init; } = default!;
+
+        public Uri BackUrl { get; init; } = default!;
     }
 }
