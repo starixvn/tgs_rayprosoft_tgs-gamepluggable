@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
 using TGS.GameProviders.Client;
@@ -9,28 +10,31 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
 {
     internal class FundOutGetService : IGetService<FundOutQuery, FundResult?>
     {
-        private ICashServiceClient _cashServiceClient;
-        private IGameProviderFundTransferTransactionRepository _gameProviderFundTransferTransactionRepository;
-        private IGameProviderRepository _gameProviderRepository;
-        private IGameProvidersClient _gameProvidersClient;
-        private IPlayerRepository _playerRepository;
-        private IPlayerVerifyService _verifyService;
+        private readonly ICashServiceClient _cashServiceClient;
+        private readonly IGameProviderFundTransferTransactionRepository _gameProviderFundTransferTransactionRepository;
+        private readonly IGameProviderRepository _gameProviderRepository;
+        private readonly IGameProvidersClient _gameProvidersClient;
+        private readonly ILogger<FundOutGetService> _logger;
+        private readonly IPlayerRepository _playerRepository;
+        private readonly IPlayerVerifyService _verifyService;
 
         public FundOutGetService(
-            IPlayerVerifyService verifyService,
             ICashServiceClient cashServiceClient,
-            IGameProvidersClient gameProvidersClient,
-            IPlayerRepository playerRepository,
+            IGameProviderFundTransferTransactionRepository gameProviderFundTransferTransactionRepository,
             IGameProviderRepository gameProviderRepository,
-            IGameProviderFundTransferTransactionRepository gameProviderFundTransferTransactionRepository
+            IGameProvidersClient gameProvidersClient,
+            ILogger<FundOutGetService> logger,
+            IPlayerRepository playerRepository,
+            IPlayerVerifyService verifyService
             )
         {
-            _verifyService = verifyService ?? throw new ArgumentNullException(nameof(verifyService));
             _cashServiceClient = cashServiceClient ?? throw new ArgumentNullException(nameof(cashServiceClient));
-            _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
-            _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
-            _gameProviderRepository = gameProviderRepository ?? throw new ArgumentNullException(nameof(gameProviderRepository));
             _gameProviderFundTransferTransactionRepository = gameProviderFundTransferTransactionRepository ?? throw new ArgumentNullException(nameof(gameProviderFundTransferTransactionRepository));
+            _gameProviderRepository = gameProviderRepository ?? throw new ArgumentNullException(nameof(gameProviderRepository));
+            _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
+            _verifyService = verifyService ?? throw new ArgumentNullException(nameof(verifyService));
         }
 
         public async ValueTask<FundResult?> GetAsync(FundOutQuery query, CancellationToken cancellationToken = default)
@@ -51,38 +55,42 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
 
             var gameProviderModel = await _gameProviderRepository.GetAsync(query.GameProviderCode).ConfigureAwait(false);
 
-            var gameProviderBalance = await _gameProvidersClient.PlayerBalanceAsync(query.GameProviderCode, playerModel.BrandCode, playerModel.PlayerCode, playerModel.DefaultWalletCurrencyCode).ConfigureAwait(false);
+            var gameProviderBalance = await _gameProvidersClient.PlayerBalanceAsync(
+                query.GameProviderCode,
+                playerModel.BrandCode,
+                playerModel.PlayerCode,
+                playerModel.DefaultWalletCurrencyCode)
+                .ConfigureAwait(false);
 
             if (!gameProviderBalance.HasValue)
             {
-                new Exception("Game Provider failed to withdraw balance");
+                throw new Exception("Game Provider failed to withdraw balance");
             }
 
             var playerBalance = await _cashServiceClient.BalanceAsync(playerModel.DefaultWalletId).ConfigureAwait(false);
 
             if (playerBalance - amount < 0)
             {
-                new Exception("Game Provider balance is insufficient");
+                throw new Exception("Game Provider balance is insufficient");
             }
 
             var gameProviderFundTransferTransactionId = await _gameProviderFundTransferTransactionRepository.AddFundOutAsync(
-            gameProviderModel.GameProviderId,
-            playerModel.DefaultWalletId,
-            playerModel.PlayerCode,
-            gameProviderModel.GameProviderCode,
-            amount * -1,
-            string.Empty)
-            .ConfigureAwait(false);
+                gameProviderModel.GameProviderId,
+                playerModel.DefaultWalletId,
+                playerModel.PlayerCode,
+                gameProviderModel.GameProviderCode,
+                amount * -1,
+                string.Empty)
+                .ConfigureAwait(false);
 
             var transactionViewModel = await _cashServiceClient.GameProviderFundOutAsync(
-               playerModel.BrandId,
-               playerModel.DefaultWalletId,
-               playerModel.PlayerCode,
-               amount,
-               $"【Default】->【{ gameProviderModel.GameProviderCode}】",
-               gameProviderFundTransferTransactionId.ToString()
-               )
-               .ConfigureAwait(false);
+                playerModel.BrandId,
+                playerModel.DefaultWalletId,
+                playerModel.PlayerCode,
+                amount * -1,
+                $"【Default】->【{ gameProviderModel.GameProviderCode}】",
+                gameProviderFundTransferTransactionId.ToString())
+                .ConfigureAwait(false);
 
             if (transactionViewModel == null)
             {
@@ -92,36 +100,39 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
                     FundTransferTransactionStatus.FailureOnSystem,
                     string.Empty,
                     -1,
-                    string.Empty
-                    )
+                    string.Empty)
                     .ConfigureAwait(false);
                 return null;
             }
 
-            var gameProviderTransactionId = await _gameProvidersClient.PlayerFundOutAsync(
-                gameProviderModel.GameProviderCode,
-                playerModel.BrandCode,
-                playerModel.PlayerCode,
-                playerModel.DefaultWalletCurrencyCode,
-                gameProviderFundTransferTransactionId.ToString("N"),
-                amount)
-                .ConfigureAwait(false);
-
-            if (string.IsNullOrEmpty(gameProviderTransactionId))
+            var gameProviderTransactionId = string.Empty;
+            try
             {
-                await _gameProviderFundTransferTransactionRepository.UpdateFundInAsync(
-                     gameProviderFundTransferTransactionId,
-                     null,
-                     FundTransferTransactionStatus.FailureOnGameProvider,
-                     string.Empty,
-                     -1,
-                     string.Empty
-                     )
-                    .ConfigureAwait(false);
-                return null;
+                gameProviderTransactionId = await _gameProvidersClient.PlayerFundOutAsync(
+                   gameProviderModel.GameProviderCode,
+                   playerModel.BrandCode,
+                   playerModel.PlayerCode,
+                   playerModel.DefaultWalletCurrencyCode,
+                   gameProviderFundTransferTransactionId.ToString("N"),
+                   amount)
+                   .ConfigureAwait(false);
             }
-
-            await _gameProviderFundTransferTransactionRepository.UpdateFundInAsync(
+            finally
+            {
+                if (string.IsNullOrEmpty(gameProviderTransactionId))
+                {
+                    await _gameProviderFundTransferTransactionRepository.UpdateFundInAsync(
+                        gameProviderFundTransferTransactionId,
+                        null,
+                        FundTransferTransactionStatus.FailureOnGameProvider,
+                        string.Empty,
+                        -1,
+                        string.Empty)
+                        .ConfigureAwait(false);
+                }
+                else
+                {
+                    await _gameProviderFundTransferTransactionRepository.UpdateFundInAsync(
                     gameProviderFundTransferTransactionId,
                     transactionViewModel.TransactionId,
                     FundTransferTransactionStatus.Success,
@@ -129,6 +140,8 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
                     transactionViewModel.Balance,
                     string.Empty
                     ).ConfigureAwait(false);
+                }
+            }
 
             return new()
             {

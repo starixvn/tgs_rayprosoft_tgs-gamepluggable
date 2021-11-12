@@ -98,45 +98,53 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
                     .ConfigureAwait(false);
                 return null;
             }
-
-            var transactionViewModel = await _cashServiceClient.GameProviderFundInAsync(
-                playerModel.BrandId,
-                playerModel.DefaultWalletId,
-                playerModel.PlayerCode,
-                amount,
-                $"【{ gameProviderModel.GameProviderCode}】->【Default】",
-                gameProviderFundTransferTransactionId.ToString())
-                .ConfigureAwait(false);
-
-            if (transactionViewModel == null)
+            TransactionViewModel? transactionViewModel = default;
+            try
             {
-                await _gameProviderFundTransferTransactionRepository.UpdateFundInAsync(
-                    gameProviderFundTransferTransactionId,
-                    null,
-                    FundTransferTransactionStatus.FailureOnSystem,
-                    gameProviderTransactionId,
-                    -1,
-                    string.Empty
-                    )
-                    .ConfigureAwait(false);
-                return null;
+                transactionViewModel = await _cashServiceClient.GameProviderFundInAsync(
+                   playerModel.BrandId,
+                   playerModel.DefaultWalletId,
+                   playerModel.PlayerCode,
+                   amount,
+                   $"【{ gameProviderModel.GameProviderCode}】->【Default】",
+                   gameProviderFundTransferTransactionId.ToString())
+                   .ConfigureAwait(false);
+            }
+            finally
+            {
+                if (transactionViewModel == null)
+                {
+                    await _gameProviderFundTransferTransactionRepository.UpdateFundInAsync(
+                        gameProviderFundTransferTransactionId,
+                        null,
+                        FundTransferTransactionStatus.FailureOnSystem,
+                        gameProviderTransactionId,
+                        -1,
+                        string.Empty
+                        )
+                        .ConfigureAwait(false);
+                }
+                else
+                {
+                    await _gameProviderFundTransferTransactionRepository.UpdateFundInAsync(
+                                    gameProviderFundTransferTransactionId,
+                                    transactionViewModel.TransactionId,
+                                    FundTransferTransactionStatus.Success,
+                                    gameProviderTransactionId,
+                                    transactionViewModel.Balance,
+                                    string.Empty
+                                    )
+                                    .ConfigureAwait(false);
+                }
             }
 
-            await _gameProviderFundTransferTransactionRepository.UpdateFundInAsync(
-                gameProviderFundTransferTransactionId,
-                transactionViewModel.TransactionId,
-                FundTransferTransactionStatus.Success,
-                gameProviderTransactionId,
-                transactionViewModel.Balance,
-                string.Empty
-                )
-                .ConfigureAwait(false);
-
-            return new()
-            {
-                TransactionsId = transactionViewModel.TransactionId,
-                GameProviderTransactionId = gameProviderTransactionId
-            };
+            return (transactionViewModel == null) ?
+                null :
+                new()
+                {
+                    TransactionsId = transactionViewModel.TransactionId,
+                    GameProviderTransactionId = gameProviderTransactionId
+                };
         }
     }
 }

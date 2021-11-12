@@ -101,17 +101,14 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
                query.Amount,
                string.Empty).Returns(ValueTask.FromResult(gameProviderFundTransferTransactionId));
 
-            _ = await fakeService.GetAsync(query).ConfigureAwait(false);
-
             _ = fakeGameProvidersClient.PlayerFundInAsync(
                 gameProviderModel.GameProviderCode,
                 playerModel.BrandCode,
                 playerModel.PlayerCode,
                 playerModel.DefaultWalletCurrencyCode,
-                gameProviderTransactionId,
+                gameProviderFundTransferTransactionId.ToString("N"),
                 query.Amount)
                 .Returns(ValueTask.FromResult(gameProviderTransactionId));
-
 
 
             _ = fakeCashServiceClient.GameProviderFundInAsync(
@@ -129,8 +126,9 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
                  FundTransferTransactionStatus.Success,
                  gameProviderTransactionId,
                  transactionViewModel.Balance,
-                 string.Empty
-                 );
+                 string.Empty);
+
+            _ = await fakeService.GetAsync(query).ConfigureAwait(false);
         }
     }
 }
