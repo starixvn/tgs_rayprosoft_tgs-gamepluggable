@@ -8,6 +8,6 @@ namespace Tgs.GameProviders.Pluggable.Core
     {
         ValueTask ClosedGameRoundAsync(Guid roundId, decimal betAmount, decimal validBetAmount, decimal settleAmount, decimal commission, decimal turnover, decimal winLoss, ClientRoundStatus clientRoundStatus, DateTimeOffset externalClosedOn);
 
-        Task<GameRoundModel> GetAsync(Guid roundId);
+        Task<GameRoundModel?> GetAsync(Guid roundId);
     }
 }

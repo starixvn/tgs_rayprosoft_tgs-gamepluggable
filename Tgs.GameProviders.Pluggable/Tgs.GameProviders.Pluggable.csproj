@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net5.0</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
 		<UserSecretsId>9f9db4ef-bfd9-4062-abdb-40f2b0b30126</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<GlobalNugetConfig>$(UserProfile)\AppData\Roaming\NuGet\NuGet.Config</GlobalNugetConfig>
@@ -18,7 +18,7 @@
 	<ItemGroup>
 		<PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="5.0.2" />
 		<PackageReference Include="AspNetCore.HealthChecks.Uris" Version="6.0.1" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="5.0.12" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 		<PackageReference Include="Tgs.CashService.Client" Version="0.0.2" />

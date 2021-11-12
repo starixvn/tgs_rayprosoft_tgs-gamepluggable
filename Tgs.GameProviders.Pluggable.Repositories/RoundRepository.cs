@@ -21,7 +21,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
         {
             var data = await _betContext.Rounds
                 .Where(x => x.Id == roundId)
-                .FirstOrDefaultAsync()
+                .FirstAsync()
                 .ConfigureAwait(false);
             var systemDateTimeOffset = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).DateTime;
             data.Status = (short)RoundStatus.Closed;
@@ -39,7 +39,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             await _betContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public Task<GameRoundModel> GetAsync(Guid roundId)
+        public Task<GameRoundModel?> GetAsync(Guid roundId)
             => _betContext
             .Rounds
             .Where(x => x.Id == roundId)
