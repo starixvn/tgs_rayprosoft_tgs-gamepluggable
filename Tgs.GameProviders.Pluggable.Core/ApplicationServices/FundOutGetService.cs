@@ -143,11 +143,13 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
                 }
             }
 
-            return new()
-            {
-                TransactionsId = transactionViewModel.TransactionId,
-                GameProviderTransactionId = gameProviderTransactionId
-            };
+            return (string.IsNullOrEmpty(gameProviderTransactionId)) ?
+                null :
+                new()
+                {
+                    TransactionsId = transactionViewModel.TransactionId,
+                    GameProviderTransactionId = gameProviderTransactionId
+                };
         }
     }
 }
