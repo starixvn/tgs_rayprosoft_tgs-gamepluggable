@@ -10,5 +10,7 @@ namespace Tgs.GameProviders.Pluggable.Core
         ValueTask<GameProviderModel> GetAsync(string gameProviderCode);
 
         ValueTask<GameProviderStatus> GetStatusAsync(Guid gameProviderId);
+
+        ValueTask<SubGameProviderModel> GetSubGameProvider(string subGameProviderCode);
     }
 }

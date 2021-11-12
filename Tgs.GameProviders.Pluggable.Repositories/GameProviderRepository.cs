@@ -11,5 +11,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
         public ValueTask<GameProviderModel> GetAsync(string gameProviderCode) => throw new NotImplementedException();
 
         public ValueTask<GameProviderStatus> GetStatusAsync(Guid gameProviderId) => throw new NotImplementedException();
+
+        public ValueTask<SubGameProviderModel> GetSubGameProvider(string subGameProviderCode) => throw new NotImplementedException();
     }
 }

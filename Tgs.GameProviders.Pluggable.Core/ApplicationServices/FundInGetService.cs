@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
 using TGS.GameProviders.Client;
@@ -9,28 +10,31 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
 {
     internal class FundInGetService : IGetService<FundInQuery, FundResult?>
     {
-        private ICashServiceClient _cashServiceClient;
-        private IGameProviderFundTransferTransactionRepository _gameProviderFundTransferTransactionRepository;
-        private IGameProviderRepository _gameProviderRepository;
-        private IGameProvidersClient _gameProvidersClient;
-        private IPlayerRepository _playerRepository;
-        private IPlayerVerifyService _verifyService;
+        private readonly ICashServiceClient _cashServiceClient;
+        private readonly IGameProviderFundTransferTransactionRepository _gameProviderFundTransferTransactionRepository;
+        private readonly IGameProviderRepository _gameProviderRepository;
+        private readonly IGameProvidersClient _gameProvidersClient;
+        private readonly ILogger<FundInGetService> _logger;
+        private readonly IPlayerRepository _playerRepository;
+        private readonly IPlayerVerifyService _verifyService;
 
         public FundInGetService(
-            IPlayerVerifyService verifyService,
             ICashServiceClient cashServiceClient,
-            IGameProvidersClient gameProvidersClient,
-            IPlayerRepository playerRepository,
+            IGameProviderFundTransferTransactionRepository gameProviderFundTransferTransactionRepository,
             IGameProviderRepository gameProviderRepository,
-            IGameProviderFundTransferTransactionRepository gameProviderFundTransferTransactionRepository
+            IGameProvidersClient gameProvidersClient,
+            ILogger<FundInGetService> logger,
+            IPlayerRepository playerRepository,
+            IPlayerVerifyService verifyService
             )
         {
-            _verifyService = verifyService ?? throw new ArgumentNullException(nameof(verifyService));
             _cashServiceClient = cashServiceClient ?? throw new ArgumentNullException(nameof(cashServiceClient));
-            _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
-            _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
-            _gameProviderRepository = gameProviderRepository ?? throw new ArgumentNullException(nameof(gameProviderRepository));
             _gameProviderFundTransferTransactionRepository = gameProviderFundTransferTransactionRepository ?? throw new ArgumentNullException(nameof(gameProviderFundTransferTransactionRepository));
+            _gameProviderRepository = gameProviderRepository ?? throw new ArgumentNullException(nameof(gameProviderRepository));
+            _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
+            _verifyService = verifyService ?? throw new ArgumentNullException(nameof(verifyService));
         }
 
         public async ValueTask<FundResult?> GetAsync(FundInQuery query, CancellationToken cancellationToken = default)
@@ -55,12 +59,12 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
 
             if (!gameProviderBalance.HasValue)
             {
-                new Exception("Game Provider failed to withdraw balance");
+                throw new Exception("Game Provider failed to withdraw balance");
             }
 
             if (gameProviderBalance - amount < 0)
             {
-                new Exception("Game Provider balance is insufficient");
+                throw new Exception("Game Provider balance is insufficient");
             }
 
             var gameProviderFundTransferTransactionId = await _gameProviderFundTransferTransactionRepository.AddFundInAsync(
