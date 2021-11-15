@@ -8,7 +8,7 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
 {
-    internal class GameRoundGetService : IGetService<Guid, GameRoundModel?>
+    internal class GameRoundGetService : IGetService<Guid, GameRoundModel>
     {
         private readonly IRoundRepository _roundRepository;
 
@@ -17,7 +17,13 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
             _roundRepository = roundRepository ?? throw new ArgumentNullException(nameof(roundRepository));
         }
 
-        public async ValueTask<GameRoundModel?> GetAsync(Guid query, CancellationToken cancellationToken = default)
-            => await _roundRepository.GetAsync(query).ConfigureAwait(false);
+        public async ValueTask<GameRoundModel> GetAsync(Guid query, CancellationToken cancellationToken = default)
+        {
+            var data = await _roundRepository
+                .GetAsync(query)
+                .ConfigureAwait(false);
+
+            return data != null ? data : throw new Exception($"Game Round does not exist.({query})");
+        }
     }
 }

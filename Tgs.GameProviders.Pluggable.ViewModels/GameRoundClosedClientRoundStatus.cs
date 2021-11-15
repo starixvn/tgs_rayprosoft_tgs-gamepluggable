@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tgs.GameProviders.Pluggable.ViewModels
 {
-    public enum ClosedClientRoundStatus
+    public enum GameRoundClosedClientRoundStatus
     {
         Void = 2,
         Win = 3,

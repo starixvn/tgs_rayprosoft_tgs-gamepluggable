@@ -51,7 +51,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
 
             _ = fakeRoundRepository
                 .GetAsync(roundId)
-                .Returns(Task.FromResult(gameRoundModel));
+                .Returns(ValueTask.FromResult(gameRoundModel));
 
             var betAmount = 0.060000m;
             var validBetAmount = 0.060000m;

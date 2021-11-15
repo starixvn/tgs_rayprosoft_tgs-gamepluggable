@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Mime;
@@ -19,18 +20,51 @@ namespace Tgs.GameProviders.Pluggable.Client
             _serializerOptions = serializerOptions;
         }
 
-        public async ValueTask ClosedGameRoundAsync(Guid roundId, ClosedGameRoundViewModel viewModel)
+        public async ValueTask<GameRoundViewModel?> GameRoundGetAsync(Guid roundId)
+        {
+            var response = await _httpClient
+               .GetAsync(
+                $"Round/{roundId}")
+               .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+
+            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            return JsonSerializer.Deserialize<GameRoundViewModel>(contentJson, _serializerOptions);
+
+        }
+
+        public async ValueTask GameRoundClosedAsync(Guid roundId, GameRoundClosedViewModel viewModel)
         {
             var requestContent = new StringContent(JsonSerializer.Serialize(viewModel, _serializerOptions));
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
             var response = await _httpClient
                .PutAsync(
-                    $"Round/{roundId}/ClosedGameRound"
+                    $"Round/{roundId}/GameRoundClosed"
                    , requestContent)
                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
+        }
+
+        public async IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(Guid roundId)
+        {
+            var response = await _httpClient
+               .GetAsync(
+                $"Round/{roundId}/GameActionQuery")
+               .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+
+            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            var payments = JsonSerializer.Deserialize<GameActionViewModel[]>(contentJson, _serializerOptions);
+
+            foreach (var payment in payments!)
+                yield return payment;
+
         }
     }
 }
