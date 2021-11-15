@@ -34,7 +34,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             data.SettleAmount = settleAmount;
             data.Commission = commission;
             data.Turnover = turnover;
-            data.WinLoss = winLoss * -1;
+            data.WinLoss = winLoss;
             data.ClientStatus = (short)clientRoundStatus;
             _betContext.Update(data);
             await _betContext.SaveChangesAsync().ConfigureAwait(false);
