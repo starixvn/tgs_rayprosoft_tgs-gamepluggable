@@ -15,11 +15,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
         [Test]
         public async Task Closed_Game_Round()
         {
-            var faceLogger = NullLogger<ClosedGameRoundService>.Instance;
+            var faceLogger = NullLogger<GameRoundClosedService>.Instance;
             var fakeRoundOperationRecordsRepository = Substitute.For<IRoundOperationRecordsRepository>();
             var fakeRoundRepository = Substitute.For<IRoundRepository>();
 
-            var fakeService = new ClosedGameRoundService(faceLogger, fakeRoundOperationRecordsRepository, fakeRoundRepository);
+            var fakeService = new GameRoundClosedService(faceLogger, fakeRoundOperationRecordsRepository, fakeRoundRepository);
 
             var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
             var gameRoundModel = new GameRoundModel(RoundId: Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02"),

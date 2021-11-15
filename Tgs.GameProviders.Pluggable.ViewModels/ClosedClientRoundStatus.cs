@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Tgs.GameProviders.Pluggable.ViewModels
+{
+    public enum ClosedClientRoundStatus
+    {
+        Void = 2,
+        Win = 3,
+        Loss = 4,
+        Draw = 5
+    }
+}

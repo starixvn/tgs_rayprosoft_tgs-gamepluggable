@@ -38,7 +38,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers
         /// </remarks>
         [HttpPut("{roundId}/ClosedGameRound")]
         public ValueTask ClosedGameRoundAsync(
-                    [FromServices] ICommandService<ClosedGameRoundCommand> commandService,
+                    [FromServices] ICommandService<GameRoundClosedCommand> commandService,
                     Guid roundId,
                     [FromBody] ClosedGameRoundViewModel viewModel)
                     => commandService.ExecuteAsync(new()

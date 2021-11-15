@@ -66,7 +66,7 @@ namespace Tgs.GameProviders.Pluggable.ClientSample
                     });
             });
 
-            services.AddKickPlayerServerClient((options, sp) =>
+            services.AddGameProvidersPluggableServerClient((options, sp) =>
             {
                 var configuration = sp.GetRequiredService<IConfiguration>();
 

@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddKickPlayerServerClient(
+        public static IServiceCollection AddGameProvidersPluggableServerClient(
             this IServiceCollection services,
             Action<GameProvidersPluggableClientOptions, IServiceProvider> configure)
             => services

@@ -8,14 +8,14 @@ using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
 {
-    internal class ClosedGameRoundService : ICommandService<ClosedGameRoundCommand>
+    internal class GameRoundClosedService : ICommandService<GameRoundClosedCommand>
     {
-        private readonly ILogger<ClosedGameRoundService> _logger;
+        private readonly ILogger<GameRoundClosedService> _logger;
         private readonly IRoundOperationRecordsRepository _roundOperationRecordsRepository;
         private readonly IRoundRepository _roundRepository;
 
-        public ClosedGameRoundService(
-              ILogger<ClosedGameRoundService> logger,
+        public GameRoundClosedService(
+              ILogger<GameRoundClosedService> logger,
               IRoundOperationRecordsRepository roundOperationRecordsRepository,
               IRoundRepository roundRepository
             )
@@ -25,7 +25,7 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
             _roundRepository = roundRepository ?? throw new ArgumentNullException(nameof(roundRepository));
         }
 
-        public async ValueTask ExecuteAsync(ClosedGameRoundCommand command, CancellationToken cancellationToken = default)
+        public async ValueTask ExecuteAsync(GameRoundClosedCommand command, CancellationToken cancellationToken = default)
         {
             var gameRoundModel = await _roundRepository.GetAsync(command.RoundId).ConfigureAwait(false);
             if (gameRoundModel == null)

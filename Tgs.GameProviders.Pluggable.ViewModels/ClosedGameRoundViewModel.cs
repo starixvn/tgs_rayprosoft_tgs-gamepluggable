@@ -9,8 +9,7 @@ namespace Tgs.GameProviders.Pluggable.ViewModels
         public decimal BetAmount { get; init; }
 
         [Required]
-        [Range(2, 5, ErrorMessage = "Value for {0} must be between {1} and {2}(2:Void 3:Win 4:Loss 5:Draw).")]
-        public int ClientRoundStatus { get; init; }
+        public ClosedClientRoundStatus ClientRoundStatus { get; init; }
 
         [Required]
         public decimal Commission { get; init; }
