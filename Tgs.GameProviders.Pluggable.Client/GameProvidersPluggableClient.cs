@@ -20,19 +20,21 @@ namespace Tgs.GameProviders.Pluggable.Client
             _serializerOptions = serializerOptions;
         }
 
-        public async ValueTask<GameRoundViewModel?> GameRoundGetAsync(Guid roundId)
+        public async IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(Guid roundId)
         {
             var response = await _httpClient
                .GetAsync(
-                $"Round/{roundId}")
+                $"Round/{roundId}/GameActionQuery")
                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<GameRoundViewModel>(contentJson, _serializerOptions);
+            var payments = JsonSerializer.Deserialize<GameActionViewModel[]>(contentJson, _serializerOptions);
 
+            foreach (var payment in payments!)
+                yield return payment;
         }
 
         public async ValueTask GameRoundClosedAsync(Guid roundId, GameRoundClosedViewModel viewModel)
@@ -49,22 +51,18 @@ namespace Tgs.GameProviders.Pluggable.Client
             response.EnsureSuccessStatusCode();
         }
 
-        public async IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(Guid roundId)
+        public async ValueTask<GameRoundViewModel?> GameRoundGetAsync(Guid roundId)
         {
             var response = await _httpClient
                .GetAsync(
-                $"Round/{roundId}/GameActionQuery")
+                $"Round/{roundId}")
                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            var payments = JsonSerializer.Deserialize<GameActionViewModel[]>(contentJson, _serializerOptions);
-
-            foreach (var payment in payments!)
-                yield return payment;
-
+            return JsonSerializer.Deserialize<GameRoundViewModel>(contentJson, _serializerOptions);
         }
     }
 }

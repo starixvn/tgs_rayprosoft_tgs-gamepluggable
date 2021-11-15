@@ -40,7 +40,6 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             await _betContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
-
         public IAsyncEnumerable<GameActionModel> GameActionQueryAsync(Guid roundId)
             =>
             _betContext
@@ -72,7 +71,6 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                  x.JackpotContribution,
                  x.StoredOn
                 ));
-
 
         public async ValueTask<GameRoundModel?> GetAsync(Guid roundId)
             => await _betContext

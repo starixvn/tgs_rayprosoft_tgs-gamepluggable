@@ -16,56 +16,6 @@ namespace Tgs.GameProviders.Pluggable.Controllers
     public class RoundController : ControllerBase
     {
         /// <summary>
-        /// Games the round get asynchronous.
-        /// </summary>
-        /// <param name="getService">The get service.</param>
-        /// <param name="roundId">The round identifier.</param>
-        /// <returns></returns>
-        /// <remarks>
-        /// <b>Example</b><br />
-        ///
-        ///     Get /e8a90f53-11e7-40ab-9ed3-08d99f799e5a
-        /// </remarks>
-        [HttpGet("{roundId}")]
-        public async ValueTask<GameRoundViewModel> GameRoundGetAsync(
-                    [FromServices] IGetService<Guid, GameRoundModel> getService,
-                    Guid roundId)
-        {
-            var data = await getService.GetAsync(
-                roundId)
-                .ConfigureAwait(false);
-            return new GameRoundViewModel()
-            {
-                RoundId = data.RoundId,
-                ExternalRoundId = data.ExternalRoundId,
-                GameProviderId = data.GameProviderId,
-                PlayerCode = data.PlayerCode,
-                GameId = data.GameId,
-                CurrencyCode = data.CurrencyCode,
-                Status = (int)data.Status,
-                GameProviderConfigurationId = data.GameProviderConfigurationId,
-                WalletId = data.WalletId,
-                CreatedOn = data.CreatedOn,
-                ClosedOn = data.ClosedOn,
-                UpdatedOn = data.UpdatedOn,
-                BrandId = data.BrandId,
-                ExternalCreatedOn = data.ExternalCreatedOn,
-                ExternalClosedOn = data.ExternalClosedOn,
-                BetAmount = data.BetAmount,
-                ValidBetAmount = data.ValidBetAmount,
-                SettleAmount = data.SettleAmount,
-                Commission = data.Commission,
-                Turnover = data.Turnover,
-                WinLoss = data.WinLoss,
-                TieBetAdjustment = data.TieBetAdjustment,
-                ClientStatus = (int)data.ClientStatus,
-                ReopenTurnoverAdjustment = data.ReopenTurnoverAdjustment,
-                ReopenedOn = data.ReopenedOn,
-                EffectiveBettingPercentage = data.EffectiveBettingPercentage
-            };
-        }
-
-        /// <summary>
         /// Games the action query asynchronous.
         /// </summary>
         /// <param name="queryService">The query service.</param>
@@ -151,5 +101,55 @@ namespace Tgs.GameProviders.Pluggable.Controllers
                         OperatorId = viewModel.OperatorId,
                         Remark = viewModel.Remark,
                     });
+
+        /// <summary>
+        /// Games the round get asynchronous.
+        /// </summary>
+        /// <param name="getService">The get service.</param>
+        /// <param name="roundId">The round identifier.</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// <b>Example</b><br />
+        ///
+        ///     Get /e8a90f53-11e7-40ab-9ed3-08d99f799e5a
+        /// </remarks>
+        [HttpGet("{roundId}")]
+        public async ValueTask<GameRoundViewModel> GameRoundGetAsync(
+                    [FromServices] IGetService<Guid, GameRoundModel> getService,
+                    Guid roundId)
+        {
+            var data = await getService.GetAsync(
+                roundId)
+                .ConfigureAwait(false);
+            return new GameRoundViewModel()
+            {
+                RoundId = data.RoundId,
+                ExternalRoundId = data.ExternalRoundId,
+                GameProviderId = data.GameProviderId,
+                PlayerCode = data.PlayerCode,
+                GameId = data.GameId,
+                CurrencyCode = data.CurrencyCode,
+                Status = (int)data.Status,
+                GameProviderConfigurationId = data.GameProviderConfigurationId,
+                WalletId = data.WalletId,
+                CreatedOn = data.CreatedOn,
+                ClosedOn = data.ClosedOn,
+                UpdatedOn = data.UpdatedOn,
+                BrandId = data.BrandId,
+                ExternalCreatedOn = data.ExternalCreatedOn,
+                ExternalClosedOn = data.ExternalClosedOn,
+                BetAmount = data.BetAmount,
+                ValidBetAmount = data.ValidBetAmount,
+                SettleAmount = data.SettleAmount,
+                Commission = data.Commission,
+                Turnover = data.Turnover,
+                WinLoss = data.WinLoss,
+                TieBetAdjustment = data.TieBetAdjustment,
+                ClientStatus = (int)data.ClientStatus,
+                ReopenTurnoverAdjustment = data.ReopenTurnoverAdjustment,
+                ReopenedOn = data.ReopenedOn,
+                EffectiveBettingPercentage = data.EffectiveBettingPercentage
+            };
+        }
     }
 }
