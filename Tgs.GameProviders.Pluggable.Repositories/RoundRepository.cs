@@ -24,11 +24,12 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                 .Where(x => x.Id == roundId)
                 .FirstAsync()
                 .ConfigureAwait(false);
-            var systemDateTimeOffset = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).DateTime;
+            
+            var systemDateTimeOffset = DateTime.UtcNow;
             data.Status = (short)RoundStatus.Closed;
             data.UpdatedOn = systemDateTimeOffset;
             data.ClosedOn = systemDateTimeOffset;
-            data.ExternalClosedOn = externalClosedOn.DateTime;
+            data.ExternalClosedOn = externalClosedOn.UtcDateTime;
             data.BetAmount = betAmount;
             data.ValidBetAmount = validBetAmount;
             data.SettleAmount = settleAmount;

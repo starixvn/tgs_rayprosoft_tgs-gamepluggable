@@ -23,7 +23,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                 OperatorId = operatorId,
                 OldData = oldData,
                 NewData = newData,
-                CreatedOn = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).DateTime,
+                CreatedOn = DateTime.UtcNow,
                 Remark = remark
             }).ConfigureAwait(false);
             await _betContext.SaveChangesAsync().ConfigureAwait(false);
