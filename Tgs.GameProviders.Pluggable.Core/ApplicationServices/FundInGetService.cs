@@ -55,13 +55,11 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
 
             var gameProviderModel = await _gameProviderRepository.GetAsync(query.GameProviderCode).ConfigureAwait(false);
 
-            var gameProviderBalance = await _gameProvidersClient.PlayerBalanceAsync(query.GameProviderCode, playerModel.BrandCode, playerModel.PlayerCode, playerModel.DefaultWalletCurrencyCode).ConfigureAwait(false);
+            var gameProviderBalance = await _gameProvidersClient.PlayerBalanceAsync(
+                query.GameProviderCode,
+                playerModel.PlayerCode).ConfigureAwait(false);
 
-            if (!gameProviderBalance.HasValue)
-            {
-                throw new Exception("Game Provider failed to withdraw balance");
-            }
-
+           
             if (gameProviderBalance - amount < 0)
             {
                 throw new Exception("Game Provider balance is insufficient");
@@ -98,13 +96,11 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
                     .ConfigureAwait(false);
                 return null;
             }
-            TransactionViewModel? transactionViewModel = default;
+            TransactionResponse? transactionResponse = default;
             try
             {
-                transactionViewModel = await _cashServiceClient.GameProviderFundInAsync(
-                   playerModel.BrandId,
+                transactionResponse = await _cashServiceClient.GameProviderFundInAsync(
                    playerModel.DefaultWalletId,
-                   playerModel.PlayerCode,
                    amount,
                    $"【{ gameProviderModel.GameProviderCode}】->【Default】",
                    gameProviderFundTransferTransactionId.ToString())
@@ -112,7 +108,7 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
             }
             finally
             {
-                if (transactionViewModel == null)
+                if (transactionResponse == null)
                 {
                     await _gameProviderFundTransferTransactionRepository.UpdateFundInAsync(
                         gameProviderFundTransferTransactionId,
@@ -128,21 +124,21 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
                 {
                     await _gameProviderFundTransferTransactionRepository.UpdateFundInAsync(
                                     gameProviderFundTransferTransactionId,
-                                    transactionViewModel.TransactionId,
+                                    transactionResponse.TransactionId,
                                     FundTransferTransactionStatus.Success,
                                     gameProviderTransactionId,
-                                    transactionViewModel.Balance,
+                                    transactionResponse.Balance,
                                     string.Empty
                                     )
                                     .ConfigureAwait(false);
                 }
             }
 
-            return (transactionViewModel == null) ?
+            return (transactionResponse == null) ?
                 null :
                 new()
                 {
-                    TransactionsId = transactionViewModel.TransactionId,
+                    TransactionsId = transactionResponse.TransactionId,
                     GameProviderTransactionId = gameProviderTransactionId
                 };
         }

@@ -156,26 +156,18 @@ namespace Tgs.GameProviders.Pluggable
             {
                 var configuration = sp.GetRequiredService<IConfiguration>();
                 options.BaseUrl = new Uri(configuration.GetConnectionString("TGSGameProviders"));
-                options.JsonSerializerOptions = new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    Converters = { new JsonStringEnumConverter() }
-                };
             });
 
             services.AddCashServiceClient((options, sp) =>
             {
                 var configuration = sp.GetRequiredService<IConfiguration>();
                 options.BaseUrl = new(configuration.GetConnectionString("CashService"));
+            });
 
-                options.JsonSerializerOptions = new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    Converters =
-                        {
-                            new JsonStringEnumConverter()
-                        }
-                };
+            services.AddKickPlayerServerClient((options, sp) =>
+            {
+                var configuration = sp.GetRequiredService<IConfiguration>();
+                options.BaseUrl = new(configuration.GetConnectionString("TGSGameProviderKickPlayerServer"));
             });
 
             services.AddGameProvidersServices()
@@ -184,8 +176,9 @@ namespace Tgs.GameProviders.Pluggable
             services
                 .AddHealthChecks()
                 .AddNpgSql(Configuration.GetConnectionString("Tgs"), name: "PostgreSQL Tgs")
-                .AddUrlGroup(new Uri($"{Configuration.GetConnectionString("TGSGameProviders")}/health"), "TGS Game Providers")
-                .AddUrlGroup(new Uri($"{Configuration.GetConnectionString("CashService")}/health"), "Cash Service");
+                .AddUrlGroup(new Uri($"{Configuration.GetConnectionString("TGSGameProviders")}/health"), "Tgs Game Providers")
+                .AddUrlGroup(new Uri($"{Configuration.GetConnectionString("CashService")}/health"), "Tgs Cash Service")
+                .AddUrlGroup(new Uri($"{Configuration.GetConnectionString("TGSGameProviderKickPlayerServer")}/health"), "Tgs Game Provider KickPlayerServer");
         }
     }
 }

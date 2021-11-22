@@ -39,9 +39,7 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
 
             return await _gameProvidersClient.PlayerBalanceAsync(
                 query.GameProviderCode,
-                playerModel.BrandCode,
-                playerModel.PlayerCode,
-                playerModel.DefaultWalletCurrencyCode)
+                playerModel.PlayerCode)
                 .ConfigureAwait(false);
         }
     }

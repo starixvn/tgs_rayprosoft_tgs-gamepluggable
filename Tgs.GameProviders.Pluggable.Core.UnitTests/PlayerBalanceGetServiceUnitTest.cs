@@ -5,6 +5,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Tgs.GameProviders.Pluggable.Core.ApplicationServices;
 using TGS.GameProviders.Client;
+using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTests
 {
@@ -52,10 +53,8 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
             _ = fakePlayerRepository.GetAsync(query.PlayerCode).Returns(ValueTask.FromResult(playerModel));
             _ = fakeGameProvidersClient.PlayerBalanceAsync(
                 query.GameProviderCode,
-                playerModel.BrandCode,
-                playerModel.PlayerCode,
-                playerModel.DefaultWalletCurrencyCode)
-                .Returns(ValueTask.FromResult<decimal?>(expected));
+                playerModel.PlayerCode)
+                .Returns(ValueTask.FromResult<decimal>(expected));
 
             var actual = await fakeService.GetAsync(query);
 

@@ -72,20 +72,22 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
                 SubGameProviderCode = "ky"
             };
 
-            var gameProviderModel = new GameProviderModel()
-            {
-                GameProviderId = Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
-                Status = GameProviderStatus.Active,
-                AutoCloseRound = true,
-                SupportTestPlayer = true,
-                AllowKickPlayer = false,
-                PlaceBetTimeout = 0,
-                SettleBetTimeout = 0,
-                UniqueId = 10,
-                TransferWallet = true,
-                GameProviderCode = "KY",
-                Name = "KY"
-            };
+            var gameProviderModel = new GameProviderModel(
+                 Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
+                 GameProviderStatus.Active,
+                 string.Empty,
+                 true,
+                 true,
+                 false,
+                 0,
+                 0,
+                 (int)GameProviderUnique.KY,
+                 true,
+                 GameProviderType.KY,
+                 GameProviderUnique.KY.ToString(),
+                 string.Empty
+                 );
+
 
             _ = fakePlayerVerifyService.IsPlayerEnableAsync(query.PlayerCode).Returns(ValueTask.FromResult(true));
             _ = fakePlayerVerifyService.IsPlayerGameActiveAsync(playerModel.BrandId, query.GameId).Returns(ValueTask.FromResult(true));

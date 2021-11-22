@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Tgs.GameProviders.Pluggable.Core;
+using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Repositories
 {

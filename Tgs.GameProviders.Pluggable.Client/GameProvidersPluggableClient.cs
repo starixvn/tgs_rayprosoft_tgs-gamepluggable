@@ -20,6 +20,26 @@ namespace Tgs.GameProviders.Pluggable.Client
             _serializerOptions = serializerOptions;
         }
 
+        public async ValueTask KickPlayerAsync(string playerCode)
+        {
+            var response = await _httpClient
+               .GetAsync(
+                $"kickplayer/{playerCode}")
+               .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async ValueTask KickPlayerAsync(string playerCode, string gameProviderCode)
+        {
+            var response = await _httpClient
+               .GetAsync(
+                $"kickplayer/{playerCode}/{gameProviderCode}")
+               .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+        }
+
         public async IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(Guid roundId)
         {
             var response = await _httpClient

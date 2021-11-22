@@ -1,4 +1,5 @@
 ﻿using System;
+using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Core
 {

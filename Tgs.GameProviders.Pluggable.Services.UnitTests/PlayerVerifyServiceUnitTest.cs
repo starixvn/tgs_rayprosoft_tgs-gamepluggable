@@ -35,20 +35,22 @@ namespace Tgs.GameProviders.Pluggable.Services.UnitTests
             var brandId = Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af");
             var gameProviderId = Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5");
             var gameId = 1000031;
-            var gameProviderModel = new GameProviderModel()
-            {
-                GameProviderId = gameProviderId,
-                Status = GameProviderStatus.Active,
-                AutoCloseRound = true,
-                SupportTestPlayer = true,
-                AllowKickPlayer = false,
-                PlaceBetTimeout = 0,
-                SettleBetTimeout = 0,
-                UniqueId = 10,
-                TransferWallet = true,
-                GameProviderCode = "KY",
-                Name = "KY"
-            };
+
+            var gameProviderModel = new GameProviderModel(
+                 Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
+                 GameProviderStatus.Active,
+                 string.Empty,
+                 true,
+                 true,
+                 false,
+                 0,
+                 0,
+                 (int)GameProviderUnique.KY,
+                 true,
+                 GameProviderType.KY,
+                 GameProviderUnique.KY.ToString(),
+                 string.Empty
+                );
 
             var gameModel = new GameModel()
             {
@@ -163,20 +165,21 @@ namespace Tgs.GameProviders.Pluggable.Services.UnitTests
             var brandId = Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af");
             var gameProviderId = Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5");
 
-            var gameProviderModel = new GameProviderModel()
-            {
-                GameProviderId = gameProviderId,
-                Status = GameProviderStatus.Active,
-                AutoCloseRound = true,
-                SupportTestPlayer = true,
-                AllowKickPlayer = false,
-                PlaceBetTimeout = 0,
-                SettleBetTimeout = 0,
-                UniqueId = 10,
-                TransferWallet = true,
-                GameProviderCode = "KY",
-                Name = "KY"
-            };
+            var gameProviderModel = new GameProviderModel(
+                 Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
+                 GameProviderStatus.Active,
+                 string.Empty,
+                 true,
+                 true,
+                 false,
+                 0,
+                 0,
+                 (int)GameProviderUnique.KY,
+                 true,
+                 GameProviderType.KY,
+                 GameProviderUnique.KY.ToString(),
+                 string.Empty
+                );
 
             _ = fakeGameProviderRepository
                 .GetAsync(gameProviderCode)

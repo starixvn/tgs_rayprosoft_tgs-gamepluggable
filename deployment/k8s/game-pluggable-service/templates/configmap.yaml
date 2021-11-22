@@ -17,7 +17,8 @@ data:
         "Tgs": "{{ .Values.connectionStrings.tgs }}",
         "NatsMQ": "{{ .Values.nats.urls }}",
         "TGSGameProviders": "http://game-gameproviders",
-        "CashService": "http://cashservice-api"
+        "CashService": "http://cashservice-api",
+        "TGSGameProviderKickPlayerServer": "http://game-kickplayer-server"
       },
       "AllowedHosts": "*"
     }

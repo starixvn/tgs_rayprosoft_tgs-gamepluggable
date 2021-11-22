@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Core.ApplicationServices;
 using TGS.GameProviders.Client;
+using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTests
 {
@@ -54,25 +55,28 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
                 Status = PlayerStatus.Enabled
             };
 
-            var gameProviderModel = new GameProviderModel()
-            {
-                GameProviderId = Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
-                Status = GameProviderStatus.Active,
-                AutoCloseRound = true,
-                SupportTestPlayer = true,
-                AllowKickPlayer = false,
-                PlaceBetTimeout = 0,
-                SettleBetTimeout = 0,
-                UniqueId = 10,
-                TransferWallet = true,
-                GameProviderCode = "KY",
-                Name = "KY"
-            };
+            var gameProviderModel = new GameProviderModel(
+                 Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
+                 GameProviderStatus.Active,
+                 string.Empty,
+                 true,
+                 true,
+                 false,
+                 0,
+                 0,
+                 (int)GameProviderUnique.KY,
+                 true,
+                 GameProviderType.KY,
+                 GameProviderUnique.KY.ToString(),
+                 string.Empty
+                );
+
+
             var playerBalance = 10.0m;
             var gameProviderFundTransferTransactionId = Guid.NewGuid();
             var gameProviderTransactionId = $"72412{DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).ToString("yyyyMMddHHmmssfff")}4udwnknl3eg7";
 
-            var transactionViewModel = new TransactionViewModel()
+            var transactionResponse = new TransactionResponse()
             {
                 TransactionId = Guid.NewGuid(),
                 Balance = 10
@@ -85,10 +89,8 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
             _ = fakeGameProviderRepository.GetAsync(query.GameProviderCode).Returns(ValueTask.FromResult(gameProviderModel));
             _ = fakeGameProvidersClient.PlayerBalanceAsync(
                 query.GameProviderCode,
-                playerModel.BrandCode,
-                playerModel.PlayerCode,
-                playerModel.DefaultWalletCurrencyCode)
-                .Returns(ValueTask.FromResult<decimal?>(playerBalance));
+                playerModel.PlayerCode)
+                .Returns(ValueTask.FromResult<decimal>(playerBalance));
             _ = fakeGameProviderFundTransferTransactionRepository.AddFundInAsync(
                gameProviderModel.GameProviderId,
                playerModel.DefaultWalletId,
@@ -107,20 +109,18 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
                 .Returns(ValueTask.FromResult(gameProviderTransactionId));
 
             _ = fakeCashServiceClient.GameProviderFundInAsync(
-                 playerModel.BrandId,
                  playerModel.DefaultWalletId,
-                 playerModel.PlayerCode,
                  query.Amount,
                  $"【{ gameProviderModel.GameProviderCode}】->【Default】",
                  gameProviderFundTransferTransactionId.ToString())
-                 .Returns(ValueTask.FromResult(transactionViewModel));
+                 .Returns(ValueTask.FromResult(transactionResponse));
 
             await fakeGameProviderFundTransferTransactionRepository.UpdateFundInAsync(
                  gameProviderFundTransferTransactionId,
-                 transactionViewModel.TransactionId,
+                 transactionResponse.TransactionId,
                  FundTransferTransactionStatus.Success,
                  gameProviderTransactionId,
-                 transactionViewModel.Balance,
+                 transactionResponse.Balance,
                  string.Empty);
 
             _ = await fakeService.GetAsync(query).ConfigureAwait(false);
