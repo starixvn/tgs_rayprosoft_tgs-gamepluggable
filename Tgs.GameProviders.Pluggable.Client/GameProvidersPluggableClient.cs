@@ -6,6 +6,7 @@ using System.Net.Mime;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Tgs.GameProviders.Pluggable.ViewModels;
 
 namespace Tgs.GameProviders.Pluggable.Client
@@ -22,10 +23,14 @@ namespace Tgs.GameProviders.Pluggable.Client
         };
 
         private readonly HttpClient _httpClient;
+        private readonly ILogger<GameProvidersPluggableClient> _logger;
 
-        public GameProvidersPluggableClient(HttpClient httpClient)
+        public GameProvidersPluggableClient(
+            HttpClient httpClient,
+            ILogger<GameProvidersPluggableClient> _logger)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            this._logger = _logger ?? throw new ArgumentNullException(nameof(_logger));
         }
 
         public async IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(Guid roundId)
@@ -55,6 +60,8 @@ namespace Tgs.GameProviders.Pluggable.Client
                     $"round/{roundId}/gameroundclosed"
                    , requestContent)
                .ConfigureAwait(false);
+
+            _logger.LogInformation(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             response.EnsureSuccessStatusCode();
         }
