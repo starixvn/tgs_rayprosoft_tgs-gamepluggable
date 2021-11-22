@@ -177,7 +177,7 @@ namespace Tgs.GameProviders.Pluggable
                 .AddHealthChecks()
                 .AddNpgSql(Configuration.GetConnectionString("Tgs"), name: "PostgreSQL Tgs")
                 .AddUrlGroup(new Uri($"{Configuration.GetConnectionString("TGSGameProviders")}/health"), "Tgs Game Providers")
-                .AddUrlGroup(new Uri($"{Configuration.GetConnectionString("CashService")}/health"), "Tgs Cash Service")
+                .AddUrlGroup(new Uri($"{Configuration.GetConnectionString("CashService")}/healthz"), "Tgs Cash Service")
                 .AddUrlGroup(new Uri($"{Configuration.GetConnectionString("TGSGameProviderKickPlayerServer")}/health"), "Tgs Game Provider KickPlayerServer");
         }
     }
