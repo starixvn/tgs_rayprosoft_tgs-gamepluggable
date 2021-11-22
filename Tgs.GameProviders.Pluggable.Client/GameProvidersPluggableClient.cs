@@ -23,7 +23,7 @@ namespace Tgs.GameProviders.Pluggable.Client
 
         private readonly HttpClient _httpClient;
 
-        public GameProvidersPluggableClient(HttpClient httpClient, JsonSerializerOptions? serializerOptions)
+        public GameProvidersPluggableClient(HttpClient httpClient)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
