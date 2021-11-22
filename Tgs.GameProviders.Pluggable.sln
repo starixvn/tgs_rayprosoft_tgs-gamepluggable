@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31729.503
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{914506ED-CEB7-4744-B5CB-E67D5631522E}"
 	ProjectSection(SolutionItems) = preProject
@@ -25,11 +25,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameProviders.Pluggable
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameProviders.Pluggable.Repositories.UnitTests", "Tgs.GameProviders.Pluggable.Repositories.UnitTests\Tgs.GameProviders.Pluggable.Repositories.UnitTests.csproj", "{DB45F7B2-5106-4279-8AA7-FF0D736DE53E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameProviders.Pluggable.Client", "Tgs.GameProviders.Pluggable.Client\Tgs.GameProviders.Pluggable.Client.csproj", "{4C11D9F3-09F3-467D-8282-F1F7A0A6A2A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameProviders.Pluggable.Client", "Tgs.GameProviders.Pluggable.Client\Tgs.GameProviders.Pluggable.Client.csproj", "{4C11D9F3-09F3-467D-8282-F1F7A0A6A2A5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{62205C45-3846-4750-8227-2601B9346651}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameProviders.Pluggable.ClientSample", "Tgs.GameProviders.Pluggable.ClientSample\Tgs.GameProviders.Pluggable.ClientSample.csproj", "{0DB57AD5-ACE6-4D16-BC92-9D1CFC9CDCF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameProviders.Pluggable.ClientSample", "Tgs.GameProviders.Pluggable.ClientSample\Tgs.GameProviders.Pluggable.ClientSample.csproj", "{0DB57AD5-ACE6-4D16-BC92-9D1CFC9CDCF0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameProviders.Pluggable.IntegrationTests", "Tgs.GameProviders.Pluggable.IntegrationTests\Tgs.GameProviders.Pluggable.IntegrationTests.csproj", "{4FB38F98-949C-494B-9982-21108DF9DCB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +79,10 @@ Global
 		{0DB57AD5-ACE6-4D16-BC92-9D1CFC9CDCF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DB57AD5-ACE6-4D16-BC92-9D1CFC9CDCF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DB57AD5-ACE6-4D16-BC92-9D1CFC9CDCF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FB38F98-949C-494B-9982-21108DF9DCB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FB38F98-949C-494B-9982-21108DF9DCB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FB38F98-949C-494B-9982-21108DF9DCB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FB38F98-949C-494B-9982-21108DF9DCB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

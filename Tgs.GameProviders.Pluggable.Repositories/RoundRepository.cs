@@ -29,7 +29,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             data.Status = (short)RoundStatus.Closed;
             data.UpdatedOn = systemDateTimeOffset;
             data.ClosedOn = systemDateTimeOffset;
-            data.ExternalClosedOn = DateTime.SpecifyKind(externalClosedOn.UtcDateTime, DateTimeKind.Local);
+            data.ExternalClosedOn = externalClosedOn.UtcDateTime;
             data.BetAmount = betAmount;
             data.ValidBetAmount = validBetAmount;
             data.SettleAmount = settleAmount;
