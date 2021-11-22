@@ -12,7 +12,6 @@ namespace Tgs.GameProviders.Pluggable.Client
 {
     internal class GameProvidersPluggableClient : IGameProvidersPluggableClient
     {
-        private readonly HttpClient _httpClient;
         private static readonly JsonSerializerOptions? _SerializerOptions = new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -22,29 +21,11 @@ namespace Tgs.GameProviders.Pluggable.Client
             }
         };
 
+        private readonly HttpClient _httpClient;
+
         public GameProvidersPluggableClient(HttpClient httpClient, JsonSerializerOptions? serializerOptions)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-        }
-
-        public async ValueTask KickPlayerAsync(string playerCode)
-        {
-            var response = await _httpClient
-               .GetAsync(
-                $"kickplayer/{playerCode}")
-               .ConfigureAwait(false);
-
-            response.EnsureSuccessStatusCode();
-        }
-
-        public async ValueTask KickPlayerAsync(string playerCode, string gameProviderCode)
-        {
-            var response = await _httpClient
-               .GetAsync(
-                $"kickplayer/{playerCode}/{gameProviderCode}")
-               .ConfigureAwait(false);
-
-            response.EnsureSuccessStatusCode();
         }
 
         public async IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(Guid roundId)
@@ -90,6 +71,26 @@ namespace Tgs.GameProviders.Pluggable.Client
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             return JsonSerializer.Deserialize<GameRoundViewModel>(contentJson, _SerializerOptions);
+        }
+
+        public async ValueTask KickPlayerAsync(string playerCode)
+        {
+            var response = await _httpClient
+               .GetAsync(
+                $"kickplayer/{playerCode}")
+               .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async ValueTask KickPlayerAsync(string playerCode, string gameProviderCode)
+        {
+            var response = await _httpClient
+               .GetAsync(
+                $"kickplayer/{playerCode}/{gameProviderCode}")
+               .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
         }
     }
 }
