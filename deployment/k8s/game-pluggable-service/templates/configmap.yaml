@@ -6,6 +6,13 @@ metadata:
 data:
   appsettings.json: |
     {
+      "Logging": {
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
+      },
       "ConnectionStrings": {
         "Tgs": "{{ .Values.connectionStrings.tgs }}",
         "NatsMQ": "{{ .Values.nats.urls }}",
