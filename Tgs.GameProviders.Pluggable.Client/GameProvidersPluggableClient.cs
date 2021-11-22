@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Tgs.GameProviders.Pluggable.ViewModels;
 
@@ -12,12 +13,18 @@ namespace Tgs.GameProviders.Pluggable.Client
     internal class GameProvidersPluggableClient : IGameProvidersPluggableClient
     {
         private readonly HttpClient _httpClient;
-        private readonly JsonSerializerOptions? _serializerOptions;
+        private static readonly JsonSerializerOptions? _SerializerOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Converters =
+            {
+                new JsonStringEnumConverter()
+            }
+        };
 
         public GameProvidersPluggableClient(HttpClient httpClient, JsonSerializerOptions? serializerOptions)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _serializerOptions = serializerOptions;
         }
 
         public async ValueTask KickPlayerAsync(string playerCode)
@@ -51,7 +58,7 @@ namespace Tgs.GameProviders.Pluggable.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            var payments = JsonSerializer.Deserialize<GameActionViewModel[]>(contentJson, _serializerOptions);
+            var payments = JsonSerializer.Deserialize<GameActionViewModel[]>(contentJson, _SerializerOptions);
 
             foreach (var payment in payments!)
                 yield return payment;
@@ -59,7 +66,7 @@ namespace Tgs.GameProviders.Pluggable.Client
 
         public async ValueTask GameRoundClosedAsync(Guid roundId, GameRoundClosedViewModel viewModel)
         {
-            var requestContent = new StringContent(JsonSerializer.Serialize(viewModel, _serializerOptions));
+            var requestContent = new StringContent(JsonSerializer.Serialize(viewModel, _SerializerOptions));
             requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
             var response = await _httpClient
@@ -82,7 +89,7 @@ namespace Tgs.GameProviders.Pluggable.Client
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<GameRoundViewModel>(contentJson, _serializerOptions);
+            return JsonSerializer.Deserialize<GameRoundViewModel>(contentJson, _SerializerOptions);
         }
     }
 }

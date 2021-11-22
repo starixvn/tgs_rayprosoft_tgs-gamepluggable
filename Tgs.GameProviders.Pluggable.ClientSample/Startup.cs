@@ -71,14 +71,6 @@ namespace Tgs.GameProviders.Pluggable.ClientSample
                 var configuration = sp.GetRequiredService<IConfiguration>();
 
                 options.BaseUrl = new(configuration.GetConnectionString("GameProvidersPluggable"));
-                options.JsonSerializerOptions = new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    Converters =
-                        {
-                            new JsonStringEnumConverter()
-                        }
-                };
             });
         }
     }

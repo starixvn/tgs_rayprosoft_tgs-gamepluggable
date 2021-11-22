@@ -14,18 +14,13 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddOptions<GameProvidersPluggableClientOptions>()
                 .Configure(configure)
                 .Services
-                .AddHttpClient<GameProvidersPluggableClient, GameProvidersPluggableClient>(
-                    (httpClient, sp) => ActivatorUtilities.CreateInstance<GameProvidersPluggableClient>(
-                        sp,
-                        httpClient,
-                        sp.GetRequiredService<IOptions<GameProvidersPluggableClientOptions>>().Value.JsonSerializerOptions!))
+                .AddHttpClient<IGameProvidersPluggableClient, GameProvidersPluggableClient>()
                 .ConfigureHttpClient((sp, httpClient) =>
                 {
                     var options = sp.GetRequiredService<IOptions<GameProvidersPluggableClientOptions>>().Value;
 
                     httpClient.BaseAddress = options.BaseUrl;
                 })
-                .Services
-                .AddTransient<IGameProvidersPluggableClient>(sp => sp.GetRequiredService<GameProvidersPluggableClient>());
+                .Services;
     }
 }
