@@ -32,7 +32,7 @@ namespace Tgs.GameProviders.Pluggable.Client
         {
             var response = await _httpClient
                .GetAsync(
-                $"Round/{roundId}/GameActionQuery")
+                $"round/{roundId}/gameactionquery")
                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
@@ -52,7 +52,7 @@ namespace Tgs.GameProviders.Pluggable.Client
 
             var response = await _httpClient
                .PutAsync(
-                    $"Round/{roundId}/GameRoundClosed"
+                    $"round/{roundId}/gameroundclosed"
                    , requestContent)
                .ConfigureAwait(false);
 
@@ -63,7 +63,7 @@ namespace Tgs.GameProviders.Pluggable.Client
         {
             var response = await _httpClient
                .GetAsync(
-                $"Round/{roundId}")
+                $"round/{roundId}")
                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();

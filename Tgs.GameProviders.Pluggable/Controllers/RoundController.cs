@@ -26,7 +26,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers
         ///
         ///     Get /e8a90f53-11e7-40ab-9ed3-08d99f799e5a/GameActionQuery
         /// </remarks>
-        [HttpGet("{roundId}/GameActionQuery")]
+        [HttpGet("{roundId}/gameactionquery")]
         public IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(
                     [FromServices] IQueryService<Guid, GameActionModel> queryService,
                     Guid roundId)
@@ -82,7 +82,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers
         ///         "remark": "測試關閉"
         ///     }
         /// </remarks>
-        [HttpPut("{roundId}/GameRoundClosed")]
+        [HttpPut("{roundId}/gameroundclosed")]
         public ValueTask GameRoundClosedAsync(
                     [FromServices] ICommandService<GameRoundClosedCommand> commandService,
                     Guid roundId,
