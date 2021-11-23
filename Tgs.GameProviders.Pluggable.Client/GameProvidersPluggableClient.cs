@@ -6,7 +6,6 @@ using System.Net.Mime;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Tgs.GameProviders.Pluggable.ViewModels;
 
 namespace Tgs.GameProviders.Pluggable.Client
@@ -26,7 +25,6 @@ namespace Tgs.GameProviders.Pluggable.Client
 
         public GameProvidersPluggableClient(HttpClient httpClient)
             => _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-
 
         public async IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(Guid roundId)
         {
