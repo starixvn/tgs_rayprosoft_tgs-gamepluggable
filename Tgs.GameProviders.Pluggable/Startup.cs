@@ -37,6 +37,9 @@ namespace Tgs.GameProviders.Pluggable
             {
                 app.UseDeveloperExceptionPage();
             }
+            //使用IP解析需要使用
+            app.UseForwardedHeaders();
+
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TGS.GameProviders.PluggableService v1"));
 
