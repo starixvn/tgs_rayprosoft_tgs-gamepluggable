@@ -82,25 +82,25 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
             _ = fakeRoundRepository
                 .Received(1)
                 .ClosedGameRoundAsync(
-                 roundId,
-                 betAmount,
-                 validBetAmount,
-                 settleAmount,
-                 commission,
-                 turnover,
-                 winLoss,
-                 clientRoundStatus,
-                 externalClosedOn
+                 Arg.Is(roundId),
+                 Arg.Is(betAmount),
+                 Arg.Is(validBetAmount),
+                 Arg.Is(settleAmount),
+                 Arg.Is(commission),
+                 Arg.Is(turnover),
+                 Arg.Is(winLoss),
+                 Arg.Is(clientRoundStatus),
+                 Arg.Is(externalClosedOn)
                  );
 
             _ = fakeRoundOperationRecordsRepository
                 .Received(1)
                 .AddAsync(
-                operatorId,
-                roundId,
-                JsonSerializer.Serialize(gameRoundModel),
-                JsonSerializer.Serialize(gameRoundModel),
-                remark);
+                Arg.Is(operatorId),
+                Arg.Is(roundId),
+                Arg.Is(JsonSerializer.Serialize(gameRoundModel)),
+                Arg.Is(JsonSerializer.Serialize(gameRoundModel)),
+                Arg.Is(remark));
         }
     }
 }

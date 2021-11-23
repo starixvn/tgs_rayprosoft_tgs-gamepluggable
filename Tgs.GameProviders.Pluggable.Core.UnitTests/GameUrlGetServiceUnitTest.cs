@@ -89,23 +89,39 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
                  );
 
 
-            _ = fakePlayerVerifyService.IsPlayerEnableAsync(query.PlayerCode).Returns(ValueTask.FromResult(true));
-            _ = fakePlayerVerifyService.IsPlayerGameActiveAsync(playerModel.BrandId, query.GameId).Returns(ValueTask.FromResult(true));
-            _ = fakeGameRepository.GetAsync(query.GameId).Returns(ValueTask.FromResult(gameModel));
-            _ = fakePlayerRepository.GetAsync(query.PlayerCode).Returns(ValueTask.FromResult(playerModel));
-            _ = fakeGameProviderRepository.GetAsync(gameModel.GameProviderId).Returns(ValueTask.FromResult(gameProviderModel));
+            _ = fakePlayerVerifyService
+                .IsPlayerEnableAsync(
+                Arg.Is(query.PlayerCode)
+                ).Returns(ValueTask.FromResult(true));
+
+            _ = fakePlayerVerifyService
+                .IsPlayerGameActiveAsync(
+                Arg.Is(playerModel.BrandId),
+                Arg.Is(query.GameId)).Returns(ValueTask.FromResult(true));
+
+            _ = fakeGameRepository.GetAsync(
+                Arg.Is(query.GameId)).Returns(ValueTask.FromResult(gameModel));
+
+            _ = fakePlayerRepository
+                .GetAsync(Arg.Is(query.PlayerCode))
+                .Returns(ValueTask.FromResult(playerModel));
+
+            _ = fakeGameProviderRepository
+                .GetAsync(Arg.Is(gameModel.GameProviderId))
+                .Returns(ValueTask.FromResult(gameProviderModel));
+
             _ = fakeGameProvidersClient.GameUrlAsync(
-                gameProviderModel.GameProviderCode,
-                gameModel.GameType,
-                query.GameId,
-                playerModel.BrandCode,
-                playerModel.PlayerCode,
-                playerModel.DefaultWalletCurrencyCode,
-                query.LoginRecordId,
-                query.PlatformType,
-                query.Language,
-                query.IpAddress,
-                query.BackUrl)
+                Arg.Is(gameProviderModel.GameProviderCode),
+                Arg.Is(gameModel.GameType),
+                Arg.Is(query.GameId),
+                Arg.Is(playerModel.BrandCode),
+                Arg.Is(playerModel.PlayerCode),
+                Arg.Is(playerModel.DefaultWalletCurrencyCode),
+                Arg.Is(query.LoginRecordId),
+                Arg.Is(query.PlatformType),
+                Arg.Is(query.Language),
+                Arg.Is(query.IpAddress),
+                Arg.Is(query.BackUrl))
                 .Returns(ValueTask.FromResult(new Uri("https://www.google.com/")));
 
             var actual = await fakeService.GetAsync(query);

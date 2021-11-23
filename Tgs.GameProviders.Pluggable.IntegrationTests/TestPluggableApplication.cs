@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests
 {
-    internal class TestCashApplication : WebApplicationFactory<Startup>
+    internal class TestPluggableApplication : WebApplicationFactory<Startup>
     {
         private readonly Action<IWebHostBuilder>? _webHostConfigure;
 
-        public TestCashApplication(Action<IWebHostBuilder>? webHostConfigure = null)
+        public TestPluggableApplication(Action<IWebHostBuilder>? webHostConfigure = null)
         {
             _webHostConfigure = webHostConfigure;
         }

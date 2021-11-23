@@ -57,7 +57,7 @@ namespace Tgs.GameProviders.Pluggable.Client
 
             var response = await _httpClient
                .PutAsync(
-                    $"round/{roundId}/gameroundclosed"
+                    $"/round/{roundId}/gameroundclosed"
                    , requestContent)
                .ConfigureAwait(false);
 
@@ -70,7 +70,7 @@ namespace Tgs.GameProviders.Pluggable.Client
         {
             var response = await _httpClient
                .GetAsync(
-                $"round/{roundId}")
+                $"/round/{roundId}")
                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
@@ -83,8 +83,8 @@ namespace Tgs.GameProviders.Pluggable.Client
         public async ValueTask KickPlayerAsync(string playerCode)
         {
             var response = await _httpClient
-               .GetAsync(
-                $"kickplayer/{playerCode}")
+               .DeleteAsync(
+                $"/player/kickplayer/{playerCode}")
                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
@@ -93,8 +93,8 @@ namespace Tgs.GameProviders.Pluggable.Client
         public async ValueTask KickPlayerAsync(string playerCode, string gameProviderCode)
         {
             var response = await _httpClient
-               .GetAsync(
-                $"kickplayer/{playerCode}/{gameProviderCode}")
+               .DeleteAsync(
+                $"/player/kickplayer/{playerCode}/{gameProviderCode}")
                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();

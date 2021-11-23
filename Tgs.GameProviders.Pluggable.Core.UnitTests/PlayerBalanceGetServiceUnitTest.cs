@@ -49,11 +49,17 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
 
             var expected = 1000m;
 
-            _ = fakePlayerVerifyService.IsPlayerEnableAsync(query.PlayerCode).Returns(ValueTask.FromResult(true));
-            _ = fakePlayerRepository.GetAsync(query.PlayerCode).Returns(ValueTask.FromResult(playerModel));
+            _ = fakePlayerVerifyService.IsPlayerEnableAsync(
+                Arg.Is(query.PlayerCode))
+                .Returns(ValueTask.FromResult(true));
+
+            _ = fakePlayerRepository.GetAsync(
+                Arg.Is(query.PlayerCode))
+                .Returns(ValueTask.FromResult(playerModel));
+
             _ = fakeGameProvidersClient.PlayerBalanceAsync(
-                query.GameProviderCode,
-                playerModel.PlayerCode)
+                Arg.Is(query.GameProviderCode),
+                Arg.Is(playerModel.PlayerCode))
                 .Returns(ValueTask.FromResult<decimal>(expected));
 
             var actual = await fakeService.GetAsync(query);
