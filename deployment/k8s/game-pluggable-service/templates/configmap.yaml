@@ -20,5 +20,14 @@ data:
         "CashService": "http://cashservice-api",
         "TGSGameProviderKickPlayerServer": "http://game-kickplayer-server"
       },
+      "ForwardedHeaders": {
+        "ForwardLimit": 2,
+        "KnownProxies": [
+          "192.168.50.1",
+          "220.132.206.70",
+          "211.24.72.160",
+          "18.167.169.96"
+        ]
+      },
       "AllowedHosts": "*"
     }

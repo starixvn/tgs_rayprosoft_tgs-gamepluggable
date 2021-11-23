@@ -173,12 +173,14 @@ namespace Tgs.GameProviders.Pluggable
             services.AddOptions<ForwardedHeadersOptions>()
                 .Configure<IConfiguration>((options, config) =>
                 {
-
+                    config.GetSection("ForwardedHeaders").Bind(options);
+                    var knownProxies = config.GetSection("ForwardedHeaders:KnownProxies").Get<string[]>();
                     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
                     //options.ForwardLimit = 2;
 
                     // Replace with IP of your proxy/load balancer
-                    options.KnownProxies.Add(IPAddress.Parse("192.168.50.1"));
+                    foreach (var knownProxie in knownProxies)
+                        options.KnownProxies.Add(IPAddress.Parse(knownProxie));
 
                     // 10/8 allows any from 10.0.0.0~10.255.255.255;
                     options.KnownNetworks.Add(new IPNetwork(IPAddress.Parse("10.0.0.0"), 8));

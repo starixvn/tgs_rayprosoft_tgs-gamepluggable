@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Tgs.GameProviders.Pluggable.Core.ApplicationServices;
 using Tgs.ServiceUtility;
@@ -10,7 +9,6 @@ namespace Tgs.GameProviders.Pluggable.Controllers
     [ApiController]
     public class PlayerController : ControllerBase
     {
-
         /// <summary>
         /// Kicks the player asynchronous.
         /// </summary>

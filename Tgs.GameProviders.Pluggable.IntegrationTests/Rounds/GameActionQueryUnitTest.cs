@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NSubstitute;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NSubstitute;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
 
-namespace Tgs.GameProviders.Pluggable.IntegrationTests
+namespace Tgs.GameProviders.Pluggable.IntegrationTests.Rounds
 {
     [TestClass]
-    public class RoundGameActionQueryUnitTest
+    public class GameActionQueryUnitTest
     {
         [TestMethod]
         public async Task Round_GameAction_QueryAsync()
@@ -37,15 +37,11 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests
             });
 
             var httpClient = web.CreateClient();
-            var faceLogger = NullLogger<GameProvidersPluggableClient>.Instance;
 
-            var sut = new GameProvidersPluggableClient(httpClient, faceLogger);
+            var sut = new GameProvidersPluggableClient(httpClient);
 
             var actual = sut.GameActionQueryAsync(roundId);
             Assert.IsNotNull(actual);
         }
-
-
-
     }
 }

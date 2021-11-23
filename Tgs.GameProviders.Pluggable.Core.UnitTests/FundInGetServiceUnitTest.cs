@@ -71,7 +71,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
                  string.Empty
                 );
 
-
             var playerBalance = 10.0m;
             var gameProviderFundTransferTransactionId = Guid.NewGuid();
             var gameProviderTransactionId = $"72412{DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).ToString("yyyyMMddHHmmssfff")}4udwnknl3eg7";

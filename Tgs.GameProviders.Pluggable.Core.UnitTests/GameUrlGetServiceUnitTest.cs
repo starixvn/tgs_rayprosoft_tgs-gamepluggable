@@ -88,7 +88,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
                  string.Empty
                  );
 
-
             _ = fakePlayerVerifyService
                 .IsPlayerEnableAsync(
                 Arg.Is(query.PlayerCode)

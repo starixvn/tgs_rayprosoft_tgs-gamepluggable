@@ -91,7 +91,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
                 ).Returns(ValueTask.FromResult(playerModel));
 
             _ = fakePlayerVerifyService.IsPlayerGameProviderActiveAsync(
-                Arg.Is(playerModel.BrandId), 
+                Arg.Is(playerModel.BrandId),
                 Arg.Is(query.GameProviderCode)
                 ).Returns(ValueTask.FromResult(true));
 

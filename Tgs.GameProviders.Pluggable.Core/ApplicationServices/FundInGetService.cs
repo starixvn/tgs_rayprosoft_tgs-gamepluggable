@@ -59,7 +59,6 @@ namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
                 query.GameProviderCode,
                 playerModel.PlayerCode).ConfigureAwait(false);
 
-           
             if (gameProviderBalance - amount < 0)
             {
                 throw new Exception("Game Provider balance is insufficient");
