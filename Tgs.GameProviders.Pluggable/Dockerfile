@@ -27,5 +27,6 @@ RUN dotnet publish "Tgs.GameProviders.Pluggable.csproj" -c $BuildConfiguration -
 
 FROM base AS final
 WORKDIR /app
+ENV Logging__Console__FormatterName=Simple
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Tgs.GameProviders.Pluggable.dll"]
