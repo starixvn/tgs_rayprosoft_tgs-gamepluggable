@@ -71,6 +71,20 @@ namespace Tgs.GameProviders.Pluggable.Client
             return JsonSerializer.Deserialize<GameRoundViewModel>(contentJson, _SerializerOptions);
         }
 
+        public async ValueTask<JsonDocument?> GameRoundDetailGetAsync(Guid roundId, string language)
+        {
+            var response = await _httpClient
+               .GetAsync(
+                $"/round/{roundId}/gamerounddetail?language={language}")
+               .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+
+            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            return JsonSerializer.Deserialize<JsonDocument>(contentJson, _SerializerOptions);
+        }
+
         public async ValueTask KickPlayerAsync(string playerCode)
         {
             var response = await _httpClient

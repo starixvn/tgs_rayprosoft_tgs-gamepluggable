@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Tgs.GameProviders.Pluggable.Core;
@@ -24,7 +25,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers
         /// <remarks>
         /// <b>Example</b><br />
         ///
-        ///     Get /e8a90f53-11e7-40ab-9ed3-08d99f799e5a/GameActionQuery
+        ///     Get /round/e8a90f53-11e7-40ab-9ed3-08d99f799e5a/GameActionQuery
         /// </remarks>
         [HttpGet("{roundId}/gameactionquery")]
         public IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(
@@ -68,7 +69,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers
         /// <remarks>
         /// <b>Example</b><br />
         ///
-        ///     Put /e8a90f53-11e7-40ab-9ed3-08d99f799e5a/ClosedGameRound
+        ///     Put /round/e8a90f53-11e7-40ab-9ed3-08d99f799e5a/ClosedGameRound
         ///     {
         ///         "betAmount": 20,
         ///         "validBetAmount": 20,
@@ -111,7 +112,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers
         /// <remarks>
         /// <b>Example</b><br />
         ///
-        ///     Get /e8a90f53-11e7-40ab-9ed3-08d99f799e5a
+        ///     Get /round/e8a90f53-11e7-40ab-9ed3-08d99f799e5a
         /// </remarks>
         [HttpGet("{roundId}")]
         public async ValueTask<GameRoundViewModel> GameRoundGetAsync(
@@ -151,5 +152,30 @@ namespace Tgs.GameProviders.Pluggable.Controllers
                 EffectiveBettingPercentage = data.EffectiveBettingPercentage
             };
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="getService"></param>
+        /// <param name="roundId"></param>
+        /// <param name="language"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// <b>Example</b><br />
+        ///
+        ///     Get /round/3c6282df-d531-4482-088e-08d9a004e811/gamerounddetail?language=zh-CN
+        /// </remarks>
+        [HttpGet("{roundId}/gamerounddetail")]
+        public async ValueTask<JsonDocument> GameRoundDetailGetAsync(
+            [FromServices] IGetService<RoundDetailQuery, JsonDocument> getService,
+            Guid roundId,
+            [FromQuery] string language)
+            => await getService.GetAsync(
+                new()
+                {
+                    RoundId = roundId,
+                    Language = language
+                })
+                .ConfigureAwait(false);
     }
 }
