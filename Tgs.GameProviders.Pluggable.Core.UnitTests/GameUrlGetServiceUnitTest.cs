@@ -58,19 +58,18 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
                 Status = PlayerStatus.Enabled
             };
 
-            var gameModel = new GameModel()
-            {
-                GameId = 1000001,
-                Status = GameStatus.Active,
-                GameExternalId = "0",
-                GameProviderId = Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
-                GameType = GameType.LiveDealerLobby,
-                PlatformType = GamePlatformType.DesktopAndMobile,
-                SubGame = false,
-                GameCode = "Lobby",
-                Name = "Lobby",
-                SubGameProviderCode = "ky"
-            };
+            var gameModel = new GameModel(
+                1000001,
+                 GameStatus.Active,
+                 "0",
+                 Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
+                 GameType.LiveDealerLobby,
+                 GamePlatformType.DesktopAndMobile,
+                 false,
+                 "Lobby",
+                 "Lobby",
+                 "ky"
+                );
 
             var gameProviderModel = new GameProviderModel(
                  Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),

@@ -52,19 +52,18 @@ namespace Tgs.GameProviders.Pluggable.Services.UnitTests
                  string.Empty
                 );
 
-            var gameModel = new GameModel()
-            {
-                GameId = 1000031,
-                Status = GameStatus.Active,
-                GameExternalId = "0",
-                GameProviderId = gameProviderId,
-                GameType = GameType.LiveDealerLobby,
-                PlatformType = GamePlatformType.DesktopAndMobile,
-                SubGame = false,
-                GameCode = "Lobby",
-                Name = "Lobby",
-                SubGameProviderCode = "KY",
-            };
+            var gameModel = new GameModel(
+                1000001,
+                 GameStatus.Active,
+                 "0",
+                 Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
+                 GameType.LiveDealerLobby,
+                 GamePlatformType.DesktopAndMobile,
+                 false,
+                 "Lobby",
+                 "Lobby",
+                 "ky"
+                );
 
             _ = fakeGameRepository
                 .GetAsync(gameId)
