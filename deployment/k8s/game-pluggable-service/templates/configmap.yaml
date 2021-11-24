@@ -10,7 +10,11 @@ data:
         "LogLevel": {
           "Default": "Information",
           "Microsoft": "Warning",
-          "Microsoft.Hosting.Lifetime": "Information"
+          "Microsoft.Hosting.Lifetime": "Information",
+          "Microsoft.AspNetCore.HttpLogging": "Warning"
+        },
+        "Console": {
+          "FormatterName": "Simple"
         }
       },
       "ConnectionStrings": {
