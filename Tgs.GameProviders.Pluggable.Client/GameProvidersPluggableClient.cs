@@ -30,7 +30,7 @@ namespace Tgs.GameProviders.Pluggable.Client
         {
             var response = await _httpClient
                .GetAsync(
-                $"round/{roundId}/gameactionquery")
+                $"/round/{roundId}/gameactionquery")
                .ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
