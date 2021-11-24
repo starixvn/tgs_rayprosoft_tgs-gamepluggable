@@ -16,7 +16,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             _tgsContext = tgsContext ?? throw new ArgumentNullException(nameof(tgsContext));
         }
 
-        public ValueTask<GameProviderModel?> GetAsync(Guid gameProviderId)
+        public ValueTask<GameProviderModel> GetAsync(Guid gameProviderId)
             => _tgsContext.GameProviders
             .Where(x => x.Id == gameProviderId)
             .Select(data => new GameProviderModel(
@@ -34,9 +34,9 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                 data.Name,
                 data.Localization))
             .ToAsyncEnumerable()
-            .FirstOrDefaultAsync();
+            .FirstAsync();
 
-        public ValueTask<GameProviderModel?> GetAsync(string gameProviderCode)
+        public ValueTask<GameProviderModel> GetAsync(string gameProviderCode)
             => _tgsContext.GameProviders
             .Where(x => x.Code == gameProviderCode)
             .Select(data => new GameProviderModel(
@@ -54,10 +54,27 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                 data.Name,
                 data.Localization))
             .ToAsyncEnumerable()
-            .FirstOrDefaultAsync();
+            .FirstAsync();
 
-        public ValueTask<GameProviderStatus> GetStatusAsync(Guid gameProviderId) => throw new NotImplementedException();
+        public ValueTask<GameProviderStatus> GetStatusAsync(Guid gameProviderId)
+            => _tgsContext.GameProviders
+            .Where(x => x.Id == gameProviderId)
+            .Select(data => (GameProviderStatus)data.Status)
+            .ToAsyncEnumerable()
+            .FirstAsync();
 
-        public ValueTask<SubGameProviderModel> GetSubGameProvider(string subGameProviderCode) => throw new NotImplementedException();
+        public ValueTask<SubGameProviderModel> GetSubGameProviderAsync(string subGameProviderCode)
+            => _tgsContext.SubGameProviders
+            .Where(x => x.Code == subGameProviderCode)
+            .Select(data => new SubGameProviderModel()
+            {
+                SubGameProviderCode = data.Code,
+                Name = data.Name,
+                Description = data.Description,
+                GameProviderId = data.GameProviderId,
+                Localization = data.Localization
+            })
+            .ToAsyncEnumerable()
+            .FirstAsync();
     }
 }

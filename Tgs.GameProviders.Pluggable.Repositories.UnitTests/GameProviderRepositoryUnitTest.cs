@@ -35,5 +35,14 @@ namespace Tgs.GameProviders.Pluggable.Repositories.UnitTests
                 Arg.Any<Guid>()
                 ).ConfigureAwait(false);
         }
+
+        [Test]
+        public async Task Get_Sub_GameProvider_Async()
+        {
+            var fakeRepository = Substitute.For<IGameProviderRepository>();
+            _ = await fakeRepository.GetSubGameProviderAsync(
+                Arg.Any<string>()
+                ).ConfigureAwait(false);
+        }
     }
 }
