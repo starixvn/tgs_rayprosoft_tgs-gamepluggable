@@ -19,19 +19,16 @@ namespace Tgs.GameProviders.Pluggable.Repositories
         public ValueTask<GameModel> GetAsync(int gameId)
             => _tgsContext.Games
             .Where(x => x.Id == gameId)
-            .Select(data => new GameModel()
-            {
-                GameId = data.Id,
-                Status = (GameStatus)data.Status,
-                GameExternalId = data.ExternalId,
-                GameProviderId = data.GameProviderId,
-                GameType = (GameType)data.Type,
-                PlatformType = (GamePlatformType)data.PlatformType,
-                SubGame = data.SubGame,
-                GameCode = data.Code,
-                Name = data.Name,
-                SubGameProviderCode = data.SubGameProviderCode
-            })
+            .Select(data => new GameModel(data.Id,
+                 (GameStatus)data.Status,
+                 data.ExternalId,
+                 data.GameProviderId,
+                 (GameType)data.Type,
+                 (GamePlatformType)data.PlatformType,
+                 data.SubGame,
+                 data.Code,
+                 data.Name,
+                 data.SubGameProviderCode))
             .ToAsyncEnumerable()
             .FirstAsync();
 
