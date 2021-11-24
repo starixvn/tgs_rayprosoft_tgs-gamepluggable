@@ -13,7 +13,7 @@ data:
           "Microsoft.Hosting.Lifetime": "Information"
         },
         "Console": {
-          "FormatterName": "Systemd"
+          "FormatterName": "Simple"
         }
       },
       "ConnectionStrings": {
