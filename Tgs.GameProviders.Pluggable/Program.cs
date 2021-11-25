@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Tgs.GameProviders.Pluggable
 {
@@ -15,6 +16,10 @@ namespace Tgs.GameProviders.Pluggable
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();
+            })
+            .ConfigureLogging((_, builder) =>
+            {
+                builder.AddTgsLog();
             });
 
         public static void Main(string[] args)

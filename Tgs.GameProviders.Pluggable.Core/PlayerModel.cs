@@ -3,18 +3,18 @@ using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Core
 {
-    public record PlayerModel
-    {
-        public Guid ResellerId { get; init; }
-        public Guid LicenseeId { get; init; }
-        public string LicenseeCode { get; init; } = default!;
-        public Guid BrandId { get; init; }
-        public string BrandCode { get; init; } = default!;
-        public string PlayerCode { get; init; } = default!;
-        public string Username { get; init; } = default!;
-        public string? RealName { get; init; }
-        public Guid DefaultWalletId { get; init; }
-        public string DefaultWalletCurrencyCode { get; init; } = default!;
-        public PlayerStatus Status { get; set; }
-    }
+    public record PlayerModel(
+        Guid ResellerId,
+        string ResellerCode,
+        Guid LicenseeId,
+        string LicenseeCode,
+        Guid BrandId,
+        string BrandCode,
+        string PlayerCode,
+        string Username,
+        string? RealName,
+        Guid DefaultWalletId,
+        string DefaultWalletCurrencyCode,
+        PlayerStatus Status
+     );
 }

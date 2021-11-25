@@ -73,6 +73,8 @@ namespace Tgs.GameProviders.Pluggable.Repositories.Entities.Configurations
 
             entity.Property(e => e.EnableSms).HasColumnName("enable_sms");
 
+            entity.Property(e => e.EnableSmsRegisterFlow).HasColumnName("enable_sms_register_flow");
+
             entity.Property(e => e.LicenseeId).HasColumnName("licensee_id");
 
             entity.Property(e => e.LogoInfo)

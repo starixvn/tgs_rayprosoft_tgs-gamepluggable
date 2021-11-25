@@ -9,15 +9,15 @@ namespace Tgs.GameProviders.Pluggable.Repositories
 {
     internal class GameProviderRepository : IGameProviderRepository
     {
-        private readonly TgsContext _tgsContext;
+        private readonly TgsContext _context;
 
-        public GameProviderRepository(TgsContext tgsContext)
+        public GameProviderRepository(TgsContext context)
         {
-            _tgsContext = tgsContext ?? throw new ArgumentNullException(nameof(tgsContext));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public ValueTask<GameProviderModel> GetAsync(Guid gameProviderId)
-            => _tgsContext.GameProviders
+            => _context.GameProviders
             .Where(x => x.Id == gameProviderId)
             .Select(data => new GameProviderModel(
                 data.Id,
@@ -37,7 +37,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             .FirstAsync();
 
         public ValueTask<GameProviderModel> GetAsync(string gameProviderCode)
-            => _tgsContext.GameProviders
+            => _context.GameProviders
             .Where(x => x.Code == gameProviderCode)
             .Select(data => new GameProviderModel(
                 data.Id,
@@ -57,14 +57,14 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             .FirstAsync();
 
         public ValueTask<GameProviderStatus> GetStatusAsync(Guid gameProviderId)
-            => _tgsContext.GameProviders
+            => _context.GameProviders
             .Where(x => x.Id == gameProviderId)
             .Select(data => (GameProviderStatus)data.Status)
             .ToAsyncEnumerable()
             .FirstAsync();
 
         public ValueTask<SubGameProviderModel> GetSubGameProviderAsync(string subGameProviderCode)
-            => _tgsContext.SubGameProviders
+            => _context.SubGameProviders
             .Where(x => x.Code == subGameProviderCode)
             .Select(data => new SubGameProviderModel()
             {
