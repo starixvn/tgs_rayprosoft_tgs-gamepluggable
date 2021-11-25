@@ -73,6 +73,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 
                     services.AddSingleton(fakeRoundRepository);
                     services.AddSingleton(fakeRoundOperationRecordsRepository);
+                    services.AddFakeNatsMessageQueue();
                 });
             });
 
