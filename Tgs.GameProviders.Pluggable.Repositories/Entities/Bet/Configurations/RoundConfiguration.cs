@@ -31,7 +31,6 @@ namespace Tgs.GameProviders.Pluggable.Repositories.Entities.Configurations
 
             entity.HasIndex(e => new { e.ExternalRoundId, e.PlayerCode, e.GameProviderId, e.GameId }, "ux_rounds_external_round_id_composite")
                 .IsUnique();
-            //.IncludeProperties(new[] { "game_provider_configuration_id", "wallet_id" });
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()

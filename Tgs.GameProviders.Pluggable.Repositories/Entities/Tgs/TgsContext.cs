@@ -20,6 +20,9 @@ namespace Tgs.GameProviders.Pluggable.Repositories.Entities
         }
 
         public virtual DbSet<Brand> Brands { get; set; }
+        public virtual DbSet<BrandCurrency> BrandCurrencies { get; set; }
+        public virtual DbSet<BrandGame> BrandGames { get; set; }
+        public virtual DbSet<BrandGameProvider> BrandGameProviders { get; set; }
         public virtual DbSet<Game> Games { get; set; }
         public virtual DbSet<GameProvider> GameProviders { get; set; }
         public virtual DbSet<GameProviderFundTransferTransaction> GameProviderFundTransferTransactions { get; set; }
@@ -34,6 +37,9 @@ namespace Tgs.GameProviders.Pluggable.Repositories.Entities
                 .HasAnnotation("Relational:Collation", "en_US.utf8");
 
             modelBuilder.ApplyConfiguration(new Configurations.BrandConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.BrandCurrencyConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.BrandGameConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.BrandGameProviderConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.GameConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.GameProviderConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.GameProviderFundTransferTransactionConfiguration());

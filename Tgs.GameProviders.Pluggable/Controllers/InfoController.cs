@@ -14,7 +14,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<object> GetAsync()
+        public object Get()
         {
             var userAgent = HttpContext.Request.Headers["User-Agent"];
             var uaParser = Parser.GetDefault();
