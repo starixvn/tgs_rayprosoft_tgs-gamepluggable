@@ -159,6 +159,18 @@ namespace Tgs.GameProviders.Pluggable
                         config.GetConnectionString("Tgs"));
                 });
 
+            services
+                .AddNatsMessageQueue(natsConfig =>
+                {
+                    natsConfig
+                    .ConfigQueueOptions((options, sp) =>
+                    {
+                        var configuration = sp.GetRequiredService<IConfiguration>();
+                        options.Url = configuration.GetConnectionString("NatsMQ");
+                    });
+                })
+                .AddTgsLog();
+
             services.AddGameProvidersClient((options, sp) =>
             {
                 var configuration = sp.GetRequiredService<IConfiguration>();
@@ -170,6 +182,8 @@ namespace Tgs.GameProviders.Pluggable
                 var configuration = sp.GetRequiredService<IConfiguration>();
                 options.BaseUrl = new(configuration.GetConnectionString("CashService"));
             });
+
+
 
             services.AddHttpLogging(logging =>
             {
