@@ -31,6 +31,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Players
                     .Returns(ValueTask.FromResult(gameProviderBalance));
 
                     services.AddSingleton(fakeGameProvidersClient);
+                    services.AddFakeNatsMessageQueue();
                 });
             });
 

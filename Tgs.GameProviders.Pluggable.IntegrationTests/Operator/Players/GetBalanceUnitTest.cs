@@ -66,6 +66,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                     services.AddSingleton(faceLogger);
                     services.AddSingleton(fakePlayerRepository);
                     services.AddSingleton(fakeResellerRepository);
+                    services.AddFakeNatsMessageQueue();
                 });
             });
 

@@ -91,11 +91,11 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 
                     _ = fakeGameProviderRepository
                         .GetAsync(gameProviderId)
-                        .Returns(ValueTask.FromResult<GameProviderModel?>(gameProviderModel));
+                        .Returns(ValueTask.FromResult<GameProviderModel>(gameProviderModel));
 
                     _ = fakeGameProviderRepository
                         .GetAsync(gameProviderId)
-                        .Returns(ValueTask.FromResult<GameProviderModel?>(gameProviderModel));
+                        .Returns(ValueTask.FromResult<GameProviderModel>(gameProviderModel));
 
                     var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
 
@@ -109,6 +109,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
                     services.AddSingleton(fakeRoundRepository);
                     services.AddSingleton(fakeGameProviderRepository);
                     services.AddSingleton(fakeGameProvidersClient);
+                    services.AddFakeNatsMessageQueue();
                 });
             });
 

@@ -32,6 +32,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
                         .Returns(Array.Empty<GameActionModel>().ToAsyncEnumerable());
 
                     services.AddSingleton(fakeRoundRepository);
+                    services.AddFakeNatsMessageQueue();
                 });
             });
 
