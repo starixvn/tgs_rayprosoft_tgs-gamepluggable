@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Mime;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Tgs.GameProviders.Pluggable.ViewModels;
 
 namespace Tgs.GameProviders.Pluggable.Client
 {
@@ -40,13 +36,11 @@ namespace Tgs.GameProviders.Pluggable.Client
                 var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 return JsonSerializer.Deserialize<decimal?>(contentJson, _SerializerOptions);
-
             }
             catch
             {
                 return null;
             }
         }
-
     }
 }

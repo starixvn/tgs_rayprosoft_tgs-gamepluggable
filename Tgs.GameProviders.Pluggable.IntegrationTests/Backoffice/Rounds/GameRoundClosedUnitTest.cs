@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
+using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.ViewModels;
@@ -17,6 +18,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
         public async Task Round_GameAction_QueryAsync()
         {
             var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
+            var walletId = Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9");
             var betAmount = 0.060000m;
             var validBetAmount = 0.060000m;
             var settleAmount = 0.00m;
@@ -27,13 +29,13 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
             var externalClosedOn = DateTimeOffset.Parse("2021-06-03 13:57:05.000 +0800");
             var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
             var remark = "測試調整";
-
+            var adjustAmount = 100m;
             await using var web = new TestPluggableApplication(builder =>
             {
                 builder.ConfigureServices(services =>
                 {
                     var fakeRoundRepository = Substitute.For<IRoundRepository>();
-                    var fakeRoundOperationRecordsRepository = Substitute.For<IRoundOperationRecordsRepository>();
+                    var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
 
                     fakeRoundRepository.ClosedGameRoundAsync(
                         roundId,
@@ -44,7 +46,9 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
                         turnover,
                         winLoss,
                         clientRoundStatus,
-                        externalClosedOn);
+                        externalClosedOn,
+                        operatorId,
+                        remark);
 
                     fakeRoundRepository.ClosedGameRoundAsync(
                         Arg.Is(roundId),
@@ -55,24 +59,29 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
                         Arg.Is(turnover),
                         Arg.Is(winLoss),
                         Arg.Is(clientRoundStatus),
-                        Arg.Is(externalClosedOn));
-
-                    fakeRoundOperationRecordsRepository.AddAsync(
-                        operatorId,
-                        roundId,
-                        string.Empty,
-                        string.Empty,
-                        remark);
-
-                    fakeRoundOperationRecordsRepository.AddAsync(
+                        Arg.Is(externalClosedOn),
                         Arg.Is(operatorId),
-                        Arg.Is(roundId),
-                        Arg.Is(string.Empty),
-                        Arg.Is(string.Empty),
                         Arg.Is(remark));
 
+                    fakeCashServiceClient
+                    .UnsettledBetManualAsync(
+                        walletId,
+                        adjustAmount,
+                        remark,
+                        roundId.ToString(),
+                        operatorId
+                        );
+                    fakeCashServiceClient
+                    .UnsettledBetManualAsync(
+                        Arg.Is(walletId),
+                        Arg.Is(adjustAmount),
+                        Arg.Is(remark),
+                        Arg.Is(roundId.ToString()),
+                        Arg.Is(operatorId)
+                        );
+
                     services.AddSingleton(fakeRoundRepository);
-                    services.AddSingleton(fakeRoundOperationRecordsRepository);
+                    services.AddSingleton(fakeCashServiceClient);
                     services.AddFakeNatsMessageQueue();
                 });
             });
@@ -92,7 +101,8 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
                 SettleAmount = settleAmount,
                 Turnover = turnover,
                 ValidBetAmount = validBetAmount,
-                WinLoss = winLoss
+                WinLoss = winLoss,
+                AdjustAmount = adjustAmount
             };
 
             var actual = sut.GameRoundClosedAsync(roundId, viewModel);

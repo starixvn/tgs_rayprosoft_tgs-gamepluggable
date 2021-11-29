@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Tgs.GameProviders.Pluggable.ViewModels;
+﻿using System.Threading.Tasks;
 
 namespace Tgs.GameProviders.Pluggable.Client
 {

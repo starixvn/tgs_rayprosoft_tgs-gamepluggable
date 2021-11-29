@@ -1,11 +1,11 @@
 using System;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
+using Tgs.CashService.Client;
+using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using TGS.GameProviders.Domains;
-using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
 {
@@ -16,10 +16,10 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
         public async Task Closed_Game_Round()
         {
             var faceLogger = NullLogger<GameRoundClosedService>.Instance;
-            var fakeRoundOperationRecordsRepository = Substitute.For<IRoundOperationRecordsRepository>();
+            var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
             var fakeRoundRepository = Substitute.For<IRoundRepository>();
 
-            var fakeService = new GameRoundClosedService(faceLogger, fakeRoundOperationRecordsRepository, fakeRoundRepository);
+            var fakeService = new GameRoundClosedService(fakeCashServiceClient, faceLogger, fakeRoundRepository);
 
             var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
             var gameRoundModel = new GameRoundModel(RoundId: Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02"),
@@ -52,7 +52,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
             _ = fakeRoundRepository
                 .GetAsync(roundId)
                 .Returns(ValueTask.FromResult(gameRoundModel));
-
+            var walletId = Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9");
             var betAmount = 0.060000m;
             var validBetAmount = 0.060000m;
             var settleAmount = 0.00m;
@@ -63,6 +63,22 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
             var externalClosedOn = DateTimeOffset.Parse("2021-06-03 13:57:05.000 +0800");
             var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
             var remark = "´ú¸Õ½Õ¾ã";
+            var adjustAmount = 100m;
+
+            fakeRoundRepository
+                .ClosedGameRoundAsync(
+                 roundId,
+                 betAmount,
+                 validBetAmount,
+                 settleAmount,
+                 commission,
+                 turnover,
+                 winLoss,
+                 clientRoundStatus,
+                 externalClosedOn,
+                 operatorId,
+                 remark
+                 ).Returns(ValueTask.FromResult(true));
 
             await fakeService.ExecuteAsync(new()
             {
@@ -76,7 +92,8 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                 ClientRoundStatus = clientRoundStatus,
                 ExternalClosedOn = externalClosedOn,
                 OperatorId = operatorId,
-                Remark = remark
+                Remark = remark,
+                AdjustAmount = adjustAmount,
             }).ConfigureAwait(false);
 
             _ = fakeRoundRepository
@@ -90,17 +107,19 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                  Arg.Is(turnover),
                  Arg.Is(winLoss),
                  Arg.Is(clientRoundStatus),
-                 Arg.Is(externalClosedOn)
+                 Arg.Is(externalClosedOn),
+                 Arg.Is(operatorId),
+                 Arg.Is(remark)
                  );
-
-            _ = fakeRoundOperationRecordsRepository
+            _ = fakeCashServiceClient
                 .Received(1)
-                .AddAsync(
-                Arg.Is(operatorId),
-                Arg.Is(roundId),
-                Arg.Is(JsonSerializer.Serialize(gameRoundModel)),
-                Arg.Is(JsonSerializer.Serialize(gameRoundModel)),
-                Arg.Is(remark));
+                .UnsettledBetManualAsync(
+                Arg.Is(walletId),
+                Arg.Is(adjustAmount),
+                Arg.Is(remark),
+                Arg.Is(roundId.ToString()),
+                Arg.Is(operatorId)
+                );
         }
     }
 }

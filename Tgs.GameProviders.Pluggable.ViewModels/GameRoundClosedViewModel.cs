@@ -5,6 +5,8 @@ namespace Tgs.GameProviders.Pluggable.ViewModels
 {
     public class GameRoundClosedViewModel
     {
+        public decimal? AdjustAmount { get; init; }
+
         [Required]
         public decimal BetAmount { get; init; }
 

@@ -1,14 +1,14 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Tgs.ServiceUtility;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
+using Tgs.ServiceUtility;
+
 namespace Tgs.GameProviders.Pluggable.Controllers.Operator
 {
     [Route("op/[controller]")]
     [ApiController]
     public class PlayerController : ControllerBase
     {
-
         /// <summary>
         /// Gets the balance asynchronous.
         /// </summary>
@@ -18,7 +18,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
         /// <returns></returns>
         /// <remarks>
         /// <b>Example</b><br />
-        /// 
+        ///
         ///     Get
         ///         /op/player/balance/4ucmqplxb029/KY
         /// </remarks>
