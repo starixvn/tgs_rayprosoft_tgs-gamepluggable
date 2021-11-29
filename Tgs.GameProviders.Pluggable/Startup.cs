@@ -183,8 +183,6 @@ namespace Tgs.GameProviders.Pluggable
                 options.BaseUrl = new(configuration.GetConnectionString("CashService"));
             });
 
-
-
             services.AddHttpLogging(logging =>
             {
                 // Customize HTTP logging here.
@@ -225,11 +223,11 @@ namespace Tgs.GameProviders.Pluggable
                 .AddGameProvidersCore();
 
             services
-                .AddHealthChecks();
-                //.AddNpgSql(Configuration.GetConnectionString("Tgs"), name: "PostgreSQL Tgs")
-                //.AddUrlGroup(new Uri($"{Configuration.GetConnectionString("TGSGameProviders")}/health"), "Tgs Game Providers")
-                //.AddUrlGroup(new Uri($"{Configuration.GetConnectionString("CashService")}/healthz"), "Tgs Cash Service")
-                //.AddUrlGroup(new Uri($"{Configuration.GetConnectionString("TGSGameProviderKickPlayerServer")}/health"), "Tgs Game Provider KickPlayerServer");
+                .AddHealthChecks()
+                .AddNpgSql(Configuration.GetConnectionString("Tgs"), name: "PostgreSQL Tgs")
+                .AddUrlGroup(new Uri($"{Configuration.GetConnectionString("TGSGameProviders")}/health"), "Tgs Game Providers")
+                .AddUrlGroup(new Uri($"{Configuration.GetConnectionString("CashService")}/healthz"), "Tgs Cash Service")
+                .AddUrlGroup(new Uri($"{Configuration.GetConnectionString("TGSGameProviderKickPlayerServer")}/health"), "Tgs Game Provider KickPlayerServer");
         }
     }
 }

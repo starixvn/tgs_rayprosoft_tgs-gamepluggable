@@ -4,9 +4,9 @@ using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Client;
+using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using TGS.GameProviders.Client;
 using TGS.GameProviders.Domains;
-using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
 {

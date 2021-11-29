@@ -1,15 +1,14 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Tgs.ServiceUtility;
-using System;
-using Tgs.GameProviders.Pluggable.ViewModels;
-using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
-using Tgs.GameProviders.Pluggable.Core;
-using System.Text.Json;
+﻿using System;
 using System.Collections.Generic;
-using TGS.GameProviders.Domains;
 using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
+using Tgs.GameProviders.Pluggable.ViewModels;
+using Tgs.ServiceUtility;
+using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
 {
@@ -26,7 +25,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
         /// <remarks>
         /// <b>Example</b><br />
         ///
-        ///     Get /round/e8a90f53-11e7-40ab-9ed3-08d99f799e5a/GameActionQuery
+        ///     Get /bo/round/e8a90f53-11e7-40ab-9ed3-08d99f799e5a/GameActionQuery
         /// </remarks>
         [HttpGet("{roundId}/gameactionquery")]
         public IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(
@@ -69,39 +68,66 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
         /// <remarks>
         /// <b>Example</b><br />
         ///
-        ///     Put /round/e8a90f53-11e7-40ab-9ed3-08d99f799e5a/ClosedGameRound
+        ///     Put /bo/round/15426ced-d81b-42a6-a0a3-08d971a93a52/ClosedGameRound
         ///     {
-        ///         "betAmount": 20,
-        ///         "validBetAmount": 20,
+        ///         "betAmount": 100,
+        ///         "validBetAmount": 0,
         ///         "settleAmount": 0,
         ///         "commission": 0,
-        ///         "turnover": 20,
-        ///         "winLoss": -20,
-        ///         "clientRoundStatus": 4,
-        ///         "externalClosedOn": "2021-11-10T14:41:24.654+08:00",
-        ///         "operatorId": "ff73bf6f-637e-4575-3cfd-08d9262ce1a5",
-        ///         "remark": "測試關閉"
+        ///         "turnover": 0,
+        ///         "winLoss": 0,
+        ///         "clientRoundStatus": 2,
+        ///         "externalClosedOn": "2021-09-07T17:40:24.000+08:00",
+        ///         "operatorId": "7acf882a-474b-ec11-bf75-8c554ae8ab6b",
+        ///         "remark": "測試關閉",
+        ///         "adjustAmount": 100
         ///     }
         /// </remarks>
         [HttpPut("{roundId}/gameroundclosed")]
         public ValueTask GameRoundClosedAsync(
-                    [FromServices] ICommandService<GameRoundClosedCommand> commandService,
-                    Guid roundId,
-                    [FromBody] GameRoundClosedViewModel viewModel)
-                    => commandService.ExecuteAsync(new()
-                    {
-                        RoundId = roundId,
-                        BetAmount = viewModel.BetAmount,
-                        ValidBetAmount = viewModel.ValidBetAmount,
-                        SettleAmount = viewModel.SettleAmount,
-                        Commission = viewModel.Commission,
-                        Turnover = viewModel.Turnover,
-                        WinLoss = viewModel.WinLoss,
-                        ClientRoundStatus = (ClientRoundStatus)viewModel.ClientRoundStatus,
-                        ExternalClosedOn = viewModel.ExternalClosedOn,
-                        OperatorId = viewModel.OperatorId,
-                        Remark = viewModel.Remark,
-                    });
+                        [FromServices] ICommandService<GameRoundClosedCommand> commandService,
+                        Guid roundId,
+                        [FromBody] GameRoundClosedViewModel viewModel)
+                        => commandService.ExecuteAsync(new()
+                        {
+                            RoundId = roundId,
+                            BetAmount = viewModel.BetAmount,
+                            ValidBetAmount = viewModel.ValidBetAmount,
+                            SettleAmount = viewModel.SettleAmount,
+                            Commission = viewModel.Commission,
+                            Turnover = viewModel.Turnover,
+                            WinLoss = viewModel.WinLoss,
+                            ClientRoundStatus = (ClientRoundStatus)viewModel.ClientRoundStatus,
+                            ExternalClosedOn = viewModel.ExternalClosedOn,
+                            OperatorId = viewModel.OperatorId,
+                            Remark = viewModel.Remark,
+                            AdjustAmount = viewModel.AdjustAmount
+                        });
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="getService"></param>
+        /// <param name="roundId"></param>
+        /// <param name="language"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// <b>Example</b><br />
+        ///
+        ///     Get /bo/round/3c6282df-d531-4482-088e-08d9a004e811/gamerounddetail?language=zh-CN
+        /// </remarks>
+        [HttpGet("{roundId}/gamerounddetail")]
+        public async ValueTask<JsonDocument> GameRoundDetailGetAsync(
+            [FromServices] IGetService<RoundDetailQuery, JsonDocument> getService,
+            Guid roundId,
+            [FromQuery] string language)
+            => await getService.GetAsync(
+                new()
+                {
+                    RoundId = roundId,
+                    Language = language
+                })
+                .ConfigureAwait(false);
 
         /// <summary>
         /// Games the round get asynchronous.
@@ -112,7 +138,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
         /// <remarks>
         /// <b>Example</b><br />
         ///
-        ///     Get /round/e8a90f53-11e7-40ab-9ed3-08d99f799e5a
+        ///     Get /bo/round/e8a90f53-11e7-40ab-9ed3-08d99f799e5a
         /// </remarks>
         [HttpGet("{roundId}")]
         public async ValueTask<GameRoundViewModel> GameRoundGetAsync(
@@ -152,30 +178,5 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
                 EffectiveBettingPercentage = data.EffectiveBettingPercentage
             };
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="getService"></param>
-        /// <param name="roundId"></param>
-        /// <param name="language"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// <b>Example</b><br />
-        ///
-        ///     Get /round/3c6282df-d531-4482-088e-08d9a004e811/gamerounddetail?language=zh-CN
-        /// </remarks>
-        [HttpGet("{roundId}/gamerounddetail")]
-        public async ValueTask<JsonDocument> GameRoundDetailGetAsync(
-            [FromServices] IGetService<RoundDetailQuery, JsonDocument> getService,
-            Guid roundId,
-            [FromQuery] string language)
-            => await getService.GetAsync(
-                new()
-                {
-                    RoundId = roundId,
-                    Language = language
-                })
-                .ConfigureAwait(false);
     }
 }

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Mime;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -27,38 +25,6 @@ namespace Tgs.GameProviders.Pluggable.Client
 
         public GameProvidersBackofficePluggableClient(HttpClient httpClient)
             => _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-
-
-        public async ValueTask<decimal?> GetBalanceAsync(string playerCode, string gameProviderCode)
-        {
-            try
-            {
-                var response = await _httpClient
-                .GetAsync(
-                $"/bo/player/balance/{playerCode}/{gameProviderCode}")
-                .ConfigureAwait(false);
-
-                response.EnsureSuccessStatusCode();
-
-                var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                return JsonSerializer.Deserialize<decimal?>(contentJson, _SerializerOptions);
-
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        public Task KickPlayerAsync(string playerCode)
-            => _httpClient
-                .DeleteAsync($"/bo/player/kick/{playerCode}");
-
-        public Task KickPlayerAsync(string playerCode, string gameProviderCode)
-            => _httpClient
-                .DeleteAsync($"/bo/player/kick/{playerCode}/{gameProviderCode}");
-
 
         public async IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(Guid roundId)
         {
@@ -91,6 +57,20 @@ namespace Tgs.GameProviders.Pluggable.Client
             response.EnsureSuccessStatusCode();
         }
 
+        public async ValueTask<JsonDocument?> GameRoundDetailGetAsync(Guid roundId, string language)
+        {
+            var response = await _httpClient
+               .GetAsync(
+                $"/bo/round/{roundId}/gamerounddetail?language={language}")
+               .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+
+            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            return JsonSerializer.Deserialize<JsonDocument>(contentJson, _SerializerOptions);
+        }
+
         public async ValueTask<GameRoundViewModel?> GameRoundGetAsync(Guid roundId)
         {
             var response = await _httpClient
@@ -105,18 +85,33 @@ namespace Tgs.GameProviders.Pluggable.Client
             return JsonSerializer.Deserialize<GameRoundViewModel>(contentJson, _SerializerOptions);
         }
 
-        public async ValueTask<JsonDocument?> GameRoundDetailGetAsync(Guid roundId, string language)
+        public async ValueTask<decimal?> GetBalanceAsync(string playerCode, string gameProviderCode)
         {
-            var response = await _httpClient
-               .GetAsync(
-                $"/bo/round/{roundId}/gamerounddetail?language={language}")
-               .ConfigureAwait(false);
+            try
+            {
+                var response = await _httpClient
+                .GetAsync(
+                $"/bo/player/balance/{playerCode}/{gameProviderCode}")
+                .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+                response.EnsureSuccessStatusCode();
 
-            var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<JsonDocument>(contentJson, _SerializerOptions);
+                return JsonSerializer.Deserialize<decimal?>(contentJson, _SerializerOptions);
+            }
+            catch
+            {
+                return null;
+            }
         }
+
+        public Task KickPlayerAsync(string playerCode)
+            => _httpClient
+                .DeleteAsync($"/bo/player/kick/{playerCode}");
+
+        public Task KickPlayerAsync(string playerCode, string gameProviderCode)
+            => _httpClient
+                .DeleteAsync($"/bo/player/kick/{playerCode}/{gameProviderCode}");
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using TGS.GameProviders.Domains;
 
-namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
+namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 {
     public record GameRoundClosedCommand
     {
@@ -16,5 +16,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
         public DateTimeOffset ExternalClosedOn { get; init; }
         public Guid OperatorId { get; init; }
         public string Remark { get; init; } = default!;
+
+        public decimal? AdjustAmount { get; init; }
     }
 }

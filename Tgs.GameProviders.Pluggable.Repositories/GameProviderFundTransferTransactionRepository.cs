@@ -40,7 +40,6 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                 Status = (short)FundTransferTransactionStatus.FailureOnGameProvider,
                 CreatedOn = DateTime.Now,
                 UpdatedOn = DateTime.Now
-
             };
             await _context.GameProviderFundTransferTransactions
                 .AddAsync(fundTransferTransaction)

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Tgs.ServiceUtility;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
+using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
 {
@@ -18,7 +18,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
         /// <returns></returns>
         /// <remarks>
         /// <b>Example</b><br />
-        /// 
+        ///
         ///     Get
         ///         /bo/balance/player/4ucmqplxb029/KY
         /// </remarks>
@@ -38,7 +38,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
         /// <remarks>
         /// <b>Example</b><br />
         ///
-        ///     Delete 
+        ///     Delete
         ///         /bo/player/kick/4ucmqplxb029
         /// </remarks>
         [HttpDelete("kick/{playerCode}")]
@@ -57,7 +57,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
         /// <remarks>
         /// <b>Example</b><br />
         ///
-        ///     Delete 
+        ///     Delete
         ///         /bo/player/kick/4ucmqplxb029/ky
         /// </remarks>
         [HttpDelete("kick/{playerCode}/{gameProviderCode}")]
