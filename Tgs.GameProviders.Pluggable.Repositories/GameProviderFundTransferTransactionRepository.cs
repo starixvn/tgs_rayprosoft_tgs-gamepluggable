@@ -26,6 +26,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             string description)
         {
             var gameProviderFundTransferTransactionId = Guid.NewGuid();
+            var systemDateTime = DateTime.UtcNow;
             var fundTransferTransaction = new GameProviderFundTransferTransaction()
             {
                 GameProviderFundTransferTransactionId = gameProviderFundTransferTransactionId,
@@ -38,8 +39,8 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                 Amount = amount,
                 Description = description,
                 Status = (short)FundTransferTransactionStatus.FailureOnGameProvider,
-                CreatedOn = DateTime.Now,
-                UpdatedOn = DateTime.Now
+                CreatedOn = systemDateTime,
+                UpdatedOn = systemDateTime
             };
             await _context.GameProviderFundTransferTransactions
                 .AddAsync(fundTransferTransaction)
@@ -61,6 +62,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             string description)
         {
             var gameProviderFundTransferTransactionId = Guid.NewGuid();
+            var systemDateTime = DateTime.UtcNow;
             var fundTransferTransaction = new GameProviderFundTransferTransaction()
             {
                 GameProviderFundTransferTransactionId = gameProviderFundTransferTransactionId,
@@ -72,9 +74,9 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                 ToWallet = gameProviderCode,
                 Amount = amount,
                 Description = description,
-                Status = (short)FundTransferTransactionStatus.FailureOnSystem,
-                CreatedOn = DateTime.Now,
-                UpdatedOn = DateTime.Now
+                Status = (short)FundTransferTransactionStatus.FailureOnMainWallet,
+                CreatedOn = systemDateTime,
+                UpdatedOn = systemDateTime
             };
             await _context.GameProviderFundTransferTransactions
                 .AddAsync(fundTransferTransaction)
@@ -87,36 +89,24 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             return gameProviderFundTransferTransactionId;
         }
 
-        public async ValueTask UpdateFundInAsync(
+        public async ValueTask UpdateByFailureOnGameProviderAsync(
             Guid gameProviderFundTransferTransactionId,
             Guid? transactionsId,
-            FundTransferTransactionStatus fundTransferTransactionStatus,
             string gameProviderTransactionId,
             decimal postBalance,
             string description)
         {
             var fundTransferTransaction = await _context.GameProviderFundTransferTransactions
-                 .Where(x => x.GameProviderFundTransferTransactionId == gameProviderFundTransferTransactionId)
-                 .Select(x => new GameProviderFundTransferTransaction()
-                 {
-                     GameProviderFundTransferTransactionId = x.GameProviderFundTransferTransactionId,
-                     TransactionId = transactionsId,
-                     GameProviderId = x.GameProviderId,
-                     WalletId = x.WalletId,
-                     GameProviderTransactionId = gameProviderTransactionId,
-                     PlayerCode = x.PlayerCode,
-                     FundSource = x.FundSource,
-                     FromWallet = x.FromWallet,
-                     ToWallet = x.ToWallet,
-                     Status = (short)fundTransferTransactionStatus,
-                     Amount = x.Amount,
-                     Balance = postBalance,
-                     CreatedOn = x.CreatedOn,
-                     UpdatedOn = DateTime.Now,
-                     Description = description
-                 })
-                 .FirstAsync()
-                 .ConfigureAwait(false);
+                            .Where(x => x.GameProviderFundTransferTransactionId == gameProviderFundTransferTransactionId)
+                            .FirstAsync()
+                            .ConfigureAwait(false);
+
+            fundTransferTransaction.TransactionId = transactionsId;
+            fundTransferTransaction.GameProviderTransactionId = gameProviderTransactionId;
+            fundTransferTransaction.Status = (short)FundTransferTransactionStatus.FailureOnGameProvider;
+            fundTransferTransaction.Balance = postBalance;
+            fundTransferTransaction.UpdatedOn = DateTime.UtcNow;
+            fundTransferTransaction.Description = description;
 
             _context.GameProviderFundTransferTransactions
                .Update(fundTransferTransaction);
@@ -126,36 +116,51 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                 .ConfigureAwait(false);
         }
 
-        public async ValueTask UpdateFundOutAsync(
-            Guid gameProviderFundTransferTransactionId,
+        public async ValueTask UpdateByFailureOnMainWalletAsync(
+                    Guid gameProviderFundTransferTransactionId,
             Guid? transactionsId,
-            FundTransferTransactionStatus fundTransferTransactionStatus,
             string gameProviderTransactionId,
             decimal postBalance,
             string description)
         {
             var fundTransferTransaction = await _context.GameProviderFundTransferTransactions
-                 .Where(x => x.GameProviderFundTransferTransactionId == gameProviderFundTransferTransactionId)
-                 .Select(x => new GameProviderFundTransferTransaction()
-                 {
-                     GameProviderFundTransferTransactionId = x.GameProviderFundTransferTransactionId,
-                     TransactionId = transactionsId,
-                     GameProviderId = x.GameProviderId,
-                     WalletId = x.WalletId,
-                     GameProviderTransactionId = gameProviderTransactionId,
-                     PlayerCode = x.PlayerCode,
-                     FundSource = x.FundSource,
-                     FromWallet = x.FromWallet,
-                     ToWallet = x.ToWallet,
-                     Status = (short)fundTransferTransactionStatus,
-                     Amount = x.Amount,
-                     Balance = postBalance,
-                     CreatedOn = x.CreatedOn,
-                     UpdatedOn = DateTime.Now,
-                     Description = description
-                 })
-                 .FirstAsync()
-                 .ConfigureAwait(false);
+                            .Where(x => x.GameProviderFundTransferTransactionId == gameProviderFundTransferTransactionId)
+                            .FirstAsync()
+                            .ConfigureAwait(false);
+
+            fundTransferTransaction.TransactionId = transactionsId;
+            fundTransferTransaction.GameProviderTransactionId = gameProviderTransactionId;
+            fundTransferTransaction.Status = (short)FundTransferTransactionStatus.FailureOnMainWallet;
+            fundTransferTransaction.Balance = postBalance;
+            fundTransferTransaction.UpdatedOn = DateTime.UtcNow;
+            fundTransferTransaction.Description = description;
+
+            _context.GameProviderFundTransferTransactions
+               .Update(fundTransferTransaction);
+
+            await _context
+                .SaveChangesAsync()
+                .ConfigureAwait(false);
+        }
+
+        public async ValueTask UpdateBySuccessAsync(
+            Guid gameProviderFundTransferTransactionId,
+            Guid? transactionsId,
+            string gameProviderTransactionId,
+            decimal postBalance,
+            string description)
+        {
+            var fundTransferTransaction = await _context.GameProviderFundTransferTransactions
+                            .Where(x => x.GameProviderFundTransferTransactionId == gameProviderFundTransferTransactionId)
+                            .FirstAsync()
+                            .ConfigureAwait(false);
+
+            fundTransferTransaction.TransactionId = transactionsId;
+            fundTransferTransaction.GameProviderTransactionId = gameProviderTransactionId;
+            fundTransferTransaction.Status = (short)FundTransferTransactionStatus.Success;
+            fundTransferTransaction.Balance = postBalance;
+            fundTransferTransaction.UpdatedOn = DateTime.UtcNow;
+            fundTransferTransaction.Description = description;
 
             _context.GameProviderFundTransferTransactions
                .Update(fundTransferTransaction);
