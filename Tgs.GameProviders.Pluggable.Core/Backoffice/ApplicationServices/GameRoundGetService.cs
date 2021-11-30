@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tgs.ServiceUtility;
 
-namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
+namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 {
     internal class GameRoundGetService : IGetService<Guid, GameRoundModel>
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Tgs.ServiceUtility;
 
-namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
+namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 {
     internal class GameActionQueryService : IQueryService<Guid, GameActionModel>
     {
