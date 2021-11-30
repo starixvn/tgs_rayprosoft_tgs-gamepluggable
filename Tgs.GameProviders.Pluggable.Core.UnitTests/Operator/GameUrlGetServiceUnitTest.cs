@@ -30,18 +30,15 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                   fakePlayerRepository,
                   fakePlayerVerifyService);
 
-            var query = new GameUrlQuery()
-            {
-                SubGameProviderCode = "ky",
-
-                PlayerCode = "4ucmqplxb029",
-                LoginRecordId = Guid.NewGuid(),
-                PlatformType = PlatformType.Desktop,
-                GameId = 1000001,
-                Language = "zh-CN",
-                IpAddress = "127.0.0.1",
-                BackUrl = new("https://dev-t1.rpgp.cc/")
-            };
+            var query = new GameUrlQuery(
+                "ky",
+                 "4ucmqplxb029",
+                 Guid.NewGuid(),
+                 PlatformType.Desktop,
+                 1000001,
+                 "zh-CN",
+                 "127.0.0.1",
+                 new("https://dev-t1.rpgp.cc/"));
 
             var playerModel = new PlayerModel(
                 Guid.Parse("b5a2c708-ab70-4316-9f4d-5d2ad0e77460"),
