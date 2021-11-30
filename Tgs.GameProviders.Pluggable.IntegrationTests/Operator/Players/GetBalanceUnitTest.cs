@@ -19,7 +19,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
         public async Task GetBalanceAsync()
         {
             var playerCode = "4ucmqplxb029";
-            var gameProviderCode = "vr";
+            var gameProviderCode = "VR";
             decimal? gameProviderBalance = 0.88m;
             var playerModel = new PlayerModel(
                  Guid.Parse("b5a2c708-ab70-4316-9f4d-5d2ad0e77460"),
@@ -36,6 +36,27 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                 PlayerStatus.Enabled
                 );
 
+            var gameProviderModel = new GameProviderModel(
+               Guid.Parse("ae5533bd-35d5-5478-19d6-233ed44f7c9d"),
+               GameProviderStatus.Active,
+               string.Empty,
+               true,
+               true,
+               false,
+               0,
+               0,
+               (int)GameProviderUnique.VR,
+               true,
+               GameProviderType.VR,
+               GameProviderUnique.VR.ToString(),
+               string.Empty
+              );
+
+            var gameProviderCurrencyModel = new GameProviderCurrencyModel(
+                gameProviderModel.GameProviderId,
+                playerModel.DefaultWalletCurrencyCode,
+                "RMB"
+                );
             var fakeBrandRepository = Substitute.For<IBrandRepository>();
             var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
             var fakeGameRepository = Substitute.For<IGameRepository>();
@@ -43,6 +64,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
             var faceLogger = NullLogger<PlayerVerifyService>.Instance;
             var fakePlayerRepository = Substitute.For<IPlayerRepository>();
             var fakeResellerRepository = Substitute.For<IResellerRepository>();
+            var fakePlayerVerifyService = Substitute.For<IPlayerVerifyService>();
 
             await using var web = new TestPluggableApplication(builder =>
             {
@@ -74,39 +96,40 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
 
             var sut = new GameProvidersOperatorPluggableClient(httpClient);
 
-            var service = new PlayerVerifyService(
-                     fakeBrandRepository,
-                     fakeGameProviderRepository,
-                     fakeGameRepository,
-                     fakeLicenseeRepository,
-                     fakePlayerRepository,
-                     faceLogger,
-                     fakeResellerRepository
-                     );
-
             _ = fakePlayerRepository
                 .GetAsync(playerCode)
                 .Returns(ValueTask.FromResult(playerModel));
 
-            var gameProviderModel = new GameProviderModel(
-                 Guid.Parse("ae5533bd-35d5-5478-19d6-233ed44f7c9d"),
-                 GameProviderStatus.Active,
-                 string.Empty,
-                 true,
-                 true,
-                 false,
-                 0,
-                 0,
-                 (int)GameProviderUnique.VR,
-                 true,
-                 GameProviderType.VR,
-                 GameProviderUnique.VR.ToString(),
-                 string.Empty
-                );
-
             _ = fakeGameProviderRepository
                 .GetAsync(gameProviderCode)
                 .Returns(ValueTask.FromResult(gameProviderModel));
+
+            _ = fakePlayerVerifyService.IsPlayerEnableAsync(
+                       Arg.Is(playerCode)).Returns(ValueTask.FromResult(true));
+
+            _ = fakePlayerRepository.GetAsync(
+                Arg.Is(playerCode)).Returns(ValueTask.FromResult(playerModel));
+
+            _ = fakePlayerVerifyService.IsPlayerGameProviderActiveAsync(
+                Arg.Is(playerModel.BrandId),
+                Arg.Is(gameProviderCode)).Returns(ValueTask.FromResult(true));
+
+            _ = fakeGameProviderRepository.GetCurrencyAsync(
+                Arg.Is(gameProviderCode),
+                Arg.Is(gameProviderCurrencyModel.CurrencyCode))
+                .Returns(ValueTask.FromResult<GameProviderCurrencyModel?>(gameProviderCurrencyModel));
+
+            _ = fakeBrandRepository.GetCurrencyAsync(
+                Arg.Is(playerModel.BrandId),
+                Arg.Is(playerModel.DefaultWalletCurrencyCode)
+                )
+                .Returns(ValueTask.FromResult<string?>(playerModel.DefaultWalletCurrencyCode));
+
+            _ = fakePlayerVerifyService.IsPlayerGameProviderCurrencyAsync(
+                Arg.Is(playerModel.BrandId),
+                Arg.Is(gameProviderCode),
+                Arg.Is(playerModel.DefaultWalletCurrencyCode)
+                ).Returns(ValueTask.FromResult(true));
 
             var actual = await sut.GetBalanceAsync(playerCode, gameProviderCode).ConfigureAwait(false);
 

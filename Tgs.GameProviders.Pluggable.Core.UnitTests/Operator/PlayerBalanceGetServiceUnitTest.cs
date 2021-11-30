@@ -46,22 +46,24 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             decimal? gameProviderBalance = 1000m;
 
             _ = fakePlayerVerifyService.IsPlayerEnableAsync(
-                Arg.Is(query.PlayerCode))
-                .Returns(ValueTask.FromResult(true));
+                Arg.Is(query.PlayerCode)).Returns(ValueTask.FromResult(true));
 
             _ = fakePlayerRepository.GetAsync(
-                Arg.Is(query.PlayerCode))
-                .Returns(ValueTask.FromResult(playerModel));
+                Arg.Is(query.PlayerCode)).Returns(ValueTask.FromResult(playerModel));
 
             _ = fakeGameProvidersClient.PlayerBalanceAsync(
                 Arg.Is(query.GameProviderCode),
-                Arg.Is(playerModel.PlayerCode))
-                .Returns(ValueTask.FromResult(gameProviderBalance));
+                Arg.Is(playerModel.PlayerCode)).Returns(ValueTask.FromResult(gameProviderBalance));
 
             _ = fakePlayerVerifyService.IsPlayerGameProviderActiveAsync(
                 Arg.Is(playerModel.BrandId),
-                Arg.Is("KY"))
-                .Returns(ValueTask.FromResult(true));
+                Arg.Is(query.GameProviderCode)).Returns(ValueTask.FromResult(true));
+
+            _ = fakePlayerVerifyService.IsPlayerGameProviderCurrencyAsync(
+                Arg.Is(playerModel.BrandId),
+                Arg.Is(query.GameProviderCode),
+                Arg.Is(playerModel.DefaultWalletCurrencyCode)
+                ).Returns(ValueTask.FromResult(true));
 
             var actual = await fakeService.GetAsync(query);
 

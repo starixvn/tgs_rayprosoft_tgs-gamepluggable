@@ -19,11 +19,49 @@ namespace Tgs.GameProviders.Pluggable.Repositories.UnitTests
         }
 
         [Test]
+        public void Get_GameProviderCode_Currencies_Async()
+        {
+            var fakeRepository = Substitute.For<IGameProviderRepository>();
+            var actual = fakeRepository.GetCurrenciesAsync(Arg.Any<string>());
+
+            Assert.IsNotNull(actual);
+        }
+
+        [Test]
+        public async Task Get_GameProviderCode_Currency_Async()
+        {
+            var fakeRepository = Substitute.For<IGameProviderRepository>();
+            _ = await fakeRepository.GetCurrencyAsync(
+                Arg.Any<string>(),
+                Arg.Any<string>()
+                ).ConfigureAwait(false);
+        }
+
+        [Test]
         public async Task Get_GameProviderId_Async()
         {
             var fakeRepository = Substitute.For<IGameProviderRepository>();
             _ = await fakeRepository.GetAsync(
                 Arg.Any<Guid>()
+                ).ConfigureAwait(false);
+        }
+
+        [Test]
+        public void Get_GameProviderId_Currencies_Async()
+        {
+            var fakeRepository = Substitute.For<IGameProviderRepository>();
+            var actual = fakeRepository.GetCurrenciesAsync(Arg.Any<Guid>());
+
+            Assert.IsNotNull(actual);
+        }
+
+        [Test]
+        public async Task Get_GameProviderId_Currency_Async()
+        {
+            var fakeRepository = Substitute.For<IGameProviderRepository>();
+            _ = await fakeRepository.GetCurrencyAsync(
+                Arg.Any<Guid>(),
+                Arg.Any<string>()
                 ).ConfigureAwait(false);
         }
 

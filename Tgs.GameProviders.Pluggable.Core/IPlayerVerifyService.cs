@@ -10,5 +10,9 @@ namespace Tgs.GameProviders.Pluggable.Core
         ValueTask<bool> IsPlayerGameActiveAsync(Guid brandId, int gameId);
 
         ValueTask<bool> IsPlayerGameProviderActiveAsync(Guid brandId, string gameProviderCode);
+
+        ValueTask<bool> IsPlayerGameProviderCurrencyAsync(Guid brandId, string gameProviderCode, string currencyCode);
+
+        ValueTask<bool> IsPlayerGameProviderCurrencyAsync(Guid brandId, Guid gameProviderId, string currencyCode);
     }
 }

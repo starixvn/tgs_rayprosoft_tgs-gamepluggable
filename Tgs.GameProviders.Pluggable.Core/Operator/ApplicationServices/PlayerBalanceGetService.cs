@@ -30,16 +30,19 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
         {
             if (!await _verifyService.IsPlayerEnableAsync(query.PlayerCode).ConfigureAwait(false))
             {
-                return null;
+                throw new Exception($"The player does not exist or the status is not enabled.({query.PlayerCode})");
             }
 
-            var playerModel = await _playerRepository.GetAsync(
-                query.PlayerCode)
-                .ConfigureAwait(false);
+            var playerModel = await _playerRepository.GetAsync(query.PlayerCode).ConfigureAwait(false);
 
             if (!await _verifyService.IsPlayerGameProviderActiveAsync(playerModel.BrandId, query.GameProviderCode).ConfigureAwait(false))
             {
-                return null;
+                throw new Exception($"The game manufacturer does not exist or the status is not enabled.({query.GameProviderCode})");
+            }
+
+            if (!await _verifyService.IsPlayerGameProviderCurrencyAsync(playerModel.BrandId, query.GameProviderCode, playerModel.DefaultWalletCurrencyCode).ConfigureAwait(false))
+            {
+                throw new Exception($"The game manufacturer does not support this currency.({playerModel.DefaultWalletCurrencyCode})");
             }
 
             return await _gameProvidersClient.PlayerBalanceAsync(

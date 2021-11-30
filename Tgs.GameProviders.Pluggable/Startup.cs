@@ -79,7 +79,7 @@ namespace Tgs.GameProviders.Pluggable
                                 HostIp = hostIp?.ToString() ?? string.Empty,
                                 Environment = env.EnvironmentName,
                                 OsVersion = $"{Environment.OSVersion}",
-                                Version = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+                                Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(),
                                 ProcessCount = Environment.ProcessorCount
                             },
                             Result = new

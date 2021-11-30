@@ -36,19 +36,25 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
         {
             if (!await _verifyService.IsPlayerEnableAsync(query.PlayerCode).ConfigureAwait(false))
             {
-                return null;
+                throw new Exception($"The player does not exist or the status is not enabled.({query.PlayerCode})");
             }
 
-            var playerModel = await _playerRepository.GetAsync(query.PlayerCode);
+            var playerModel = await _playerRepository.GetAsync(query.PlayerCode).ConfigureAwait(false);
 
             if (!await _verifyService.IsPlayerGameActiveAsync(playerModel.BrandId, query.GameId).ConfigureAwait(false))
             {
                 return null;
             }
+
             var gameModel = await _gameRepository.GetAsync(query.GameId).ConfigureAwait(false);
             if (gameModel == null)
             {
                 return null;
+            }
+
+            if (!await _verifyService.IsPlayerGameProviderCurrencyAsync(playerModel.BrandId, gameModel.GameProviderId, playerModel.DefaultWalletCurrencyCode).ConfigureAwait(false))
+            {
+                throw new Exception($"The game manufacturer does not support this currency.({playerModel.DefaultWalletCurrencyCode})");
             }
 
             var gameProviderModel = await _gameProviderRepository.GetAsync(gameModel.GameProviderId).ConfigureAwait(false);
