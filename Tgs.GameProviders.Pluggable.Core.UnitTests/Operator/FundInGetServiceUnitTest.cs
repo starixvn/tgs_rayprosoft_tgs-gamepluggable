@@ -33,12 +33,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 fakePlayerRepository,
                 fakePlayerVerifyService);
 
-            var query = new FundInQuery()
-            {
-                GameProviderCode = "ky",
-                PlayerCode = "4ucmqplxb029",
-                Amount = 1
-            };
+            var query = new FundInQuery(
+                GameProviderType.KY,
+                "4ucmqplxb029",
+                1
+                );
 
             var playerModel = new PlayerModel(
                 Guid.Parse("b5a2c708-ab70-4316-9f4d-5d2ad0e77460"),
@@ -131,10 +130,9 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                  Arg.Is(gameProviderFundTransferTransactionId.ToString()))
                 .Returns(ValueTask.FromResult(transactionResponse));
 
-            await fakeGameProviderFundTransferTransactionRepository.UpdateFundInAsync(
+            await fakeGameProviderFundTransferTransactionRepository.UpdateBySuccessAsync(
                  Arg.Is(gameProviderFundTransferTransactionId),
                  Arg.Is(transactionResponse.TransactionId),
-                 Arg.Is(FundTransferTransactionStatus.Success),
                  Arg.Is(gameProviderTransactionId),
                  Arg.Is(transactionResponse.Balance),
                  Arg.Is(string.Empty));

@@ -9,8 +9,10 @@ namespace Tgs.GameProviders.Pluggable.Core
 
         ValueTask<Guid> AddFundOutAsync(Guid gameProviderId, Guid WalletId, string playerCode, string gameProviderCode, decimal amount, string description);
 
-        ValueTask UpdateFundInAsync(Guid gameProviderFundTransferTransactionId, Guid? transactionsId, FundTransferTransactionStatus fundTransferTransactionStatus, string gameProviderTransactionId, decimal postBalance, string description);
+        ValueTask UpdateByFailureOnGameProviderAsync(Guid gameProviderFundTransferTransactionId, Guid? transactionsId, string gameProviderTransactionId, decimal postBalance, string description);
 
-        ValueTask UpdateFundOutAsync(Guid gameProviderFundTransferTransactionId, Guid? transactionsId, FundTransferTransactionStatus fundTransferTransactionStatus, string gameProviderTransactionId, decimal postBalance, string description);
+        ValueTask UpdateByFailureOnMainWalletAsync(Guid gameProviderFundTransferTransactionId, Guid? transactionsId, string gameProviderTransactionId, decimal postBalance, string description);
+
+        ValueTask UpdateBySuccessAsync(Guid gameProviderFundTransferTransactionId, Guid? transactionsId, string gameProviderTransactionId, decimal postBalance, string description);
     }
 }

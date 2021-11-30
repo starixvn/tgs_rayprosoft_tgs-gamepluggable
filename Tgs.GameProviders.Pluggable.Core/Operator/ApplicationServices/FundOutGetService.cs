@@ -43,14 +43,14 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 
             if (!await _verifyService.IsPlayerEnableAsync(query.PlayerCode).ConfigureAwait(false))
             {
-                return null;
+                throw new Exception($"The player does not exist or the status is not enabled.({query.PlayerCode})");
             }
 
             var playerModel = await _playerRepository.GetAsync(query.PlayerCode).ConfigureAwait(false);
 
             if (!await _verifyService.IsPlayerGameProviderActiveAsync(playerModel.BrandId, query.GameProviderCode).ConfigureAwait(false))
             {
-                return null;
+                throw new Exception($"The game manufacturer does not exist or the status is not enabled.({query.GameProviderCode})");
             }
 
             var gameProviderModel = await _gameProviderRepository.GetAsync(query.GameProviderCode).ConfigureAwait(false);
@@ -78,22 +78,21 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 
             var transactionResponse = await _cashServiceClient.GameProviderFundOutAsync(
                 playerModel.DefaultWalletId,
-                amount * -1,
+                amount,
                 $"【Default】->【{ gameProviderModel.GameProviderCode}】",
                 gameProviderFundTransferTransactionId.ToString())
                 .ConfigureAwait(false);
 
             if (transactionResponse == null)
             {
-                await _gameProviderFundTransferTransactionRepository.UpdateFundOutAsync(
+                await _gameProviderFundTransferTransactionRepository.UpdateByFailureOnMainWalletAsync(
                     gameProviderFundTransferTransactionId,
                     null,
-                    FundTransferTransactionStatus.FailureOnSystem,
                     string.Empty,
                     -1,
                     string.Empty)
                     .ConfigureAwait(false);
-                return null;
+                throw new Exception("The main wallet transfer failed.");
             }
 
             var gameProviderTransactionId = string.Empty;
@@ -108,14 +107,17 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
                    amount)
                    .ConfigureAwait(false);
             }
+            catch (Exception ex)
+            {
+                _logger.LogError($"The game manufacturer's transfer failed..({gameProviderFundTransferTransactionId})", ex);
+            }
             finally
             {
                 if (string.IsNullOrEmpty(gameProviderTransactionId))
                 {
-                    await _gameProviderFundTransferTransactionRepository.UpdateFundInAsync(
+                    await _gameProviderFundTransferTransactionRepository.UpdateByFailureOnGameProviderAsync(
                         gameProviderFundTransferTransactionId,
                         null,
-                        FundTransferTransactionStatus.FailureOnGameProvider,
                         string.Empty,
                         -1,
                         string.Empty)
@@ -123,10 +125,9 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
                 }
                 else
                 {
-                    await _gameProviderFundTransferTransactionRepository.UpdateFundInAsync(
+                    await _gameProviderFundTransferTransactionRepository.UpdateBySuccessAsync(
                     gameProviderFundTransferTransactionId,
                     transactionResponse.TransactionId,
-                    FundTransferTransactionStatus.Success,
                     gameProviderTransactionId,
                     transactionResponse.Balance,
                     string.Empty
@@ -136,11 +137,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 
             return (string.IsNullOrEmpty(gameProviderTransactionId)) ?
                 null :
-                new()
-                {
-                    TransactionsId = transactionResponse.TransactionId,
-                    GameProviderTransactionId = gameProviderTransactionId
-                };
+                new(transactionResponse.TransactionId, gameProviderTransactionId);
         }
     }
 }

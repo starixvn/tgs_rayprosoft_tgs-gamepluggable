@@ -38,13 +38,12 @@ namespace Tgs.GameProviders.Pluggable.Repositories.UnitTests
         }
 
         [Test]
-        public async Task Update_FundIn_Async()
+        public async Task Update_By_FailureOnGameProvider_Async()
         {
             var fakeRepository = Substitute.For<IGameProviderFundTransferTransactionRepository>();
-            await fakeRepository.UpdateFundInAsync(
+            await fakeRepository.UpdateByFailureOnGameProviderAsync(
                Arg.Any<Guid>(),
                Arg.Any<Guid>(),
-               Arg.Any<FundTransferTransactionStatus>(),
                Arg.Any<string>(),
                Arg.Any<decimal>(),
                Arg.Any<string>()
@@ -52,13 +51,25 @@ namespace Tgs.GameProviders.Pluggable.Repositories.UnitTests
         }
 
         [Test]
-        public async Task Update_FundOut_Async()
+        public async Task Update_By_FailureOnMainWallet_Async()
         {
             var fakeRepository = Substitute.For<IGameProviderFundTransferTransactionRepository>();
-            await fakeRepository.UpdateFundOutAsync(
+            await fakeRepository.UpdateByFailureOnMainWalletAsync(
                Arg.Any<Guid>(),
                Arg.Any<Guid>(),
-               Arg.Any<FundTransferTransactionStatus>(),
+               Arg.Any<string>(),
+               Arg.Any<decimal>(),
+               Arg.Any<string>()
+               ).ConfigureAwait(false);
+        }
+
+        [Test]
+        public async Task Update_By_Success_Async()
+        {
+            var fakeRepository = Substitute.For<IGameProviderFundTransferTransactionRepository>();
+            await fakeRepository.UpdateBySuccessAsync(
+               Arg.Any<Guid>(),
+               Arg.Any<Guid>(),
                Arg.Any<string>(),
                Arg.Any<decimal>(),
                Arg.Any<string>()
