@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Repositories.Entities;
 using TGS.GameProviders.Domains;
@@ -55,6 +57,56 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                 data.Localization))
             .ToAsyncEnumerable()
             .FirstAsync();
+
+        public IAsyncEnumerable<GameProviderCurrencyModel> GetCurrenciesAsync(Guid gameProviderId)
+            => _context.GameProviderCurrencies
+            .Where(x => x.GameProviderId == gameProviderId)
+            .Select(x => new GameProviderCurrencyModel(
+                x.GameProviderId,
+                x.CurrencyCode,
+                x.GameProviderCurrencyCode
+                ))
+            .AsAsyncEnumerable();
+
+        public IAsyncEnumerable<GameProviderCurrencyModel> GetCurrenciesAsync(string gameProviderCode)
+            => _context.GameProviders
+            .Where(x => x.Code == gameProviderCode)
+            .Join(_context.GameProviderCurrencies
+                , gameProviders => gameProviders.Id
+                , gameProviderCurrencies => gameProviderCurrencies.GameProviderId
+                , (gameProviders, gameProviderCurrencies) => new GameProviderCurrencyModel(
+                    gameProviderCurrencies.GameProviderId,
+                    gameProviderCurrencies.CurrencyCode,
+                    gameProviderCurrencies.GameProviderCurrencyCode
+                 ))
+            .AsAsyncEnumerable();
+
+        public ValueTask<GameProviderCurrencyModel?> GetCurrencyAsync(Guid gameProviderId, string currencyCode)
+            => _context.GameProviderCurrencies
+            .Where(x => x.GameProviderId == gameProviderId
+                    && x.CurrencyCode == currencyCode)
+            .Select(x => new GameProviderCurrencyModel(
+                x.GameProviderId,
+                x.CurrencyCode,
+                x.GameProviderCurrencyCode
+                ))
+            .AsAsyncEnumerable()
+            .FirstOrDefaultAsync();
+
+        public ValueTask<GameProviderCurrencyModel?> GetCurrencyAsync(string gameProviderCode, string currencyCode)
+            => _context.GameProviders
+            .Where(x => x.Code == gameProviderCode)
+            .Join(_context.GameProviderCurrencies
+                , gameProviders => gameProviders.Id
+                , gameProviderCurrencies => gameProviderCurrencies.GameProviderId
+                , (gameProviders, gameProviderCurrencies) => new GameProviderCurrencyModel(
+                    gameProviderCurrencies.GameProviderId,
+                    gameProviderCurrencies.CurrencyCode,
+                    gameProviderCurrencies.GameProviderCurrencyCode
+                 ))
+            .Where(x => x.CurrencyCode == currencyCode)
+            .AsAsyncEnumerable()
+            .FirstOrDefaultAsync();
 
         public ValueTask<GameProviderStatus> GetStatusAsync(Guid gameProviderId)
             => _context.GameProviders

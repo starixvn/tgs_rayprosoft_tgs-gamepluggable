@@ -78,5 +78,23 @@ namespace Tgs.GameProviders.Pluggable.Services
                 gameProviderModel.Status == GameProviderStatus.Active &&
                 brandGameProviderStatus == GameProviderStatus.Active;
         }
+
+        public async ValueTask<bool> IsPlayerGameProviderCurrencyAsync(Guid brandId, string gameProviderCode, string currencyCode)
+        {
+            var gameProviderCurrencyModel = await _gameProviderRepository.GetCurrencyAsync(gameProviderCode, currencyCode).ConfigureAwait(false);
+
+            var brandCurrency = await _brandRepository.GetCurrencyAsync(brandId, currencyCode).ConfigureAwait(false);
+
+            return gameProviderCurrencyModel != null && !string.IsNullOrEmpty(brandCurrency);
+        }
+
+        public async ValueTask<bool> IsPlayerGameProviderCurrencyAsync(Guid brandId, Guid gameProviderId, string currencyCode)
+        {
+            var gameProviderCurrencyModel = await _gameProviderRepository.GetCurrencyAsync(gameProviderId, currencyCode).ConfigureAwait(false);
+
+            var brandCurrency = await _brandRepository.GetCurrencyAsync(brandId, currencyCode).ConfigureAwait(false);
+
+            return gameProviderCurrencyModel != null && !string.IsNullOrEmpty(brandCurrency);
+        }
     }
 }

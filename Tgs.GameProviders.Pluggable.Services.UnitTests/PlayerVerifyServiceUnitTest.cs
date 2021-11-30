@@ -190,5 +190,98 @@ namespace Tgs.GameProviders.Pluggable.Services.UnitTests
                 .Received(1)
                 .GetGameProviderStatusAsync(brandId, gameProviderId);
         }
+
+        [Test]
+        public async Task IsPlayerGameProviderCurrencyAsync()
+        {
+            var fakeBrandRepository = Substitute.For<IBrandRepository>();
+            var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+            var fakeGameRepository = Substitute.For<IGameRepository>();
+            var fakeLicenseeRepository = Substitute.For<ILicenseeRepository>();
+            var faceLogger = NullLogger<PlayerVerifyService>.Instance;
+            var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+            var fakeResellerRepository = Substitute.For<IResellerRepository>();
+
+            var service = new PlayerVerifyService(
+                fakeBrandRepository,
+                fakeGameProviderRepository,
+                fakeGameRepository,
+                fakeLicenseeRepository,
+                fakePlayerRepository,
+                faceLogger,
+                fakeResellerRepository
+                );
+            var currencyCode = "CNY";
+            var gameProviderCode = "KY";
+            var brandId = Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af");
+            var gameProviderId = Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5");
+
+            var gameProviderModel = new GameProviderCurrencyModel(
+                 Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
+                 "CNY",
+                 "RMB"
+                );
+
+            _ = fakeGameProviderRepository
+                .GetCurrencyAsync(gameProviderCode, currencyCode)
+                .Returns(ValueTask.FromResult(gameProviderModel));
+
+            _ = fakeBrandRepository
+                .GetCurrencyAsync(brandId, currencyCode)
+                .Returns(ValueTask.FromResult(currencyCode));
+
+            var actual = await service.IsPlayerGameProviderCurrencyAsync(
+                brandId,
+                gameProviderCode,
+                currencyCode).ConfigureAwait(false);
+            Assert.NotNull(actual);
+            Assert.AreEqual(true, actual);
+        }
+
+        [Test]
+        public async Task IsPlayerGameProviderIdCurrencyAsync()
+        {
+            var fakeBrandRepository = Substitute.For<IBrandRepository>();
+            var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+            var fakeGameRepository = Substitute.For<IGameRepository>();
+            var fakeLicenseeRepository = Substitute.For<ILicenseeRepository>();
+            var faceLogger = NullLogger<PlayerVerifyService>.Instance;
+            var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+            var fakeResellerRepository = Substitute.For<IResellerRepository>();
+
+            var service = new PlayerVerifyService(
+                fakeBrandRepository,
+                fakeGameProviderRepository,
+                fakeGameRepository,
+                fakeLicenseeRepository,
+                fakePlayerRepository,
+                faceLogger,
+                fakeResellerRepository
+                );
+            var currencyCode = "CNY";
+            var brandId = Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af");
+            var gameProviderId = Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5");
+
+            var gameProviderModel = new GameProviderCurrencyModel(
+                 Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
+                 "CNY",
+                 "RMB"
+                );
+
+            _ = fakeGameProviderRepository
+                .GetCurrencyAsync(gameProviderId, currencyCode)
+                .Returns(ValueTask.FromResult(gameProviderModel));
+
+            _ = fakeBrandRepository
+                .GetCurrencyAsync(brandId, currencyCode)
+                .Returns(ValueTask.FromResult(currencyCode));
+
+            var actual = await service.IsPlayerGameProviderCurrencyAsync(
+                brandId,
+                gameProviderId,
+                currencyCode).ConfigureAwait(false);
+            Assert.NotNull(actual);
+            Assert.AreEqual(true, actual);
+        }
     }
 }

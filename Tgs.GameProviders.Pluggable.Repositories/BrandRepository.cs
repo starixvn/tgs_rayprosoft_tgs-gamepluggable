@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Repositories.Entities;
 using TGS.GameProviders.Domains;
@@ -15,6 +17,20 @@ namespace Tgs.GameProviders.Pluggable.Repositories
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
+
+        public IAsyncEnumerable<string> GetCurrenciesAsync(Guid brandId)
+            => _context.BrandCurrencies
+            .Where(x => x.BrandId == brandId)
+            .Select(x => x.CurrencyCode)
+            .AsAsyncEnumerable();
+
+        public ValueTask<string?> GetCurrencyAsync(Guid brandId, string currencyCode)
+            => _context.BrandCurrencies
+            .Where(x => x.BrandId == brandId
+                     && x.CurrencyCode == currencyCode)
+            .Select(x => x.CurrencyCode)
+            .AsAsyncEnumerable()
+            .FirstOrDefaultAsync();
 
         public ValueTask<GameProviderStatus> GetGameProviderStatusAsync(Guid brandId, Guid gameProviderId)
             => (from brand in _context.Brands.AsQueryable()

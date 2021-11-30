@@ -100,6 +100,12 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             _ = fakeGameRepository.GetAsync(
                 Arg.Is(query.GameId)).Returns(ValueTask.FromResult(gameModel));
 
+            _ = fakePlayerVerifyService.IsPlayerGameProviderCurrencyAsync(
+                Arg.Is(playerModel.BrandId),
+                Arg.Is(gameModel.GameProviderId),
+                Arg.Is(playerModel.DefaultWalletCurrencyCode)
+                ).Returns(ValueTask.FromResult(true));
+
             _ = fakePlayerRepository
                 .GetAsync(Arg.Is(query.PlayerCode))
                 .Returns(ValueTask.FromResult(playerModel));

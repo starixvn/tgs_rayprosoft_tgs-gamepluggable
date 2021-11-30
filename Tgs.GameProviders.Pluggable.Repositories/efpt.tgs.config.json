@@ -26,6 +26,14 @@
       "ObjectType": 0
     },
     {
+      "Name": "dbo.game_provider_currencies",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.game_provider_languages",
+      "ObjectType": 0
+    },
+    {
       "Name": "dbo.resellers",
       "ObjectType": 0
     },

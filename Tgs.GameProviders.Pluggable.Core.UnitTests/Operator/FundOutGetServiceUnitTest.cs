@@ -94,18 +94,22 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 Arg.Is(query.GameProviderCode)
                 ).Returns(ValueTask.FromResult(true));
 
+            _ = fakePlayerVerifyService.IsPlayerGameProviderCurrencyAsync(
+                Arg.Is(playerModel.BrandId),
+                Arg.Is(query.GameProviderCode),
+                Arg.Is(playerModel.DefaultWalletCurrencyCode)
+                ).Returns(ValueTask.FromResult(true));
+
             _ = fakeGameProviderRepository.GetAsync(
                 Arg.Is(query.GameProviderCode)
                 ).Returns(ValueTask.FromResult(gameProviderModel));
 
             _ = fakeGameProvidersClient.PlayerBalanceAsync(
                 Arg.Is(query.GameProviderCode),
-                Arg.Is(playerModel.PlayerCode))
-                .Returns(ValueTask.FromResult(gameProviderBalance));
+                Arg.Is(playerModel.PlayerCode)).Returns(ValueTask.FromResult(gameProviderBalance));
 
             _ = fakeCashServiceClient.GetBalanceAsync(
-                Arg.Is(playerModel.DefaultWalletId))
-                .Returns(ValueTask.FromResult(balance));
+                Arg.Is(playerModel.DefaultWalletId)).Returns(ValueTask.FromResult(balance));
 
             _ = fakeGameProviderFundTransferTransactionRepository.AddFundOutAsync(
                 Arg.Is(gameProviderModel.GameProviderId),
@@ -113,15 +117,13 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 Arg.Is(playerModel.PlayerCode),
                 Arg.Is(gameProviderModel.GameProviderCode),
                 Arg.Is(query.Amount * -1),
-                Arg.Is(string.Empty))
-                .Returns(ValueTask.FromResult(gameProviderFundTransferTransactionId));
+                Arg.Is(string.Empty)).Returns(ValueTask.FromResult(gameProviderFundTransferTransactionId));
 
             _ = fakeCashServiceClient.GameProviderFundOutAsync(
                  Arg.Is(playerModel.DefaultWalletId),
                  Arg.Is(query.Amount),
                  Arg.Is($"【Default】->【{ gameProviderModel.GameProviderCode}】"),
-                 Arg.Is(gameProviderFundTransferTransactionId.ToString()))
-                 .Returns(ValueTask.FromResult(transactionResponse));
+                 Arg.Is(gameProviderFundTransferTransactionId.ToString())).Returns(ValueTask.FromResult(transactionResponse));
 
             _ = fakeGameProvidersClient.PlayerFundOutAsync(
                 Arg.Is(gameProviderModel.GameProviderCode),
@@ -129,8 +131,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 Arg.Is(playerModel.PlayerCode),
                 Arg.Is(playerModel.DefaultWalletCurrencyCode),
                 Arg.Is(gameProviderFundTransferTransactionId.ToString("N")),
-                Arg.Is(query.Amount))
-                .Returns(ValueTask.FromResult(gameProviderTransactionId));
+                Arg.Is(query.Amount)).Returns(ValueTask.FromResult(gameProviderTransactionId));
 
             await fakeGameProviderFundTransferTransactionRepository.UpdateBySuccessAsync(
                 Arg.Is(gameProviderFundTransferTransactionId),

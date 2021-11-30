@@ -12,19 +12,32 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
     {
         private readonly IGameProvidersClient _gameProvidersClient;
         private readonly ILogger<PlayerBalanceGetService> _logger;
+        private readonly IPlayerRepository _playerRepository;
+        private readonly IPlayerVerifyService _playerVerifyService;
 
         public PlayerBalanceGetService(
             IGameProvidersClient gameProvidersClient,
-            ILogger<PlayerBalanceGetService> logger)
+            ILogger<PlayerBalanceGetService> logger,
+            IPlayerRepository playerRepository,
+            IPlayerVerifyService playerVerifyService)
         {
             _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
+            _playerVerifyService = playerVerifyService ?? throw new ArgumentNullException(nameof(playerVerifyService));
         }
 
         public async ValueTask<decimal?> GetAsync(PlayerBalanceQuery query, CancellationToken cancellationToken = default)
         {
             try
             {
+                var playerModel = await _playerRepository.GetAsync(query.PlayerCode).ConfigureAwait(false);
+
+                if (!await _playerVerifyService.IsPlayerGameProviderCurrencyAsync(playerModel.BrandId, query.GameProviderCode, playerModel.DefaultWalletCurrencyCode).ConfigureAwait(false))
+                {
+                    throw new Exception($"The game manufacturer does not support this currency.({playerModel.DefaultWalletCurrencyCode})");
+                }
+
                 return await _gameProvidersClient.PlayerBalanceAsync(
                     query.GameProviderCode,
                     query.PlayerCode)
@@ -44,7 +57,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
                     ex,
                     (state, ex) =>
                     $"【Request】->{JsonSerializer.Serialize(state)}" +
-                    $"【Exception】->{ex.ToString()}"
+                    $"【Exception】->{ex?.ToString()}"
                 );
                 return null;
             }
