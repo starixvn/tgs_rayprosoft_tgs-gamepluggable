@@ -66,7 +66,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 
             if (gameProviderBalance - amount < 0)
             {
-                throw new Exception("Game Provider balance is insufficient");
+                throw new Exception($"Insufficient game wallet balance.({gameProviderBalance})");
             }
 
             var gameProviderFundTransferTransactionId = await _gameProviderFundTransferTransactionRepository.AddFundInAsync(

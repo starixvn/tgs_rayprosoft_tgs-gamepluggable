@@ -95,16 +95,21 @@ namespace Tgs.GameProviders.Pluggable.Repositories
 
         public ValueTask<GameProviderCurrencyModel?> GetCurrencyAsync(string gameProviderCode, string currencyCode)
             => _context.GameProviders
-            .Where(x => x.Code == gameProviderCode)
-            .Join(_context.GameProviderCurrencies
+
+            .Join(_context.GameProviderCurrencies.AsQueryable()
                 , gameProviders => gameProviders.Id
-                , gameProviderCurrencies => gameProviderCurrencies.GameProviderId
-                , (gameProviders, gameProviderCurrencies) => new GameProviderCurrencyModel(
-                    gameProviderCurrencies.GameProviderId,
-                    gameProviderCurrencies.CurrencyCode,
-                    gameProviderCurrencies.GameProviderCurrencyCode
-                 ))
-            .Where(x => x.CurrencyCode == currencyCode)
+                , gameProviderCurrency => gameProviderCurrency.GameProviderId
+                , (gameProvider, gameProviderCurrency) => new
+                {
+                    GameProvider = gameProvider,
+                    GameProviderCurrency = gameProviderCurrency
+                })
+            .Where(x => x.GameProvider.Code == gameProviderCode)
+            .Where(x => x.GameProviderCurrency.CurrencyCode == currencyCode)
+            .Select(x => new GameProviderCurrencyModel(
+                    x.GameProviderCurrency.GameProviderId,
+                    x.GameProviderCurrency.CurrencyCode,
+                    x.GameProviderCurrency.GameProviderCurrencyCode))
             .AsAsyncEnumerable()
             .FirstOrDefaultAsync();
 

@@ -31,7 +31,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                   fakePlayerVerifyService);
 
             var query = new GameUrlQuery(
-                "ky",
                  "4ucmqplxb029",
                  Guid.NewGuid(),
                  PlatformType.Desktop,

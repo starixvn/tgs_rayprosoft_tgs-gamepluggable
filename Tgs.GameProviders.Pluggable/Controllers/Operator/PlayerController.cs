@@ -108,7 +108,6 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
         ///
         ///     Post /op/player/gameurl
         ///         {
-        ///             "subGameProviderCode": "KY",
         ///             "playerCode": "4ucmqplxb029",
         ///             "loginRecordId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         ///             "isMobile": false,
@@ -119,11 +118,10 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
         ///         }
         /// </remarks>
         [HttpPost("gameurl")]
-        public ValueTask<Uri?> GetBalanceAsync(
+        public ValueTask<Uri?> GetGameUrlAsync(
                 [FromServices] IGetService<GameUrlQuery, Uri?> service,
                 [FromBody] GameProviderGameUrlViewModel model
                 ) => service.GetAsync(new(
-                     model.SubGameProviderCode,
                      model.PlayerCode,
                      model.LoginRecordId,
                      model.IsMobile ? PlatformType.Mobile : PlatformType.Desktop,
