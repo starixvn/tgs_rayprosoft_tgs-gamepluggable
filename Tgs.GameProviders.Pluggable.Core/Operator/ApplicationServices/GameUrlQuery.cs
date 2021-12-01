@@ -4,7 +4,6 @@ using TGS.GameProviders.Domains;
 namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 {
     public record GameUrlQuery(
-        string SubGameProviderCode,
         string PlayerCode,
         Guid LoginRecordId,
         PlatformType PlatformType,
