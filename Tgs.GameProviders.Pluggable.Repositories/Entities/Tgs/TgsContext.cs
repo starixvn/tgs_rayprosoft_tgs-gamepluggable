@@ -26,6 +26,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories.Entities
         public virtual DbSet<Licensee> Licensees { get; set; }
         public virtual DbSet<Player> Players { get; set; }
         public virtual DbSet<Reseller> Resellers { get; set; }
+        public virtual DbSet<SubGameProvider> SubGameProviders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -39,6 +40,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories.Entities
             modelBuilder.ApplyConfiguration(new Configurations.LicenseeConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.PlayerConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.ResellerConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.SubGameProviderConfiguration());
             OnModelCreatingPartial(modelBuilder);
         }
 

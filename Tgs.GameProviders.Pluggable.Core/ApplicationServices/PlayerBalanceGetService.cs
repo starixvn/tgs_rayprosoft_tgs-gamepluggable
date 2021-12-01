@@ -3,30 +3,44 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Tgs.ServiceUtility;
+using TGS.GameProviders.Client;
 
 namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
 {
-    internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, PlayerBalanceResult?>
+    internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, decimal?>
     {
-        private readonly ILogger<GameUrlGetService> _logger;
+        private readonly IGameProvidersClient _gameProvidersClient;
+        private readonly ILogger<PlayerBalanceGetService> _logger;
+        private readonly IPlayerRepository _playerRepository;
         private readonly IPlayerVerifyService _verifyService;
 
         public PlayerBalanceGetService(
-            IPlayerVerifyService verifyService,
-            ILogger<GameUrlGetService> logger)
+            IGameProvidersClient gameProvidersClient,
+            ILogger<PlayerBalanceGetService> logger,
+            IPlayerRepository playerRepository,
+            IPlayerVerifyService verifyService)
         {
-            _verifyService = verifyService ?? throw new ArgumentNullException(nameof(verifyService));
+            _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
+            _verifyService = verifyService ?? throw new ArgumentNullException(nameof(verifyService));
         }
 
-        public async ValueTask<PlayerBalanceResult?> GetAsync(PlayerBalanceQuery query, CancellationToken cancellationToken = default)
+        public async ValueTask<decimal?> GetAsync(PlayerBalanceQuery query, CancellationToken cancellationToken = default)
         {
             if (!await _verifyService.IsPlayerEnableAsync(query.PlayerCode).ConfigureAwait(false))
             {
                 return null;
             }
 
-            return new();
+            var playerModel = await _playerRepository.GetAsync(
+                query.PlayerCode)
+                .ConfigureAwait(false);
+
+            return await _gameProvidersClient.PlayerBalanceAsync(
+                query.GameProviderCode,
+                playerModel.PlayerCode)
+                .ConfigureAwait(false);
         }
     }
 }

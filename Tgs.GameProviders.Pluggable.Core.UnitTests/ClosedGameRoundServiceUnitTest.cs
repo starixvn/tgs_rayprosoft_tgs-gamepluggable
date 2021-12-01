@@ -15,11 +15,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
         [Test]
         public async Task Closed_Game_Round()
         {
-            var faceLogger = NullLogger<ClosedGameRoundService>.Instance;
+            var faceLogger = NullLogger<GameRoundClosedService>.Instance;
             var fakeRoundOperationRecordsRepository = Substitute.For<IRoundOperationRecordsRepository>();
             var fakeRoundRepository = Substitute.For<IRoundRepository>();
 
-            var fakeService = new ClosedGameRoundService(faceLogger, fakeRoundOperationRecordsRepository, fakeRoundRepository);
+            var fakeService = new GameRoundClosedService(faceLogger, fakeRoundOperationRecordsRepository, fakeRoundRepository);
 
             var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
             var gameRoundModel = new GameRoundModel(RoundId: Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02"),
@@ -51,7 +51,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
 
             _ = fakeRoundRepository
                 .GetAsync(roundId)
-                .Returns(Task.FromResult(gameRoundModel));
+                .Returns(ValueTask.FromResult(gameRoundModel));
 
             var betAmount = 0.060000m;
             var validBetAmount = 0.060000m;
@@ -82,25 +82,25 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
             _ = fakeRoundRepository
                 .Received(1)
                 .ClosedGameRoundAsync(
-                 roundId,
-                 betAmount,
-                 validBetAmount,
-                 settleAmount,
-                 commission,
-                 turnover,
-                 winLoss,
-                 clientRoundStatus,
-                 externalClosedOn
+                 Arg.Is(roundId),
+                 Arg.Is(betAmount),
+                 Arg.Is(validBetAmount),
+                 Arg.Is(settleAmount),
+                 Arg.Is(commission),
+                 Arg.Is(turnover),
+                 Arg.Is(winLoss),
+                 Arg.Is(clientRoundStatus),
+                 Arg.Is(externalClosedOn)
                  );
 
             _ = fakeRoundOperationRecordsRepository
                 .Received(1)
                 .AddAsync(
-                operatorId,
-                roundId,
-                JsonSerializer.Serialize(gameRoundModel),
-                JsonSerializer.Serialize(gameRoundModel),
-                remark);
+                Arg.Is(operatorId),
+                Arg.Is(roundId),
+                Arg.Is(JsonSerializer.Serialize(gameRoundModel)),
+                Arg.Is(JsonSerializer.Serialize(gameRoundModel)),
+                Arg.Is(remark));
         }
     }
 }

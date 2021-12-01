@@ -44,6 +44,10 @@
     {
       "Name": "dbo.games",
       "ObjectType": 0
+    },
+    {
+      "Name": "dbo.sub_game_providers",
+      "ObjectType": 0
     }
   ],
   "UiHint": ".tgs",

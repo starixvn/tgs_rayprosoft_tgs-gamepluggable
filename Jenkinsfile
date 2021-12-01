@@ -6,7 +6,7 @@ pipeline {
 	environment {
 		BuildConfiguration="Debug"
 		ImageName="registry.gitlab.com/rayprosoft/turnkey-gaming-system/game-pluggable-service"
-		ImageTagUrl = "https://gitlab.com/api/v4/projects/20478010/registry/repositories/2355332/tags"
+		ImageTagUrl = "https://gitlab.com/api/v4/projects/20478010/registry/repositories/2466861/tags"
 	}
 
 	stages {
@@ -58,6 +58,13 @@ pipeline {
 		stage('Test') {
 			steps {
 				sh 'dotnet test -c $BuildConfiguration --logger trx --no-build'
+			}
+		}
+
+        stage('Push packages') {
+			steps {
+				sh 'dotnet pack -c $BuildConfiguration "Tgs.GameProviders.Pluggable.Client/Tgs.GameProviders.Pluggable.Client.csproj" --no-restore'
+				sh 'dotnet nuget push "Tgs.GameProviders.Pluggable.Client/bin/$BuildConfiguration/*.nupkg" --source "raypro-baget" -k admin --skip-duplicate'
 			}
 		}
 

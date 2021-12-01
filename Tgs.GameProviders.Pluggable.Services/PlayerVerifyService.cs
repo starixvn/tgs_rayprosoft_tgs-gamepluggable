@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Tgs.GameProviders.Pluggable.Core;
+using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Services
 {

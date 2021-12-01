@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Core
 {
@@ -10,5 +11,7 @@ namespace Tgs.GameProviders.Pluggable.Core
         ValueTask<GameProviderModel> GetAsync(string gameProviderCode);
 
         ValueTask<GameProviderStatus> GetStatusAsync(Guid gameProviderId);
+
+        ValueTask<SubGameProviderModel> GetSubGameProviderAsync(string subGameProviderCode);
     }
 }

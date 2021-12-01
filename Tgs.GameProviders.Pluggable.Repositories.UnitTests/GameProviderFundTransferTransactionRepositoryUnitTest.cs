@@ -23,6 +23,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories.UnitTests
                 ).ConfigureAwait(false);
         }
 
+        [Test]
         public async Task Add_FundOut_Async()
         {
             var fakeRepository = Substitute.For<IGameProviderFundTransferTransactionRepository>();
@@ -36,6 +37,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories.UnitTests
                 ).ConfigureAwait(false);
         }
 
+        [Test]
         public async Task Update_FundIn_Async()
         {
             var fakeRepository = Substitute.For<IGameProviderFundTransferTransactionRepository>();
@@ -49,6 +51,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories.UnitTests
                ).ConfigureAwait(false);
         }
 
+        [Test]
         public async Task Update_FundOut_Async()
         {
             var fakeRepository = Substitute.For<IGameProviderFundTransferTransactionRepository>();

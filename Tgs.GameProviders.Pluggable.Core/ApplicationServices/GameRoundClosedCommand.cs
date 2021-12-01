@@ -3,7 +3,7 @@ using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Core.ApplicationServices
 {
-    public record ClosedGameRoundCommand
+    public record GameRoundClosedCommand
     {
         public Guid RoundId { get; init; }
         public decimal BetAmount { get; init; }
