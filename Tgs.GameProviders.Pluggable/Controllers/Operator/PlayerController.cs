@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.Pluggable.ViewModels;
 using Tgs.ServiceUtility;
+using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Controllers.Operator
 {
@@ -94,5 +96,40 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
             ) => service.GetAsync(new(
                 playerCode,
                 gameProviderCode.ToUpper()));
+
+        /// <summary>
+        /// Gets the balance asynchronous.
+        /// </summary>
+        /// <param name="service">The service.</param>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// <b>Example</b><br />
+        ///
+        ///     Post /op/player/gameurl
+        ///         {
+        ///             "subGameProviderCode": "KY",
+        ///             "playerCode": "4ucmqplxb029",
+        ///             "loginRecordId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        ///             "isMobile": false,
+        ///             "gameId": 1000032,
+        ///             "language": "zh-CN",
+        ///             "ipAddress": "127.0.0.1",
+        ///             "backUrl": "https://dev-t1.rpgp.cc"
+        ///         }
+        /// </remarks>
+        [HttpPost("gameurl")]
+        public ValueTask<Uri?> GetBalanceAsync(
+                [FromServices] IGetService<GameUrlQuery, Uri?> service,
+                [FromBody] GameProviderGameUrlViewModel model
+                ) => service.GetAsync(new(
+                     model.SubGameProviderCode,
+                     model.PlayerCode,
+                     model.LoginRecordId,
+                     model.IsMobile ? PlatformType.Mobile : PlatformType.Desktop,
+                     model.GameId,
+                     model.Language,
+                     model.IpAddress,
+                     model.BackUrl));
     }
 }
