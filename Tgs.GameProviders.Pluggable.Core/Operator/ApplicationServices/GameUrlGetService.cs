@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Tgs.ServiceUtility;
 using TGS.GameProviders.Client;
+using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 {
@@ -15,6 +16,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
         private readonly ILogger<GameUrlGetService> _logger;
         private readonly IPlayerRepository _playerRepository;
         private readonly IPlayerVerifyService _verifyService;
+        private readonly IBrandRepository _brandRepository;
 
         public GameUrlGetService(
           IGameProviderRepository gameProviderRepository,
@@ -22,7 +24,8 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
           IGameRepository gameRepository,
           ILogger<GameUrlGetService> logger,
           IPlayerRepository playerRepository,
-          IPlayerVerifyService verifyService)
+          IPlayerVerifyService verifyService,
+          IBrandRepository brandRepository)
         {
             _gameProviderRepository = gameProviderRepository ?? throw new ArgumentNullException(nameof(gameProviderRepository));
             _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
@@ -30,6 +33,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
             _verifyService = verifyService ?? throw new ArgumentNullException(nameof(verifyService));
+            _brandRepository = brandRepository ?? throw new ArgumentNullException(nameof(brandRepository));
         }
 
         public async ValueTask<Uri?> GetAsync(GameUrlQuery query, CancellationToken cancellationToken = default)
@@ -59,19 +63,55 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 
             var gameProviderModel = await _gameProviderRepository.GetAsync(gameModel.GameProviderId).ConfigureAwait(false);
 
-            return await _gameProvidersClient.GameUrlAsync(
-                gameProviderModel.GameProviderCode,
-                gameModel.GameType,
-                query.GameId,
-                playerModel.BrandCode,
-                playerModel.PlayerCode,
-                playerModel.DefaultWalletCurrencyCode,
-                query.LoginRecordId,
-                query.PlatformType,
-                query.Language,
-                query.IpAddress,
-                query.BackUrl)
-                .ConfigureAwait(false);
+            if (gameProviderModel.GameProviderCode == "BC")
+            {
+                var brandGameProviderConfiguration = await _brandRepository
+                    .GetBrandGameProviderConfigurationAsync(playerModel.BrandId, gameProviderModel.GameProviderId)
+                    .ConfigureAwait(false);
+
+                var gameProviderConfiguration = await _gameProviderRepository
+                    .GetGameProviderConfigurationAsync(gameModel.GameProviderId, brandGameProviderConfiguration.GameProviderConfigurationId)
+                    .ConfigureAwait(false);
+
+                var lobbyDomain = query.PlatformType switch
+                {
+                    PlatformType.Desktop => gameProviderConfiguration.DesktopEndpoint,
+                    PlatformType.Mobile => gameProviderConfiguration.MobileEndpoint,
+                    _ => gameProviderConfiguration.DesktopEndpoint
+                };
+
+                return await _gameProvidersClient
+                    .GameBetConstructUrlAsync(
+                        gameProviderModel.GameProviderCode,
+                        gameModel.GameType,
+                        query.GameId,
+                        playerModel.BrandCode,
+                        playerModel.PlayerCode,
+                        playerModel.DefaultWalletCurrencyCode,
+                        query.LoginRecordId,
+                        query.PlatformType,
+                        query.Language,
+                        query.IpAddress,
+                        query.BackUrl,
+                        lobbyDomain)
+                    .ConfigureAwait(false);
+            }
+            else
+            {
+                return await _gameProvidersClient.GameUrlAsync(
+                    gameProviderModel.GameProviderCode,
+                    gameModel.GameType,
+                    query.GameId,
+                    playerModel.BrandCode,
+                    playerModel.PlayerCode,
+                    playerModel.DefaultWalletCurrencyCode,
+                    query.LoginRecordId,
+                    query.PlatformType,
+                    query.Language,
+                    query.IpAddress,
+                    query.BackUrl)
+                    .ConfigureAwait(false);
+            }
         }
     }
 }
