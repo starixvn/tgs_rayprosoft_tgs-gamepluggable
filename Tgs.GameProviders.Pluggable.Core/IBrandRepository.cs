@@ -16,5 +16,7 @@ namespace Tgs.GameProviders.Pluggable.Core
         ValueTask<GameStatus> GetGameStatusAsync(Guid brandId, int gameId);
 
         ValueTask<BrandStatus> GetStatusAsync(Guid brandId);
+
+        ValueTask<BrandGameProviderModel> GetBrandGameProviderConfigurationAsync(Guid brandId, Guid gameProviderId);
     }
 }

@@ -133,5 +133,22 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             })
             .ToAsyncEnumerable()
             .FirstAsync();
+
+        public ValueTask<GameProviderConfigModel> GetGameProviderConfigurationAsync(Guid gameProviderId, Guid gameProviderConfigurationId)
+            => _context.GameProviderConfigs
+            .Where(x => x.GameProviderId == gameProviderId && x.Id == gameProviderConfigurationId)
+            .Select(data => new GameProviderConfigModel()
+            {
+                Id = data.Id,
+                GameProviderId = data.GameProviderId,
+                Status = data.Status,
+                SecretKey = data.SecretKey,
+                IsDefault = data.IsDefault,
+                ConfigurationData = data.ConfigurationData,
+                DesktopEndpoint = data.DesktopEndpoint,
+                MobileEndpoint = data.MobileEndpoint
+            })
+            .ToAsyncEnumerable()
+            .FirstAsync();
     }
 }

@@ -40,5 +40,6 @@ namespace Tgs.GameProviders.Pluggable.Repositories.Entities
         public decimal PlatformCharge { get; set; }
         public bool CheckDividendActiveCount { get; set; }
         public bool EnableSmsRegisterFlow { get; set; }
+        public short AgentDividendType { get; set; }
     }
 }

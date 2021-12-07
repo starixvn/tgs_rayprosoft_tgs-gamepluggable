@@ -62,5 +62,16 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             .Select(x => (BrandStatus)x.Status)
             .ToAsyncEnumerable()
             .FirstAsync();
+
+        public ValueTask<BrandGameProviderModel> GetBrandGameProviderConfigurationAsync(Guid brandId, Guid gameProviderId)
+            => _context.BrandGameProviders
+            .Where(x => x.BrandId == brandId && x.GameProviderId == gameProviderId)
+            .Select(data => new BrandGameProviderModel()
+            {
+                GameProviderId = data.GameProviderId,
+                GameProviderConfigurationId = data.GameProviderConfigurationId
+            })
+            .ToAsyncEnumerable()
+            .FirstAsync();
     }
 }
