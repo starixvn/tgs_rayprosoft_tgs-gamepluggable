@@ -7,7 +7,7 @@ namespace Tgs.GameProviders.Pluggable.Core
 {
     public interface IRoundRepository
     {
-        ValueTask ClosedGameRoundAsync(Guid roundId, decimal betAmount, decimal validBetAmount, decimal settleAmount, decimal commission, decimal turnover, decimal winLoss, ClientRoundStatus clientRoundStatus, DateTimeOffset externalClosedOn);
+        ValueTask<bool> ClosedGameRoundAsync(Guid roundId, decimal betAmount, decimal validBetAmount, decimal settleAmount, decimal commission, decimal turnover, decimal winLoss, ClientRoundStatus clientRoundStatus, DateTimeOffset externalClosedOn, Guid operatorId, string remark);
 
         IAsyncEnumerable<GameActionModel> GameActionQueryAsync(Guid roundId);
 

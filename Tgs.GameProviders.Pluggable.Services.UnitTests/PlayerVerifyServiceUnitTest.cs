@@ -52,19 +52,18 @@ namespace Tgs.GameProviders.Pluggable.Services.UnitTests
                  string.Empty
                 );
 
-            var gameModel = new GameModel()
-            {
-                GameId = 1000031,
-                Status = GameStatus.Active,
-                GameExternalId = "0",
-                GameProviderId = gameProviderId,
-                GameType = GameType.LiveDealerLobby,
-                PlatformType = GamePlatformType.DesktopAndMobile,
-                SubGame = false,
-                GameCode = "Lobby",
-                Name = "Lobby",
-                SubGameProviderCode = "KY",
-            };
+            var gameModel = new GameModel(
+                1000001,
+                 GameStatus.Active,
+                 "0",
+                 Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
+                 GameType.LiveDealerLobby,
+                 GamePlatformType.DesktopAndMobile,
+                 false,
+                 "Lobby",
+                 "Lobby",
+                 "ky"
+                );
 
             _ = fakeGameRepository
                 .GetAsync(gameId)
@@ -106,20 +105,20 @@ namespace Tgs.GameProviders.Pluggable.Services.UnitTests
                 );
 
             var playerCode = "4ucmqplxb029";
-            var playerModel = new PlayerModel()
-            {
-                ResellerId = Guid.Parse("b5a2c708-ab70-4316-9f4d-5d2ad0e77460"),
-                LicenseeId = Guid.Parse("66c5fef5-217b-4929-9a08-72c2479a8f4e"),
-                LicenseeCode = "TGS",
-                BrandId = Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
-                BrandCode = "GPI",
-                PlayerCode = "4ucmqplxb029",
-                Username = "4ucmqplxb029",
-                RealName = "4ucmqplxb029",
-                DefaultWalletId = Guid.Parse("36a6cdef-094f-eb11-8d88-70b5e82b6b8d"),
-                DefaultWalletCurrencyCode = "CNY",
-                Status = PlayerStatus.Enabled
-            };
+            var playerModel = new PlayerModel(
+                Guid.Parse("b5a2c708-ab70-4316-9f4d-5d2ad0e77460"),
+                "TGS",
+                Guid.Parse("66c5fef5-217b-4929-9a08-72c2479a8f4e"),
+                "TGS",
+                Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
+                "GPI",
+                "4ucmqplxb029",
+                "4ucmqplxb029",
+                "4ucmqplxb029",
+                Guid.Parse("36a6cdef-094f-eb11-8d88-70b5e82b6b8d"),
+                "CNY",
+                PlayerStatus.Enabled
+                );
 
             _ = fakePlayerRepository
                 .GetAsync(playerCode)
@@ -190,6 +189,99 @@ namespace Tgs.GameProviders.Pluggable.Services.UnitTests
             _ = fakeBrandRepository
                 .Received(1)
                 .GetGameProviderStatusAsync(brandId, gameProviderId);
+        }
+
+        [Test]
+        public async Task IsPlayerGameProviderCurrencyAsync()
+        {
+            var fakeBrandRepository = Substitute.For<IBrandRepository>();
+            var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+            var fakeGameRepository = Substitute.For<IGameRepository>();
+            var fakeLicenseeRepository = Substitute.For<ILicenseeRepository>();
+            var faceLogger = NullLogger<PlayerVerifyService>.Instance;
+            var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+            var fakeResellerRepository = Substitute.For<IResellerRepository>();
+
+            var service = new PlayerVerifyService(
+                fakeBrandRepository,
+                fakeGameProviderRepository,
+                fakeGameRepository,
+                fakeLicenseeRepository,
+                fakePlayerRepository,
+                faceLogger,
+                fakeResellerRepository
+                );
+            var currencyCode = "CNY";
+            var gameProviderCode = "KY";
+            var brandId = Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af");
+            var gameProviderId = Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5");
+
+            var gameProviderModel = new GameProviderCurrencyModel(
+                 Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
+                 "CNY",
+                 "RMB"
+                );
+
+            _ = fakeGameProviderRepository
+                .GetCurrencyAsync(gameProviderCode, currencyCode)
+                .Returns(ValueTask.FromResult(gameProviderModel));
+
+            _ = fakeBrandRepository
+                .GetCurrencyAsync(brandId, currencyCode)
+                .Returns(ValueTask.FromResult(currencyCode));
+
+            var actual = await service.IsPlayerGameProviderCurrencyAsync(
+                brandId,
+                gameProviderCode,
+                currencyCode).ConfigureAwait(false);
+            Assert.NotNull(actual);
+            Assert.AreEqual(true, actual);
+        }
+
+        [Test]
+        public async Task IsPlayerGameProviderIdCurrencyAsync()
+        {
+            var fakeBrandRepository = Substitute.For<IBrandRepository>();
+            var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+            var fakeGameRepository = Substitute.For<IGameRepository>();
+            var fakeLicenseeRepository = Substitute.For<ILicenseeRepository>();
+            var faceLogger = NullLogger<PlayerVerifyService>.Instance;
+            var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+            var fakeResellerRepository = Substitute.For<IResellerRepository>();
+
+            var service = new PlayerVerifyService(
+                fakeBrandRepository,
+                fakeGameProviderRepository,
+                fakeGameRepository,
+                fakeLicenseeRepository,
+                fakePlayerRepository,
+                faceLogger,
+                fakeResellerRepository
+                );
+            var currencyCode = "CNY";
+            var brandId = Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af");
+            var gameProviderId = Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5");
+
+            var gameProviderModel = new GameProviderCurrencyModel(
+                 Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
+                 "CNY",
+                 "RMB"
+                );
+
+            _ = fakeGameProviderRepository
+                .GetCurrencyAsync(gameProviderId, currencyCode)
+                .Returns(ValueTask.FromResult(gameProviderModel));
+
+            _ = fakeBrandRepository
+                .GetCurrencyAsync(brandId, currencyCode)
+                .Returns(ValueTask.FromResult(currencyCode));
+
+            var actual = await service.IsPlayerGameProviderCurrencyAsync(
+                brandId,
+                gameProviderId,
+                currencyCode).ConfigureAwait(false);
+            Assert.NotNull(actual);
+            Assert.AreEqual(true, actual);
         }
     }
 }

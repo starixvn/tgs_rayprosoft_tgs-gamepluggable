@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UAParser;
 
@@ -14,7 +13,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<object> GetAsync()
+        public object Get()
         {
             var userAgent = HttpContext.Request.Headers["User-Agent"];
             var uaParser = Parser.GetDefault();

@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Linq.Async" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Tgs.GameProviders.Pluggable.Core\Tgs.GameProviders.Pluggable.Core.csproj" />
   </ItemGroup>
 
