@@ -101,7 +101,7 @@ namespace Tgs.GameProviders.Pluggable.Client
             }
         }
 
-        public async ValueTask<Uri?> GetGameUrlAsync(string playerCode, Guid loginRecordId, bool isMobile, int gameId, string language, string ipAddress, Uri backUrl)
+        public async ValueTask<Uri?> GetGameUrlAsync(string playerCode, Guid loginRecordId, bool isMobile, int gameId, string language, string ipAddress, Uri? backUrl)
         {
             try
             {
