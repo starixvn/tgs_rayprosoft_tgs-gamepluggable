@@ -12,6 +12,6 @@ namespace Tgs.GameProviders.Pluggable.Client
 
         ValueTask<decimal?> GetBalanceAsync(string playerCode, string gameProviderCode);
 
-        ValueTask<Uri?> GetGameUrlAsync(string playerCode, Guid loginRecordId, bool isMobile, int gameId, string language, string ipAddress, Uri backUrl);
+        ValueTask<Uri?> GetGameUrlAsync(string playerCode, Guid loginRecordId, bool isMobile, int gameId, string language, string ipAddress, Uri? backUrl);
     }
 }
