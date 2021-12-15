@@ -14,16 +14,30 @@ namespace Tgs.GameProviders.Pluggable.Repositories.UnitTests
         public async Task ClosedGameRoundAsync()
         {
             var fakeRepository = Substitute.For<IRoundRepository>();
+            var roundId = Guid.NewGuid();
+
+            decimal betAmount = 100;
+            decimal validBetAmount = 100;
+            decimal settleAmount = 0;
+            decimal commission = 0;
+            decimal turnover = 100;
+            decimal winLoss = 100;
+            ClientRoundStatus clientRoundStatus = ClientRoundStatus.Loss;
+            DateTimeOffset externalClosedOn = DateTimeOffset.UtcNow;
+            var operatorId = Guid.NewGuid();
+            string remark = "測試關閉遊戲";
             await fakeRepository.ClosedGameRoundAsync(
-               Arg.Any<Guid>(),
-               Arg.Any<decimal>(),
-               Arg.Any<decimal>(),
-               Arg.Any<decimal>(),
-               Arg.Any<decimal>(),
-               Arg.Any<decimal>(),
-               Arg.Any<decimal>(),
-               Arg.Any<ClientRoundStatus>(),
-               Arg.Any<DateTimeOffset>()
+               Arg.Is(roundId),
+               Arg.Is(betAmount),
+               Arg.Is(validBetAmount),
+               Arg.Is(settleAmount),
+               Arg.Is(commission),
+               Arg.Is(turnover),
+               Arg.Is(winLoss),
+               Arg.Is(clientRoundStatus),
+               Arg.Is(externalClosedOn),
+               Arg.Is(operatorId),
+               Arg.Is(remark)
                ).ConfigureAwait(false);
         }
 

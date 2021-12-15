@@ -15,10 +15,10 @@
         FailureOnGameProvider,
 
         /// <summary>
-        /// The failure on system
+        /// The failure on main wallet
         /// 主錢包失敗
         /// </summary>
-        FailureOnSystem,
+        FailureOnMainWallet,
 
         /// <summary>
         /// The success

@@ -20,9 +20,15 @@ namespace Tgs.GameProviders.Pluggable.Repositories.Entities
         }
 
         public virtual DbSet<Brand> Brands { get; set; }
+        public virtual DbSet<BrandCurrency> BrandCurrencies { get; set; }
+        public virtual DbSet<BrandGame> BrandGames { get; set; }
+        public virtual DbSet<BrandGameProvider> BrandGameProviders { get; set; }
         public virtual DbSet<Game> Games { get; set; }
         public virtual DbSet<GameProvider> GameProviders { get; set; }
+        public virtual DbSet<GameProviderConfig> GameProviderConfigs { get; set; }
+        public virtual DbSet<GameProviderCurrency> GameProviderCurrencies { get; set; }
         public virtual DbSet<GameProviderFundTransferTransaction> GameProviderFundTransferTransactions { get; set; }
+        public virtual DbSet<GameProviderLanguage> GameProviderLanguages { get; set; }
         public virtual DbSet<Licensee> Licensees { get; set; }
         public virtual DbSet<Player> Players { get; set; }
         public virtual DbSet<Reseller> Resellers { get; set; }
@@ -34,9 +40,15 @@ namespace Tgs.GameProviders.Pluggable.Repositories.Entities
                 .HasAnnotation("Relational:Collation", "en_US.utf8");
 
             modelBuilder.ApplyConfiguration(new Configurations.BrandConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.BrandCurrencyConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.BrandGameConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.BrandGameProviderConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.GameConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.GameProviderConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.GameProviderConfigConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.GameProviderCurrencyConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.GameProviderFundTransferTransactionConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.GameProviderLanguageConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.LicenseeConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.PlayerConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.ResellerConfiguration());

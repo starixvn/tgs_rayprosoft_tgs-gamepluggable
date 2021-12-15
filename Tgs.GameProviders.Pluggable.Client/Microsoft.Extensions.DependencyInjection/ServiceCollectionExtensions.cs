@@ -9,17 +9,27 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddGameProvidersPluggableServerClient(
             this IServiceCollection services,
             Action<GameProvidersPluggableClientOptions, IServiceProvider> configure)
-            => services
+        {
+            services
                 .AddOptions<GameProvidersPluggableClientOptions>()
-                .Configure(configure)
-                .Services
-                .AddHttpClient<IGameProvidersPluggableClient, GameProvidersPluggableClient>()
+                .Configure(configure);
+            services
+                .AddHttpClient<IGameProvidersOperatorPluggableClient, GameProvidersOperatorPluggableClient>()
                 .ConfigureHttpClient((sp, httpClient) =>
                 {
                     var options = sp.GetRequiredService<IOptions<GameProvidersPluggableClientOptions>>().Value;
-
                     httpClient.BaseAddress = options.BaseUrl;
-                })
-                .Services;
+                });
+            services
+            .AddHttpClient<IGameProvidersBackofficePluggableClient, GameProvidersBackofficePluggableClient>()
+            .ConfigureHttpClient((sp, httpClient) =>
+            {
+                var options = sp.GetRequiredService<IOptions<GameProvidersPluggableClientOptions>>().Value;
+
+                httpClient.BaseAddress = options.BaseUrl;
+            });
+
+            return services;
+        }
     }
 }
