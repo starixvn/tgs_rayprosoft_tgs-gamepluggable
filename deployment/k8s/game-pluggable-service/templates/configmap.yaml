@@ -25,12 +25,28 @@ data:
           "FormatterName": "Simple"
         }
       },
+      "ForwardedHeaders": {
+        "ForwardLimit": 2,
+        "KnownProxies": [
+          "192.168.50.1",
+          "220.132.206.70",
+          "211.24.72.160",
+          "18.167.169.96"
+        ],
+        "KnowNetworks": [
+          "10.0.0.0/8",
+          "172.16.0.0/12",
+          "192.168.0.0/16"
+        ]
+      },
       "AllowedHosts": "*",
       "ConnectionStrings": {
         "Tgs": "{{ .Values.connectionStrings.tgs }}",
-        "NatsMQ": "{{ .Values.nats.urls }}",
-        "TGSGameProviders": "http://game-gameproviders",
-        "CashService": "http://cashservice-api",
-        "TGSGameProviderKickPlayerServer": "http://game-kickplayer-server"
+        "NatsMQ": "{{ .Values.nats.urls }}"
+      },
+      "Pluggable": {
+        "TGSGameProvidersBaseUrl": "http://game-gameproviders",
+        "CashServiceBaseUrl": "http://cashservice-api",
+        "TGSGameProviderKickPlayerServerBaseUrl": "http://game-kickplayer-server"
       }
     }
