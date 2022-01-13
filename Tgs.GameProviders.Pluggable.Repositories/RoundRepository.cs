@@ -24,6 +24,60 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        public async ValueTask<bool> AdjustClosedRoundAsync(Guid roundId, decimal betAmount, decimal validBetAmount, decimal settleAmount, decimal commission, decimal turnover, decimal winLoss, ClientRoundStatus clientRoundStatus, DateTimeOffset externalClosedOn, Guid operatorId, string remark)
+        {
+            var data = await _betContext.Rounds
+                .Where(x => x.Id == roundId)
+                .FirstAsync()
+                .ConfigureAwait(false);
+
+            var oldData = data;
+
+            using (var transaction = _betContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    var systemDateTimeOffset = DateTime.UtcNow;
+                    data.UpdatedOn = systemDateTimeOffset;
+                    data.ClosedOn = systemDateTimeOffset;
+                    data.ExternalClosedOn = externalClosedOn.UtcDateTime;
+                    data.BetAmount = betAmount;
+                    data.ValidBetAmount = validBetAmount;
+                    data.SettleAmount = settleAmount;
+                    data.Commission = commission;
+                    data.ReopenTurnoverAdjustment = data.Turnover;
+                    data.ReopenedOn = systemDateTimeOffset;
+                    data.Turnover = turnover;
+                    data.WinLoss = winLoss;
+                    data.ClientStatus = (short)clientRoundStatus;
+                    _betContext.Update(data);
+                    _ = await _betContext.SaveChangesAsync().ConfigureAwait(false);
+
+                    _ = await _betContext.RoundOperationRecords.AddAsync(new()
+                    {
+                        Id = Guid.NewGuid(),
+                        RoundId = roundId,
+                        OperatorId = operatorId,
+                        OldData = JsonSerializer.Serialize(oldData),
+                        NewData = JsonSerializer.Serialize(data),
+                        CreatedOn = systemDateTimeOffset,
+                        Remark = remark
+                    }).ConfigureAwait(false);
+                    _ = await _betContext.SaveChangesAsync().ConfigureAwait(false);
+
+                    await transaction.CommitAsync().ConfigureAwait(false);
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync().ConfigureAwait(false);
+                    _logger.LogError($"An exception occurs when adjusting the closed game record.({roundId})", ex);
+                    return false;
+                }
+            }
+        }
+
         public async ValueTask<bool> ClosedGameRoundAsync(Guid roundId, decimal betAmount, decimal validBetAmount, decimal settleAmount, decimal commission, decimal turnover, decimal winLoss, ClientRoundStatus clientRoundStatus, DateTimeOffset externalClosedOn, Guid operatorId, string remark)
         {
             var data = await _betContext.Rounds
