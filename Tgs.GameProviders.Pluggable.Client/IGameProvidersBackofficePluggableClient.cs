@@ -12,6 +12,8 @@ namespace Tgs.GameProviders.Pluggable.Client
 
         ValueTask GameRoundClosedAsync(Guid RoundId, GameRoundClosedViewModel viewModel);
 
+        ValueTask AdjustClosedRoundAsync(Guid RoundId, AdjustClosedRoundViewModel viewModel);
+
         ValueTask<JsonDocument?> GameRoundDetailGetAsync(Guid roundId, string language);
 
         ValueTask<GameRoundViewModel?> GameRoundGetAsync(Guid roundId);

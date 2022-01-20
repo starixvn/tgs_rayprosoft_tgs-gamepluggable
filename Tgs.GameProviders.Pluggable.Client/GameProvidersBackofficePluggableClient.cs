@@ -57,6 +57,20 @@ namespace Tgs.GameProviders.Pluggable.Client
             response.EnsureSuccessStatusCode();
         }
 
+        public async ValueTask AdjustClosedRoundAsync(Guid roundId, AdjustClosedRoundViewModel viewModel)
+        {
+            var requestContent = new StringContent(JsonSerializer.Serialize(viewModel, _SerializerOptions));
+            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+            var response = await _httpClient
+               .PutAsync(
+                    $"/bo/round/{roundId}/adjustclosedRound"
+                   , requestContent)
+               .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+        }
+
         public async ValueTask<JsonDocument?> GameRoundDetailGetAsync(Guid roundId, string language)
         {
             var response = await _httpClient
