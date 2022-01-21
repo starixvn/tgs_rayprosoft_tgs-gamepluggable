@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
 using TGS.GameProviders.Client;
 using TGS.GameProviders.Domains;
@@ -17,6 +18,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
         private readonly IPlayerRepository _playerRepository;
         private readonly IPlayerVerifyService _verifyService;
         private readonly IBrandRepository _brandRepository;
+        private readonly ICashServiceClient _cashServiceClient;
 
         public GameUrlGetService(
           IGameProviderRepository gameProviderRepository,
@@ -25,7 +27,8 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
           ILogger<GameUrlGetService> logger,
           IPlayerRepository playerRepository,
           IPlayerVerifyService verifyService,
-          IBrandRepository brandRepository)
+          IBrandRepository brandRepository,
+          ICashServiceClient cashServiceClient)
         {
             _gameProviderRepository = gameProviderRepository ?? throw new ArgumentNullException(nameof(gameProviderRepository));
             _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
@@ -34,6 +37,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
             _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
             _verifyService = verifyService ?? throw new ArgumentNullException(nameof(verifyService));
             _brandRepository = brandRepository ?? throw new ArgumentNullException(nameof(brandRepository));
+            _cashServiceClient = cashServiceClient ?? throw new ArgumentNullException(nameof(cashServiceClient));
         }
 
         public async ValueTask<Uri?> GetAsync(GameUrlQuery query, CancellationToken cancellationToken = default)
@@ -51,10 +55,6 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
             }
 
             var gameModel = await _gameRepository.GetAsync(query.GameId).ConfigureAwait(false);
-            if (gameModel == null)
-            {
-                return null;
-            }
 
             if (!await _verifyService.IsPlayerGameProviderCurrencyAsync(playerModel.BrandId, gameModel.GameProviderId, playerModel.DefaultWalletCurrencyCode).ConfigureAwait(false))
             {
@@ -63,42 +63,28 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 
             var gameProviderModel = await _gameProviderRepository.GetAsync(gameModel.GameProviderId).ConfigureAwait(false);
 
-            if (gameProviderModel.GameProviderCode == "BC")
+            if (gameProviderModel.GameProviderCode == "AG")
             {
-                var brandGameProviderConfiguration = await _brandRepository
-                    .GetBrandGameProviderConfigurationAsync(playerModel.BrandId, gameProviderModel.GameProviderId)
-                    .ConfigureAwait(false);
-
-                var gameProviderConfiguration = await _gameProviderRepository
-                    .GetGameProviderConfigurationAsync(gameModel.GameProviderId, brandGameProviderConfiguration.GameProviderConfigurationId)
-                    .ConfigureAwait(false);
-
-                var lobbyDomain = query.PlatformType switch
-                {
-                    PlatformType.Desktop => gameProviderConfiguration.DesktopEndpoint,
-                    PlatformType.Mobile => gameProviderConfiguration.MobileEndpoint,
-                    _ => gameProviderConfiguration.DesktopEndpoint
-                };
-
-                return await _gameProvidersClient
-                    .GameBetConstructUrlAsync(
-                        gameProviderModel.GameProviderCode,
-                        gameModel.GameType,
-                        query.GameId,
-                        playerModel.BrandCode,
-                        playerModel.PlayerCode,
-                        playerModel.DefaultWalletCurrencyCode,
-                        query.LoginRecordId,
-                        query.PlatformType,
-                        query.Language,
-                        query.IpAddress,
-                        query.BackUrl,
-                        lobbyDomain)
+                return await GetAsiaGamingUrlAsync(
+                        query,
+                        playerModel,
+                        gameProviderModel,
+                        gameModel)
                     .ConfigureAwait(false);
             }
-            else
+
+            if (gameProviderModel.GameProviderCode == "BC")
             {
-                return await _gameProvidersClient.GameUrlAsync(
+                return await GetBetConstructUrlAsync(
+                        query,
+                        playerModel,
+                        gameProviderModel,
+                        gameModel)
+                    .ConfigureAwait(false);
+            }
+
+            return await _gameProvidersClient
+                .GameUrlAsync(
                     gameProviderModel.GameProviderCode,
                     gameModel.GameType,
                     query.GameId,
@@ -110,8 +96,72 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
                     query.Language,
                     query.IpAddress,
                     query.BackUrl)
-                    .ConfigureAwait(false);
-            }
+                .ConfigureAwait(false);
+        }
+
+        private async ValueTask<Uri?> GetAsiaGamingUrlAsync(
+            GameUrlQuery query, PlayerModel playerModel,
+            GameProviderModel gameProviderModel,
+            GameModel gameModel)
+        {
+            var playerBalance = await _cashServiceClient
+                .GetBalanceAsync(playerModel.DefaultWalletId)
+                .ConfigureAwait(false);
+
+            return await _gameProvidersClient
+                .GameUrlByAsiaGamingAsync(
+                    gameProviderModel.GameProviderCode,
+                    gameModel.GameType,
+                    query.GameId,
+                    playerModel.BrandCode,
+                    playerModel.PlayerCode,
+                    playerModel.DefaultWalletCurrencyCode,
+                    query.LoginRecordId,
+                    query.PlatformType,
+                    query.Language,
+                    query.IpAddress,
+                    query.BackUrl,
+                    playerBalance)
+                .ConfigureAwait(false);
+        }
+
+        private async ValueTask<Uri?> GetBetConstructUrlAsync(
+            GameUrlQuery query,
+            PlayerModel playerModel,
+            GameProviderModel gameProviderModel,
+            GameModel gameModel)
+        {
+            var brandGameProviderConfiguration = await _brandRepository
+                .GetBrandGameProviderConfigurationAsync(playerModel.BrandId, gameProviderModel.GameProviderId)
+                .ConfigureAwait(false);
+
+            var gameProviderConfiguration = await _gameProviderRepository
+                .GetGameProviderConfigurationAsync(gameModel.GameProviderId,
+                    brandGameProviderConfiguration.GameProviderConfigurationId)
+                .ConfigureAwait(false);
+
+            var lobbyDomain = query.PlatformType switch
+            {
+                PlatformType.Desktop => gameProviderConfiguration.DesktopEndpoint,
+                PlatformType.Mobile => gameProviderConfiguration.MobileEndpoint,
+                _ => gameProviderConfiguration.DesktopEndpoint
+            };
+
+            return await _gameProvidersClient
+                .GameUrlByBetConstructAsync(
+                    gameProviderModel.GameProviderCode,
+                    gameModel.GameType,
+                    query.GameId,
+                    playerModel.BrandCode,
+                    playerModel.PlayerCode,
+                    playerModel.DefaultWalletCurrencyCode,
+                    query.LoginRecordId,
+                    query.PlatformType,
+                    query.Language,
+                    query.IpAddress,
+                    query.BackUrl,
+                    lobbyDomain)
+                .ConfigureAwait(false);
         }
     }
 }

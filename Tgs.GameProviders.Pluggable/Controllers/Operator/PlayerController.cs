@@ -98,7 +98,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
                 gameProviderCode.ToUpper()));
 
         /// <summary>
-        /// Gets the balance asynchronous.
+        /// Gets the game url asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="model">The model.</param>
@@ -119,15 +119,16 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
         /// </remarks>
         [HttpPost("gameurl")]
         public ValueTask<Uri?> GetGameUrlAsync(
-                [FromServices] IGetService<GameUrlQuery, Uri?> service,
-                [FromBody] GameProviderGameUrlViewModel model
-                ) => service.GetAsync(new(
-                     model.PlayerCode,
-                     model.LoginRecordId,
-                     model.IsMobile ? PlatformType.Mobile : PlatformType.Desktop,
-                     model.GameId,
-                     model.Language,
-                     model.IpAddress,
-                     model.BackUrl));
+            [FromServices] IGetService<GameUrlQuery, Uri?> service,
+            [FromBody] GameProviderGameUrlViewModel model)
+            => service
+                .GetAsync(new(
+                    model.PlayerCode,
+                    model.LoginRecordId,
+                    model.IsMobile ? PlatformType.Mobile : PlatformType.Desktop,
+                    model.GameId,
+                    model.Language,
+                    model.IpAddress,
+                    model.BackUrl));
     }
 }
