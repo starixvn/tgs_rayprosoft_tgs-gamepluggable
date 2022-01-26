@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: registry.gitlab.com/rayprosoft/turnkey-gaming-system/game-pluggable-service
+  repository: harbor.rpgp.cc/tgs/game-pluggable-service
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
@@ -13,7 +13,7 @@ image:
 namespace: dev
 
 imagePullSecrets: 
-  - name: registry-credentials
+  - name: secret-tgs-harbor
 nameOverride: "game-pluggable-service"
 fullnameOverride: "game-pluggable-service"
 
@@ -47,10 +47,10 @@ resources:
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
     cpu: 200m
-    memory: 400Mi
+    memory: 256Mi
   requests:
-    cpu: 200m
-    memory: 400Mi
+    cpu: 50m
+    memory: 64Mi
 
 autoscaling:
   enabled: false
