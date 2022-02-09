@@ -63,13 +63,6 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
                 );
             var roundDetailResult = new RoundDetailResult()
             {
-                GameProviderName = gameProviderModel.GameProviderCode,
-                GameName = "百家樂",
-                ExternalRoundId = gameRoundModel.ExternalRoundId,
-                BetAmount = gameRoundModel.BetAmount,
-                Turnover = gameRoundModel.Turnover,
-                Winloss = gameRoundModel.WinLoss,
-                GameResult = gameRoundModel.ClientStatus.ToString(),
                 Data = null
             };
 
