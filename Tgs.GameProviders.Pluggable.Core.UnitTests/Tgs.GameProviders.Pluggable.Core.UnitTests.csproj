@@ -20,7 +20,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Tgs.GameProviders.Pluggable.Core\Tgs.GameProviders.Pluggable.Core.csproj" />
     <ProjectReference Include="..\Tgs.GameProviders.Pluggable.Repositories\Tgs.GameProviders.Pluggable.Repositories.csproj" />
-    <ProjectReference Include="..\Tgs.GameProviders.Pluggable.Services\Tgs.GameProviders.Pluggable.Services.csproj" />
   </ItemGroup>
 
 </Project>

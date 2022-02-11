@@ -8,11 +8,11 @@ namespace Tgs.GameProviders.Pluggable.Client
 {
     public interface IGameProvidersBackofficePluggableClient
     {
+        ValueTask AdjustClosedRoundAsync(Guid RoundId, AdjustClosedRoundViewModel viewModel);
+
         IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(Guid roundId);
 
         ValueTask GameRoundClosedAsync(Guid RoundId, GameRoundClosedViewModel viewModel);
-
-        ValueTask AdjustClosedRoundAsync(Guid RoundId, AdjustClosedRoundViewModel viewModel);
 
         ValueTask<JsonDocument?> GameRoundDetailGetAsync(Guid roundId, string language);
 

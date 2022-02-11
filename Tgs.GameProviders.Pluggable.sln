@@ -13,10 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameProviders.Pluggable
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameProviders.Pluggable.Repositories", "Tgs.GameProviders.Pluggable.Repositories\Tgs.GameProviders.Pluggable.Repositories.csproj", "{D7DCA9BE-86E1-4F43-A8D2-812575F053B0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameProviders.Pluggable.Services", "Tgs.GameProviders.Pluggable.Services\Tgs.GameProviders.Pluggable.Services.csproj", "{64BA2A63-6E4E-4F52-83AA-8420DD1085F6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameProviders.Pluggable.Services.UnitTests", "Tgs.GameProviders.Pluggable.Services.UnitTests\Tgs.GameProviders.Pluggable.Services.UnitTests.csproj", "{4247673C-63DC-451E-9E26-5208ADD7186E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameProviders.Pluggable", "Tgs.GameProviders.Pluggable\Tgs.GameProviders.Pluggable.csproj", "{265ABCA6-3DBB-431B-9F60-18F207F6DB99}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameProviders.Pluggable.ViewModels", "Tgs.GameProviders.Pluggable.ViewModels\Tgs.GameProviders.Pluggable.ViewModels.csproj", "{6A2169CC-1001-4A85-952D-7CDF111AB193}"
@@ -43,14 +39,6 @@ Global
 		{D7DCA9BE-86E1-4F43-A8D2-812575F053B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7DCA9BE-86E1-4F43-A8D2-812575F053B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7DCA9BE-86E1-4F43-A8D2-812575F053B0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{64BA2A63-6E4E-4F52-83AA-8420DD1085F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{64BA2A63-6E4E-4F52-83AA-8420DD1085F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{64BA2A63-6E4E-4F52-83AA-8420DD1085F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{64BA2A63-6E4E-4F52-83AA-8420DD1085F6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4247673C-63DC-451E-9E26-5208ADD7186E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4247673C-63DC-451E-9E26-5208ADD7186E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4247673C-63DC-451E-9E26-5208ADD7186E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4247673C-63DC-451E-9E26-5208ADD7186E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{265ABCA6-3DBB-431B-9F60-18F207F6DB99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{265ABCA6-3DBB-431B-9F60-18F207F6DB99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{265ABCA6-3DBB-431B-9F60-18F207F6DB99}.Release|Any CPU.ActiveCfg = Release|Any CPU
