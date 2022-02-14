@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
-using TGS.GameProviders.Domains;
+using Tgs.GameProviders.QueryServer.Models;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 {
@@ -17,7 +17,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
         {
             var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
 
-            var gameRoundModel = new GameRoundModel(RoundId: Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02"),
+            var gameRoundModel = new GameRoundInfo(RoundId: Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02"),
                ExternalRoundId: "50-1636345294-40676339-2",
                GameProviderId: Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
                PlayerCode: "4uf6j0t01809",
@@ -39,7 +39,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
                Turnover: null,
                WinLoss: null,
                TieBetAdjustment: null,
-               ClientStatus: ClientRoundStatus.Open,
+               ClientStatus: RoundClientStatus.Open,
                ReopenTurnoverAdjustment: null,
                ReopenedOn: null,
                EffectiveBettingPercentage: null);
@@ -52,11 +52,11 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 
                     _ = fakeRoundRepository
                         .GetAsync(roundId)
-                        .Returns(ValueTask.FromResult<GameRoundModel?>(gameRoundModel));
+                        .Returns(ValueTask.FromResult<GameRoundInfo?>(gameRoundModel));
 
                     _ = fakeRoundRepository
                         .GetAsync(roundId)
-                        .Returns(ValueTask.FromResult<GameRoundModel?>(gameRoundModel));
+                        .Returns(ValueTask.FromResult<GameRoundInfo?>(gameRoundModel));
 
                     services.AddSingleton(fakeRoundRepository);
                     services.AddFakeNatsMessageQueue();

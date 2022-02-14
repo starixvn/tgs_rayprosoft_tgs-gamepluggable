@@ -5,9 +5,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
+using Tgs.GameProviders.QueryServer.Models;
 using TGS.GameProviders.Client;
 using TGS.GameProviders.Domains;
 using TGS.GameProviders.Domains.RoundDetail;
+using RoundClientStatus = Tgs.GameProviders.QueryServer.Models.RoundClientStatus;
+using RoundStatus = Tgs.GameProviders.QueryServer.Models.RoundStatus;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 {
@@ -20,35 +23,36 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
             var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
             var language = "zh-CN";
             var gameProviderId = Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5");
-            var gameRoundModel = new GameRoundModel(RoundId: Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02"),
-               ExternalRoundId: "50-1636345294-40676339-2",
-               GameProviderId: Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
-               PlayerCode: "4uf6j0t01809",
-               GameId: 1000015,
-               CurrencyCode: "CNY",
-               Status: RoundStatus.Open,
-               GameProviderConfigurationId: Guid.Parse("fa0d7706-f910-4e98-bf71-bd7084140304"),
-               WalletId: Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9"),
-               CreatedOn: DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
-               ClosedOn: null,
-               UpdatedOn: DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
-               BrandId: Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
-               ExternalCreatedOn: DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
-               ExternalClosedOn: null,
-               BetAmount: 0.060000m,
-               ValidBetAmount: 0.060000m,
-               SettleAmount: null,
-               Commission: null,
-               Turnover: null,
-               WinLoss: null,
-               TieBetAdjustment: null,
-               ClientStatus: ClientRoundStatus.Open,
-               ReopenTurnoverAdjustment: null,
-               ReopenedOn: null,
-               EffectiveBettingPercentage: null);
+            var gameRoundModel = new GameRoundInfo(
+                RoundId: Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02"),
+                ExternalRoundId: "50-1636345294-40676339-2",
+                GameProviderId: Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
+                PlayerCode: "4uf6j0t01809",
+                GameId: 1000015,
+                CurrencyCode: "CNY",
+                Status: RoundStatus.Open,
+                GameProviderConfigurationId: Guid.Parse("fa0d7706-f910-4e98-bf71-bd7084140304"),
+                WalletId: Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9"),
+                CreatedOn: DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
+                ClosedOn: null,
+                UpdatedOn: DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
+                BrandId: Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
+                ExternalCreatedOn: DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
+                ExternalClosedOn: null,
+                BetAmount: 0.060000m,
+                ValidBetAmount: 0.060000m,
+                SettleAmount: null,
+                Commission: null,
+                Turnover: null,
+                WinLoss: null,
+                TieBetAdjustment: null,
+                ClientStatus: RoundClientStatus.Open,
+                ReopenTurnoverAdjustment: null,
+                ReopenedOn: null,
+                EffectiveBettingPercentage: null);
             var gameProvider = new GameProviderInfo(
                  Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
-                 (QueryServer.Models.GameProviderStatus)GameProviderStatus.Active,
+                 GameProviderStatus.Active,
                  string.Empty,
                  true,
                  true,
@@ -74,11 +78,11 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 
                     _ = fakeRoundRepository
                         .GetAsync(roundId)
-                        .Returns(ValueTask.FromResult<GameRoundModel?>(gameRoundModel));
+                        .Returns(ValueTask.FromResult<GameRoundInfo?>(gameRoundModel));
 
                     _ = fakeRoundRepository
                         .GetAsync(roundId)
-                        .Returns(ValueTask.FromResult<GameRoundModel?>(gameRoundModel));
+                        .Returns(ValueTask.FromResult<GameRoundInfo?>(gameRoundModel));
 
                     var fakeGameProvider = Substitute.For<IGameProviderService>();
 

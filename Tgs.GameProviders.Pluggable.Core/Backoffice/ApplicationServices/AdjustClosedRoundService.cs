@@ -41,7 +41,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
                     command.Commission,
                     command.Turnover,
                     command.WinLoss,
-                    command.ClientRoundStatus,
+                    command.RoundClientStatus,
                     command.ExternalClosedOn,
                     command.OperatorId,
                     command.Remark)

@@ -5,6 +5,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
+using Tgs.GameProviders.QueryServer.Models;
 using TGS.GameProviders.Client;
 using TGS.GameProviders.Domains;
 
@@ -41,7 +42,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 "4ucmqplxb029",
                 Guid.Parse("36a6cdef-094f-eb11-8d88-70b5e82b6b8d"),
                 "CNY",
-                (QueryServer.Models.PlayerStatus)PlayerStatus.Enabled);
+                PlayerStatus.Enabled);
 
             var gameProvider = new GameProviderInfo(
                  Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),

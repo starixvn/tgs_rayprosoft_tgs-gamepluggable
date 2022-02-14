@@ -36,7 +36,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             var query = new GameUrlQuery(
                  "4ucmqplxb029",
                  Guid.NewGuid(),
-                 PlatformType.Desktop,
+                 GameProvidersClientPlatformType.Desktop,
                  1000001,
                  "zh-CN",
                  "127.0.0.1",
@@ -119,7 +119,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
 
             _ = fakeGameProvidersClient.GameUrlAsync(
                 gameProvider.GameProviderCode,
-                (TGS.GameProviders.Domains.GameType)game.GameType,
+                (GameProvidersClientGameType)game.GameType,
                 Arg.Is(query.GameId),
                 Arg.Is(player.BrandCode),
                 Arg.Is(player.PlayerCode),
@@ -213,7 +213,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             var query = new GameUrlQuery(
                 player.PlayerCode,
                 Guid.NewGuid(),
-                PlatformType.Desktop,
+                GameProvidersClientPlatformType.Desktop,
                 game.GameId,
                 "zh-CN",
                 "127.0.0.1",
@@ -272,7 +272,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
 
             _ = fakeGameProvidersClient.GameUrlByAsiaGamingAsync(
                 gameProvider.GameProviderCode,
-                (TGS.GameProviders.Domains.GameType)game.GameType,
+                (GameProvidersClientGameType)game.GameType,
                 Arg.Is(query.GameId),
                 Arg.Is(player.BrandCode),
                 Arg.Is(player.PlayerCode),
@@ -318,7 +318,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             var query = new GameUrlQuery(
                  "4ucmqplxb029",
                  Guid.NewGuid(),
-                 PlatformType.Desktop,
+                 GameProvidersClientPlatformType.Desktop,
                  2100001,
                  "zh-CN",
                  "127.0.0.1",
@@ -432,7 +432,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
 
             _ = fakeGameProvidersClient.GameUrlByBetConstructAsync(
                 gameProvider.GameProviderCode,
-                (TGS.GameProviders.Domains.GameType)game.GameType,
+                (GameProvidersClientGameType)game.GameType,
                 Arg.Is(query.GameId),
                 Arg.Is(player.BrandCode),
                 Arg.Is(player.PlayerCode),

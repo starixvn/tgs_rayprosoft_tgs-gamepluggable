@@ -5,7 +5,7 @@ using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.Pluggable.ViewModels;
 using Tgs.ServiceUtility;
-using TGS.GameProviders.Domains;
+using TGS.GameProviders.Client;
 
 namespace Tgs.GameProviders.Pluggable.Controllers.Operator
 {
@@ -125,7 +125,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
                 .GetAsync(new(
                     model.PlayerCode,
                     model.LoginRecordId,
-                    model.IsMobile ? PlatformType.Mobile : PlatformType.Desktop,
+                    model.IsMobile ? GameProvidersClientPlatformType.Mobile : GameProvidersClientPlatformType.Desktop,
                     model.GameId,
                     model.Language,
                     model.IpAddress,
