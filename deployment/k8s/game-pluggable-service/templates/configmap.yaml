@@ -47,7 +47,7 @@ data:
       "Pluggable": {
         "GameProvidersBaseUrl": "http://game-gameproviders",
         "CashServiceBaseUrl": "http://cashservice-api",
-        "GameProviderKickPlayerServerBaseUrl": "http://game-kickplayer-server"
+        "GameProviderKickPlayerServerBaseUrl": "http://game-kickplayer-server",
         "GameProvidersQueryServerBaseUrl": "http://game-gameprovider-queryserver"
       }
     }
