@@ -38,7 +38,7 @@ namespace Tgs.GameProviders.Pluggable.Core
                     data.Name,
                     data.Localization,
                     data.SubGameProviderCode))
-                : throw new ArgumentException($"Then game doesn't exist.{gameId}");
+                : throw new ArgumentException($"The game doesn't exist.{gameId}");
         }
 
         public async ValueTask<GameStatus> GetStatusAsync(int gameId)
