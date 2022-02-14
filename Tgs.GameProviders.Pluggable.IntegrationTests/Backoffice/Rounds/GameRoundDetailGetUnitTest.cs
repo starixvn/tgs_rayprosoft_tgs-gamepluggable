@@ -46,9 +46,9 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
                ReopenTurnoverAdjustment: null,
                ReopenedOn: null,
                EffectiveBettingPercentage: null);
-            var gameProviderModel = new GameProviderModel(
+            var gameProvider = new GameProviderInfo(
                  Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
-                 GameProviderStatus.Active,
+                 (QueryServer.Models.GameProviderStatus)GameProviderStatus.Active,
                  string.Empty,
                  true,
                  true,
@@ -80,27 +80,27 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
                         .GetAsync(roundId)
                         .Returns(ValueTask.FromResult<GameRoundModel?>(gameRoundModel));
 
-                    var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+                    var fakeGameProvider = Substitute.For<IGameProviderService>();
 
-                    _ = fakeGameProviderRepository
+                    _ = fakeGameProvider
                         .GetAsync(gameProviderId)
-                        .Returns(ValueTask.FromResult<GameProviderModel>(gameProviderModel));
+                        .Returns(ValueTask.FromResult<GameProviderInfo>(gameProvider));
 
-                    _ = fakeGameProviderRepository
+                    _ = fakeGameProvider
                         .GetAsync(gameProviderId)
-                        .Returns(ValueTask.FromResult<GameProviderModel>(gameProviderModel));
+                        .Returns(ValueTask.FromResult<GameProviderInfo>(gameProvider));
 
                     var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
 
                     _ = fakeGameProvidersClient
-                       .RoundDetailAsync(gameProviderModel.GameProviderCode, roundId, language)
+                       .RoundDetailAsync(gameProvider.GameProviderCode, roundId, language)
                        .Returns(ValueTask.FromResult<RoundDetailResult?>(roundDetailResult));
                     _ = fakeGameProvidersClient
-                       .RoundDetailAsync(gameProviderModel.GameProviderCode, roundId, language)
+                       .RoundDetailAsync(gameProvider.GameProviderCode, roundId, language)
                        .Returns(ValueTask.FromResult<RoundDetailResult?>(roundDetailResult));
 
                     services.AddSingleton(fakeRoundRepository);
-                    services.AddSingleton(fakeGameProviderRepository);
+                    services.AddSingleton(fakeGameProvider);
                     services.AddSingleton(fakeGameProvidersClient);
                     services.AddFakeNatsMessageQueue();
                 });

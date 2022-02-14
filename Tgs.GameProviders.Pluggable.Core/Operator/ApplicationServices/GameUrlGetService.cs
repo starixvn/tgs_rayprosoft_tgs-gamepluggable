@@ -11,86 +11,86 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 {
     internal class GameUrlGetService : IGetService<GameUrlQuery, Uri?>
     {
-        private readonly IGameProviderRepository _gameProviderRepository;
-        private readonly IGameProvidersClient _gameProvidersClient;
-        private readonly IGameRepository _gameRepository;
-        private readonly ILogger<GameUrlGetService> _logger;
-        private readonly IPlayerRepository _playerRepository;
-        private readonly IPlayerVerifyService _verifyService;
-        private readonly IBrandRepository _brandRepository;
+        private readonly IBrandService _brandService;
         private readonly ICashServiceClient _cashServiceClient;
+        private readonly IGameProvidersClient _gameProvidersClient;
+        private readonly IGameProviderService _gameProviderService;
+        private readonly IGameService _gameService;
+        private readonly ILogger<GameUrlGetService> _logger;
+        private readonly IPlayerService _playerService;
+        private readonly IPlayerVerifyHanlde _verifyService;
 
         public GameUrlGetService(
-          IGameProviderRepository gameProviderRepository,
-          IGameProvidersClient gameProvidersClient,
-          IGameRepository gameRepository,
-          ILogger<GameUrlGetService> logger,
-          IPlayerRepository playerRepository,
-          IPlayerVerifyService verifyService,
-          IBrandRepository brandRepository,
-          ICashServiceClient cashServiceClient)
+            IBrandService brandService,
+            ICashServiceClient cashServiceClient,
+            IGameProvidersClient gameProvidersClient,
+            IGameProviderService gameProviderService,
+            IGameService gameService,
+            ILogger<GameUrlGetService> logger,
+            IPlayerService playerService,
+            IPlayerVerifyHanlde verifyService)
         {
-            _gameProviderRepository = gameProviderRepository ?? throw new ArgumentNullException(nameof(gameProviderRepository));
-            _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
-            _gameRepository = gameRepository ?? throw new ArgumentNullException(nameof(gameRepository));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
-            _verifyService = verifyService ?? throw new ArgumentNullException(nameof(verifyService));
-            _brandRepository = brandRepository ?? throw new ArgumentNullException(nameof(brandRepository));
+            _brandService = brandService ?? throw new ArgumentNullException(nameof(brandService));
             _cashServiceClient = cashServiceClient ?? throw new ArgumentNullException(nameof(cashServiceClient));
+            _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
+            _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
+            _gameService = gameService ?? throw new ArgumentNullException(nameof(gameService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
+            _verifyService = verifyService ?? throw new ArgumentNullException(nameof(verifyService));
         }
 
         public async ValueTask<Uri?> GetAsync(GameUrlQuery query, CancellationToken cancellationToken = default)
         {
-            if (!await _verifyService.IsPlayerEnableAsync(query.PlayerCode).ConfigureAwait(false))
+            var player = await _playerService.GetAsync(query.PlayerCode).ConfigureAwait(false);
+
+            if (!await _verifyService.IsPlayerEnableAsync(player).ConfigureAwait(false))
             {
                 throw new Exception($"The player does not exist or the status is not enabled.({query.PlayerCode})");
             }
 
-            var playerModel = await _playerRepository.GetAsync(query.PlayerCode).ConfigureAwait(false);
+            var game = await _gameService.GetAsync(query.GameId).ConfigureAwait(false);
 
-            if (!await _verifyService.IsPlayerGameActiveAsync(playerModel.BrandId, query.GameId).ConfigureAwait(false))
+            if (!await _verifyService.IsPlayerGameActiveAsync(player.BrandId, game).ConfigureAwait(false))
             {
-                return null;
+                throw new Exception($"The game manufacturer does not exist or the status is not enabled.({query.GameId})");
             }
 
-            var gameModel = await _gameRepository.GetAsync(query.GameId).ConfigureAwait(false);
-
-            if (!await _verifyService.IsPlayerGameProviderCurrencyAsync(playerModel.BrandId, gameModel.GameProviderId, playerModel.DefaultWalletCurrencyCode).ConfigureAwait(false))
+            if (!await _verifyService.IsPlayerGameProviderCurrencyAsync(player.BrandId, game.GameProviderId, player.DefaultWalletCurrencyCode).ConfigureAwait(false))
             {
-                throw new Exception($"The game manufacturer does not support this currency.({playerModel.DefaultWalletCurrencyCode})");
+                throw new Exception($"The game manufacturer does not support this currency.({player.DefaultWalletCurrencyCode})");
             }
 
-            var gameProviderModel = await _gameProviderRepository.GetAsync(gameModel.GameProviderId).ConfigureAwait(false);
+            var gameProvider = await _gameProviderService.GetAsync(game.GameProviderId).ConfigureAwait(false);
 
-            if (gameProviderModel.GameProviderCode == "AG")
+            if (gameProvider.GameProviderCode == "AG")
             {
                 return await GetAsiaGamingUrlAsync(
                         query,
-                        playerModel,
-                        gameProviderModel,
-                        gameModel)
+                        player,
+                        gameProvider,
+                        game)
                     .ConfigureAwait(false);
             }
 
-            if (gameProviderModel.GameProviderCode == "BC")
+            if (gameProvider.GameProviderCode == "BC")
             {
                 return await GetBetConstructUrlAsync(
                         query,
-                        playerModel,
-                        gameProviderModel,
-                        gameModel)
+                        player,
+                        gameProvider,
+                        game)
                     .ConfigureAwait(false);
             }
 
             return await _gameProvidersClient
                 .GameUrlAsync(
-                    gameProviderModel.GameProviderCode,
-                    gameModel.GameType,
+                    gameProvider.GameProviderCode,
+                    (GameType)game.GameType,
                     query.GameId,
-                    playerModel.BrandCode,
-                    playerModel.PlayerCode,
-                    playerModel.DefaultWalletCurrencyCode,
+                    player.BrandCode,
+                    player.PlayerCode,
+                    player.DefaultWalletCurrencyCode,
                     query.LoginRecordId,
                     query.PlatformType,
                     query.Language,
@@ -100,22 +100,23 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
         }
 
         private async ValueTask<Uri?> GetAsiaGamingUrlAsync(
-            GameUrlQuery query, PlayerModel playerModel,
-            GameProviderModel gameProviderModel,
-            GameModel gameModel)
+            GameUrlQuery query,
+            PlayerInfo player,
+            GameProviderInfo gameProviderInfo,
+            GameInfo gameModel)
         {
             var playerBalance = await _cashServiceClient
-                .GetBalanceAsync(playerModel.DefaultWalletId)
+                .GetBalanceAsync(player.DefaultWalletId)
                 .ConfigureAwait(false);
 
             return await _gameProvidersClient
                 .GameUrlByAsiaGamingAsync(
-                    gameProviderModel.GameProviderCode,
-                    gameModel.GameType,
+                    gameProviderInfo.GameProviderCode,
+                    (GameType)gameModel.GameType,
                     query.GameId,
-                    playerModel.BrandCode,
-                    playerModel.PlayerCode,
-                    playerModel.DefaultWalletCurrencyCode,
+                    player.BrandCode,
+                    player.PlayerCode,
+                    player.DefaultWalletCurrencyCode,
                     query.LoginRecordId,
                     query.PlatformType,
                     query.Language,
@@ -127,17 +128,16 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 
         private async ValueTask<Uri?> GetBetConstructUrlAsync(
             GameUrlQuery query,
-            PlayerModel playerModel,
-            GameProviderModel gameProviderModel,
-            GameModel gameModel)
+            PlayerInfo player,
+            GameProviderInfo gameProviderInfo,
+            GameInfo gameModel)
         {
-            var brandGameProviderConfiguration = await _brandRepository
-                .GetBrandGameProviderConfigurationAsync(playerModel.BrandId, gameProviderModel.GameProviderId)
+            var brandGameProviderConfiguration = await _brandService
+                .GetBrandGameProviderConfigurationAsync(player.BrandId, gameProviderInfo.GameProviderId)
                 .ConfigureAwait(false);
 
-            var gameProviderConfiguration = await _gameProviderRepository
-                .GetGameProviderConfigurationAsync(gameModel.GameProviderId,
-                    brandGameProviderConfiguration.GameProviderConfigurationId)
+            var gameProviderConfiguration = await _gameProviderService
+                .GetConfigurationAsync(brandGameProviderConfiguration.GameProviderConfigurationId)
                 .ConfigureAwait(false);
 
             var lobbyDomain = query.PlatformType switch
@@ -149,12 +149,12 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 
             return await _gameProvidersClient
                 .GameUrlByBetConstructAsync(
-                    gameProviderModel.GameProviderCode,
-                    gameModel.GameType,
+                    gameProviderInfo.GameProviderCode,
+                    (GameType)gameModel.GameType,
                     query.GameId,
-                    playerModel.BrandCode,
-                    playerModel.PlayerCode,
-                    playerModel.DefaultWalletCurrencyCode,
+                    player.BrandCode,
+                    player.PlayerCode,
+                    player.DefaultWalletCurrencyCode,
                     query.LoginRecordId,
                     query.PlatformType,
                     query.Language,

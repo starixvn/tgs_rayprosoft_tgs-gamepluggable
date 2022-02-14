@@ -26,8 +26,8 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
         public ValueTask<decimal?> GetBalanceAsync(
             [FromServices] IGetService<PlayerBalanceQuery, decimal?> service,
             string playerCode,
-            string gameProviderCode
-            ) => service.GetAsync(new PlayerBalanceQuery(gameProviderCode, playerCode));
+            string gameProviderCode)
+            => service.GetAsync(new PlayerBalanceQuery(gameProviderCode, playerCode));
 
         /// <summary>
         /// Kicks the asynchronous.

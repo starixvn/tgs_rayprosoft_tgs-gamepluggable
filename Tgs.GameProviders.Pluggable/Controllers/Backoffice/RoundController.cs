@@ -16,6 +16,27 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
     [ApiController]
     public class RoundController : ControllerBase
     {
+        [HttpPut("{roundId}/adjustclosedRound")]
+        public ValueTask AdjustClosedGameRoundAsync(
+                    [FromServices] ICommandService<AdjustClosedRoundCommand> commandService,
+                    Guid roundId,
+                    [FromBody] AdjustClosedRoundViewModel viewModel)
+                    => commandService.ExecuteAsync(new()
+                    {
+                        RoundId = roundId,
+                        BetAmount = viewModel.BetAmount,
+                        ValidBetAmount = viewModel.ValidBetAmount,
+                        SettleAmount = viewModel.SettleAmount,
+                        Commission = viewModel.Commission,
+                        Turnover = viewModel.Turnover,
+                        WinLoss = viewModel.WinLoss,
+                        ClientRoundStatus = (ClientRoundStatus)viewModel.ClientRoundStatus,
+                        ExternalClosedOn = viewModel.ExternalClosedOn,
+                        OperatorId = viewModel.OperatorId,
+                        Remark = viewModel.Remark,
+                        AdjustAmount = viewModel.AdjustAmount
+                    });
+
         /// <summary>
         /// Games the action query asynchronous.
         /// </summary>
@@ -103,27 +124,6 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
                             Remark = viewModel.Remark,
                             AdjustAmount = viewModel.AdjustAmount
                         });
-
-        [HttpPut("{roundId}/adjustclosedRound")]
-        public ValueTask AdjustClosedGameRoundAsync(
-            [FromServices] ICommandService<AdjustClosedRoundCommand> commandService,
-            Guid roundId,
-            [FromBody] AdjustClosedRoundViewModel viewModel)
-            => commandService.ExecuteAsync(new()
-            {
-                RoundId = roundId,
-                BetAmount = viewModel.BetAmount,
-                ValidBetAmount = viewModel.ValidBetAmount,
-                SettleAmount = viewModel.SettleAmount,
-                Commission = viewModel.Commission,
-                Turnover = viewModel.Turnover,
-                WinLoss = viewModel.WinLoss,
-                ClientRoundStatus = (ClientRoundStatus)viewModel.ClientRoundStatus,
-                ExternalClosedOn = viewModel.ExternalClosedOn,
-                OperatorId = viewModel.OperatorId,
-                Remark = viewModel.Remark,
-                AdjustAmount = viewModel.AdjustAmount
-            });
 
         /// <summary>
         ///

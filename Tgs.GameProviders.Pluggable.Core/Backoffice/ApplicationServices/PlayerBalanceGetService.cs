@@ -11,31 +11,36 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
     internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, decimal?>
     {
         private readonly IGameProvidersClient _gameProvidersClient;
+        private readonly IGameProviderService _gameProviderService;
         private readonly ILogger<PlayerBalanceGetService> _logger;
-        private readonly IPlayerRepository _playerRepository;
-        private readonly IPlayerVerifyService _playerVerifyService;
+        private readonly IPlayerService _playerService;
+        private readonly IPlayerVerifyHanlde _playerVerifyService;
 
         public PlayerBalanceGetService(
             IGameProvidersClient gameProvidersClient,
+            IGameProviderService gameProviderService,
             ILogger<PlayerBalanceGetService> logger,
-            IPlayerRepository playerRepository,
-            IPlayerVerifyService playerVerifyService)
+            IPlayerService playerService,
+            IPlayerVerifyHanlde playerVerifyService)
         {
             _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
+            _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
-            _playerVerifyService = playerVerifyService ?? throw new ArgumentNullException(nameof(playerVerifyService));
+            _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
+            _playerVerifyService = playerVerifyService;
         }
 
         public async ValueTask<decimal?> GetAsync(PlayerBalanceQuery query, CancellationToken cancellationToken = default)
         {
             try
             {
-                var playerModel = await _playerRepository.GetAsync(query.PlayerCode).ConfigureAwait(false);
+                var player = await _playerService.GetAsync(query.PlayerCode).ConfigureAwait(false);
 
-                if (!await _playerVerifyService.IsPlayerGameProviderCurrencyAsync(playerModel.BrandId, query.GameProviderCode, playerModel.DefaultWalletCurrencyCode).ConfigureAwait(false))
+                var gameProviderId = await _gameProviderService.GetCacheGameProviderIdAsync(query.GameProviderCode).ConfigureAwait(false);
+
+                if (!await _playerVerifyService.IsPlayerGameProviderCurrencyAsync(player.BrandId, gameProviderId, player.DefaultWalletCurrencyCode).ConfigureAwait(false))
                 {
-                    throw new Exception($"The game manufacturer does not support this currency.({playerModel.DefaultWalletCurrencyCode})");
+                    throw new Exception($"The game manufacturer does not support this currency.({player.DefaultWalletCurrencyCode})");
                 }
 
                 return await _gameProvidersClient.PlayerBalanceAsync(

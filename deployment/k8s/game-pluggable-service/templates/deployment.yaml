@@ -19,6 +19,7 @@ spec:
       {{- end }}
       labels:
         {{- include "game-pluggable-service.selectorLabels" . | nindent 8 }}
+        tgs.kind: game
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
