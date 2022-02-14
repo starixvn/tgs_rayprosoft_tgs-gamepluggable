@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.Pluggable.ViewModels;
+using Tgs.GameProviders.QueryServer.Models;
 using Tgs.ServiceUtility;
-using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
 {
@@ -30,7 +30,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
                         Commission = viewModel.Commission,
                         Turnover = viewModel.Turnover,
                         WinLoss = viewModel.WinLoss,
-                        ClientRoundStatus = (ClientRoundStatus)viewModel.ClientRoundStatus,
+                        RoundClientStatus = (RoundClientStatus)viewModel.ClientRoundStatus,
                         ExternalClosedOn = viewModel.ExternalClosedOn,
                         OperatorId = viewModel.OperatorId,
                         Remark = viewModel.Remark,
@@ -118,7 +118,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
                             Commission = viewModel.Commission,
                             Turnover = viewModel.Turnover,
                             WinLoss = viewModel.WinLoss,
-                            ClientRoundStatus = (ClientRoundStatus)viewModel.ClientRoundStatus,
+                            RoundClientStatus = (RoundClientStatus)viewModel.ClientRoundStatus,
                             ExternalClosedOn = viewModel.ExternalClosedOn,
                             OperatorId = viewModel.OperatorId,
                             Remark = viewModel.Remark,
@@ -163,7 +163,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
         /// </remarks>
         [HttpGet("{roundId}")]
         public async ValueTask<GameRoundViewModel> GameRoundGetAsync(
-                    [FromServices] IGetService<Guid, GameRoundModel> getService,
+                    [FromServices] IGetService<Guid, GameRoundInfo> getService,
                     Guid roundId)
         {
             var data = await getService.GetAsync(

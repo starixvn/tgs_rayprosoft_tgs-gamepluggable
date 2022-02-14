@@ -24,8 +24,8 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
         {
             string playerCode = "4ucmqplxb029";
             Guid loginRecordId = Guid.NewGuid();
-            var platformType = PlatformType.Desktop;
-            bool isMobile = platformType == PlatformType.Mobile;
+            var platformType = GameProvidersClientPlatformType.Desktop;
+            bool isMobile = platformType == GameProvidersClientPlatformType.Mobile;
             int gameId = 1000032;
             string language = "zh-CN";
             string ipAddress = "127.0.0.1";
@@ -90,7 +90,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                     _ = fakeGameProvidersClient
                      .GameUrlAsync(
                         gameProvider.GameProviderCode,
-                        (TGS.GameProviders.Domains.GameType)game.GameType,
+                        (GameProvidersClientGameType)game.GameType,
                         game.GameId,
                         player.BrandCode,
                         player.PlayerCode,

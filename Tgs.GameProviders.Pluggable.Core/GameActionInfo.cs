@@ -1,9 +1,9 @@
 ﻿using System;
-using TGS.GameProviders.Domains;
+using Tgs.GameProviders.QueryServer.Models;
 
 namespace Tgs.GameProviders.Pluggable.Core
 {
-    public record GameActionModel(
+    public record GameActionInfo(
         Guid Id,
         Guid RoundId,
         string PlayerCode,

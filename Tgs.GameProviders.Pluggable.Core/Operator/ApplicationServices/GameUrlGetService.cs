@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
 using TGS.GameProviders.Client;
-using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 {
@@ -86,7 +85,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
             return await _gameProvidersClient
                 .GameUrlAsync(
                     gameProvider.GameProviderCode,
-                    (GameType)game.GameType,
+                    (GameProvidersClientGameType)game.GameType,
                     query.GameId,
                     player.BrandCode,
                     player.PlayerCode,
@@ -112,7 +111,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
             return await _gameProvidersClient
                 .GameUrlByAsiaGamingAsync(
                     gameProviderInfo.GameProviderCode,
-                    (GameType)gameModel.GameType,
+                    (GameProvidersClientGameType)gameModel.GameType,
                     query.GameId,
                     player.BrandCode,
                     player.PlayerCode,
@@ -142,15 +141,15 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 
             var lobbyDomain = query.PlatformType switch
             {
-                PlatformType.Desktop => gameProviderConfiguration.DesktopEndpoint,
-                PlatformType.Mobile => gameProviderConfiguration.MobileEndpoint,
+                GameProvidersClientPlatformType.Desktop => gameProviderConfiguration.DesktopEndpoint,
+                GameProvidersClientPlatformType.Mobile => gameProviderConfiguration.MobileEndpoint,
                 _ => gameProviderConfiguration.DesktopEndpoint
             };
 
             return await _gameProvidersClient
                 .GameUrlByBetConstructAsync(
                     gameProviderInfo.GameProviderCode,
-                    (GameType)gameModel.GameType,
+                    (GameProvidersClientGameType)gameModel.GameType,
                     query.GameId,
                     player.BrandCode,
                     player.PlayerCode,

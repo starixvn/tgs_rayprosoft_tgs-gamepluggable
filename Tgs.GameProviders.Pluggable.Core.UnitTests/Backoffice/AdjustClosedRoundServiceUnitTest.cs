@@ -5,7 +5,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
-using TGS.GameProviders.Domains;
+using Tgs.GameProviders.QueryServer.Models;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
 {
@@ -31,13 +31,13 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
             var commission = 0.0m;
             var turnover = 0.06m;
             var winLoss = -0.06m;
-            var clientRoundStatus = ClientRoundStatus.Loss;
+            var roundClientStatus = RoundClientStatus.Loss;
             var externalClosedOn = DateTimeOffset.Parse("2021-06-03 13:57:05.000 +0800");
             var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
             var remark = "測試調整Closed Round";
             var adjustAmount = 100m;
 
-            var gameRoundModel = new GameRoundModel
+            var gameRoundModel = new GameRoundInfo
             (
                 RoundId: roundId,
                 ExternalRoundId: "50-1636345294-40676339-2",
@@ -61,7 +61,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                 Turnover: null,
                 WinLoss: null,
                 TieBetAdjustment: null,
-                ClientStatus: ClientRoundStatus.Open,
+                ClientStatus: RoundClientStatus.Open,
                 ReopenTurnoverAdjustment: null,
                 ReopenedOn: null,
                 EffectiveBettingPercentage: null
@@ -80,7 +80,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                     commission,
                     turnover,
                     winLoss,
-                    clientRoundStatus,
+                    roundClientStatus,
                     externalClosedOn,
                     operatorId,
                     remark)
@@ -95,7 +95,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                 Commission = commission,
                 Turnover = turnover,
                 WinLoss = winLoss,
-                ClientRoundStatus = clientRoundStatus,
+                RoundClientStatus = roundClientStatus,
                 ExternalClosedOn = externalClosedOn,
                 OperatorId = operatorId,
                 Remark = remark,
@@ -116,7 +116,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                     commission,
                     turnover,
                     winLoss,
-                    clientRoundStatus,
+                    roundClientStatus,
                     externalClosedOn,
                     operatorId,
                     remark);

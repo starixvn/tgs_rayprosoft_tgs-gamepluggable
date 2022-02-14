@@ -1,9 +1,9 @@
 ﻿using System;
-using TGS.GameProviders.Domains;
+using Tgs.GameProviders.QueryServer.Models;
 
 namespace Tgs.GameProviders.Pluggable.Core
 {
-    public record GameRoundModel(
+    public record GameRoundInfo(
         Guid RoundId,
         string ExternalRoundId,
         Guid GameProviderId,
@@ -26,7 +26,7 @@ namespace Tgs.GameProviders.Pluggable.Core
         decimal? Turnover,
         decimal? WinLoss,
         decimal? TieBetAdjustment,
-        ClientRoundStatus ClientStatus,
+        RoundClientStatus ClientStatus,
         decimal? ReopenTurnoverAdjustment,
         DateTimeOffset? ReopenedOn,
         decimal? EffectiveBettingPercentage
