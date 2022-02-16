@@ -161,6 +161,7 @@ namespace Tgs.GameProviders.Pluggable
                 });
 
             services
+                .AddMessageQueue()
                 .AddNatsMessageQueue(natsConfig =>
                 {
                     natsConfig
@@ -170,6 +171,10 @@ namespace Tgs.GameProviders.Pluggable
                         options.Url = configuration.GetConnectionString("NatsMQ");
                     });
                 })
+                .ClearAllExchanges()
+                .AddNatsGlobPatternExchange("*");
+
+            services
                 .AddTgsLog();
 
             services.AddHttpLogging(logging =>
