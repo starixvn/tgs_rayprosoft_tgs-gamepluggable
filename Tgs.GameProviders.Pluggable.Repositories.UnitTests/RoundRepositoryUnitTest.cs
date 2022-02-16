@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.GameProviders.Pluggable.Core;
-using TGS.GameProviders.Domains;
+using Tgs.GameProviders.QueryServer.Models;
 
 namespace Tgs.GameProviders.Pluggable.Repositories.UnitTests
 {
@@ -22,7 +22,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories.UnitTests
             decimal commission = 0;
             decimal turnover = 100;
             decimal winLoss = 100;
-            ClientRoundStatus clientRoundStatus = ClientRoundStatus.Loss;
+            RoundClientStatus clientRoundStatus = RoundClientStatus.Loss;
             DateTimeOffset externalClosedOn = DateTimeOffset.UtcNow;
             var operatorId = Guid.NewGuid();
             string remark = "測試關閉遊戲";

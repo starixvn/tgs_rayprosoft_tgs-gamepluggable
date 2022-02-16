@@ -34,8 +34,8 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "game-pluggable-service.labels" -}}
-
 {{ include "game-pluggable-service.selectorLabels" . }}
+tgs.kind: game
 {{- end }}
 
 {{/*

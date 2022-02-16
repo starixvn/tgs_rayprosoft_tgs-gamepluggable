@@ -161,6 +161,7 @@ namespace Tgs.GameProviders.Pluggable
                 });
 
             services
+                .AddMessageQueue()
                 .AddNatsMessageQueue(natsConfig =>
                 {
                     natsConfig
@@ -170,25 +171,11 @@ namespace Tgs.GameProviders.Pluggable
                         options.Url = configuration.GetConnectionString("NatsMQ");
                     });
                 })
+                .ClearAllExchanges()
+                .AddNatsGlobPatternExchange("*");
+
+            services
                 .AddTgsLog();
-
-            services.AddGameProvidersClient((options, sp) =>
-            {
-                var configuration = sp.GetRequiredService<IConfiguration>();
-                options.BaseUrl = configuration.GetValue<Uri>("Pluggable:TGSGameProvidersBaseUrl");
-            });
-
-            services.AddCashServiceClient((options, sp) =>
-            {
-                var configuration = sp.GetRequiredService<IConfiguration>();
-                options.BaseUrl = configuration.GetValue<Uri>("Pluggable:CashServiceBaseUrl");
-            });
-
-            services.AddKickPlayerServerClient((options, sp) =>
-            {
-                var configuration = sp.GetRequiredService<IConfiguration>();
-                options.BaseUrl = configuration.GetValue<Uri>("Pluggable:TGSGameProviderKickPlayerServerBaseUrl");
-            });
 
             services.AddHttpLogging(logging =>
             {
@@ -211,7 +198,6 @@ namespace Tgs.GameProviders.Pluggable
                     var knownProxies = config.GetSection("ForwardedHeaders:KnownProxies").Get<string[]>();
                     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 
-
                     // Replace with IP of your proxy/load balancer
                     foreach (var knownProxie in knownProxies)
                         options.KnownProxies.Add(IPAddress.Parse(knownProxie));
@@ -230,15 +216,30 @@ namespace Tgs.GameProviders.Pluggable
                     }
                 });
 
-            services.AddGameProvidersServices()
-                .AddGameProvidersCore();
+            services.AddGameProvidersCore(
+                (options, sp) =>
+                {
+                    var configuration = sp.GetRequiredService<IConfiguration>();
+                    options.BaseUrl = configuration.GetValue<Uri>("Pluggable:CashServiceBaseUrl");
+                },
+                (options, sp) =>
+                {
+                    var configuration = sp.GetRequiredService<IConfiguration>();
+                    options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameProvidersBaseUrl");
+                },
+                (options, sp) =>
+                {
+                    var configuration = sp.GetRequiredService<IConfiguration>();
+                    options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameProvidersQueryServerBaseUrl");
+                },
+                (options, sp) =>
+                {
+                    var configuration = sp.GetRequiredService<IConfiguration>();
+                    options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameProviderKickPlayerServerBaseUrl");
+                });
 
             services
                 .AddHealthChecks();
-            //.AddNpgSql(Configuration.GetConnectionString("Tgs"), name: "PostgreSQL Tgs")
-            //.AddUrlGroup(new Uri($"{Configuration.GetConnectionString("TGSGameProviders")}/health"), "Tgs Game Providers")
-            //.AddUrlGroup(new Uri($"{Configuration.GetConnectionString("CashService")}/healthz"), "Tgs Cash Service")
-            //.AddUrlGroup(new Uri($"{Configuration.GetConnectionString("TGSGameProviderKickPlayerServer")}/health"), "Tgs Game Provider KickPlayerServer");
         }
     }
 }

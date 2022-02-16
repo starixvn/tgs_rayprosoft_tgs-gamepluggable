@@ -26,6 +26,20 @@ namespace Tgs.GameProviders.Pluggable.Client
         public GameProvidersBackofficePluggableClient(HttpClient httpClient)
             => _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
+        public async ValueTask AdjustClosedRoundAsync(Guid roundId, AdjustClosedRoundViewModel viewModel)
+        {
+            var requestContent = new StringContent(JsonSerializer.Serialize(viewModel, _SerializerOptions));
+            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+            var response = await _httpClient
+               .PutAsync(
+                    $"/bo/round/{roundId}/adjustclosedRound"
+                   , requestContent)
+               .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+        }
+
         public async IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(Guid roundId)
         {
             var response = await _httpClient
@@ -51,20 +65,6 @@ namespace Tgs.GameProviders.Pluggable.Client
             var response = await _httpClient
                .PutAsync(
                     $"/bo/round/{roundId}/gameroundclosed"
-                   , requestContent)
-               .ConfigureAwait(false);
-
-            response.EnsureSuccessStatusCode();
-        }
-
-        public async ValueTask AdjustClosedRoundAsync(Guid roundId, AdjustClosedRoundViewModel viewModel)
-        {
-            var requestContent = new StringContent(JsonSerializer.Serialize(viewModel, _SerializerOptions));
-            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
-
-            var response = await _httpClient
-               .PutAsync(
-                    $"/bo/round/{roundId}/adjustclosedRound"
                    , requestContent)
                .ConfigureAwait(false);
 

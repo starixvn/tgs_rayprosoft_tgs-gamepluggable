@@ -14,7 +14,6 @@ COPY ["NuGet.config", "."]
 COPY ["Tgs.GameProviders.Pluggable/Tgs.GameProviders.Pluggable.csproj", "Tgs.GameProviders.Pluggable/"]
 COPY ["Tgs.GameProviders.Pluggable.Core/Tgs.GameProviders.Pluggable.Core.csproj", "Tgs.GameProviders.Pluggable.Core/"]
 COPY ["Tgs.GameProviders.Pluggable.ViewModels/Tgs.GameProviders.Pluggable.ViewModels.csproj", "Tgs.GameProviders.Pluggable.ViewModels/"]
-COPY ["Tgs.GameProviders.Pluggable.Services/Tgs.GameProviders.Pluggable.Services.csproj", "Tgs.GameProviders.Pluggable.Services/"]
 COPY ["Tgs.GameProviders.Pluggable.Repositories/Tgs.GameProviders.Pluggable.Repositories.csproj", "Tgs.GameProviders.Pluggable.Repositories/"]
 RUN dotnet restore "Tgs.GameProviders.Pluggable/Tgs.GameProviders.Pluggable.csproj"
 COPY . .
@@ -27,6 +26,5 @@ RUN dotnet publish "Tgs.GameProviders.Pluggable.csproj" -c $BuildConfiguration -
 
 FROM base AS final
 WORKDIR /app
-#ENV Logging__Console__FormatterName=Simple
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Tgs.GameProviders.Pluggable.dll"]

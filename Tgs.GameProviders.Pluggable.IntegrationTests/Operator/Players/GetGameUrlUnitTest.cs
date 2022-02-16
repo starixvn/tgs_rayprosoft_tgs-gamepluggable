@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
-using Tgs.GameProviders.Pluggable.Services;
+using Tgs.GameProviders.QueryServer.Models;
 using TGS.GameProviders.Client;
 using TGS.GameProviders.Domains;
+using GamePlatformType = Tgs.GameProviders.QueryServer.Models.GamePlatformType;
+using GameProviderStatus = Tgs.GameProviders.QueryServer.Models.GameProviderStatus;
+using GameStatus = Tgs.GameProviders.QueryServer.Models.GameStatus;
+using GameType = Tgs.GameProviders.QueryServer.Models.GameType;
+using PlayerStatus = Tgs.GameProviders.QueryServer.Models.PlayerStatus;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
 {
@@ -20,15 +24,15 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
         {
             string playerCode = "4ucmqplxb029";
             Guid loginRecordId = Guid.NewGuid();
-            var platformType = PlatformType.Desktop;
-            bool isMobile = platformType == PlatformType.Mobile;
+            var platformType = GameProvidersClientPlatformType.Desktop;
+            bool isMobile = platformType == GameProvidersClientPlatformType.Mobile;
             int gameId = 1000032;
             string language = "zh-CN";
             string ipAddress = "127.0.0.1";
             Uri backUrl = new("https://dev-t1.rpgp.cc");
             Uri gameurl = new("https://www.google.com/");
 
-            var playerModel = new PlayerModel(
+            var player = new PlayerInfo(
                  Guid.Parse("b5a2c708-ab70-4316-9f4d-5d2ad0e77460"),
                 "TGS",
                 Guid.Parse("66c5fef5-217b-4929-9a08-72c2479a8f4e"),
@@ -37,13 +41,12 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                 "GPI",
                 "4ucmqplxb029",
                 "4ucmqplxb029",
-                "4ucmqplxb029",
                 Guid.Parse("36a6cdef-094f-eb11-8d88-70b5e82b6b8d"),
                 "CNY",
                 PlayerStatus.Enabled
                 );
 
-            var gameProviderModel = new GameProviderModel(
+            var gameProvider = new GameProviderInfo(
                Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
                GameProviderStatus.Active,
                string.Empty,
@@ -58,32 +61,25 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                GameProviderType.KY,
                string.Empty
               );
-            var gameModel = new GameModel(
+            var game = new GameInfo(
                1000032,
                GameStatus.Active,
                "0",
+               null,
+               null,
+               null,
                new("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
                GameType.CardGameLobby,
                GamePlatformType.DesktopAndMobile,
                false,
+               false,
+               false,
+               true,
+               null,
                "Lobby",
                "Lobby",
-               "KY"
-              );
-
-            var gameProviderCurrencyModel = new GameProviderCurrencyModel(
-                gameProviderModel.GameProviderId,
-                playerModel.DefaultWalletCurrencyCode,
-                "RMB");
-
-            var fakeBrandRepository = Substitute.For<IBrandRepository>();
-            var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
-            var fakeGameRepository = Substitute.For<IGameRepository>();
-            var fakeLicenseeRepository = Substitute.For<ILicenseeRepository>();
-            var faceLogger = NullLogger<PlayerVerifyService>.Instance;
-            var fakePlayerRepository = Substitute.For<IPlayerRepository>();
-            var fakeResellerRepository = Substitute.For<IResellerRepository>();
-            var fakePlayerVerifyService = Substitute.For<IPlayerVerifyService>();
+               null,
+               null);
 
             await using var web = new TestPluggableApplication(builder =>
             {
@@ -92,33 +88,86 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                     var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
 
                     _ = fakeGameProvidersClient
-                     .GameUrlAsync(gameProviderModel.GameProviderCode, gameModel.GameType, gameModel.GameId, playerModel.BrandCode, playerModel.PlayerCode, playerModel.DefaultWalletCurrencyCode, loginRecordId, platformType, language, ipAddress, backUrl)
+                     .GameUrlAsync(
+                        gameProvider.GameProviderCode,
+                        (GameProvidersClientGameType)game.GameType,
+                        game.GameId,
+                        player.BrandCode,
+                        player.PlayerCode,
+                        player.DefaultWalletCurrencyCode, loginRecordId, platformType, language, ipAddress, backUrl)
                      .Returns(ValueTask.FromResult<Uri?>(gameurl));
 
-                    _ = fakeGameProvidersClient
-                     .GameUrlAsync(
-                        Arg.Is(gameProviderModel.GameProviderCode),
-                        Arg.Is(gameModel.GameType),
-                        Arg.Is(gameModel.GameId),
-                        Arg.Is(playerModel.BrandCode),
-                        Arg.Is(playerModel.PlayerCode),
-                        Arg.Is(playerModel.DefaultWalletCurrencyCode),
-                        Arg.Is(loginRecordId),
-                        Arg.Is(platformType),
-                        Arg.Is(language),
-                        Arg.Is(ipAddress),
-                        Arg.Is(backUrl)
-                        )
-                     .Returns(ValueTask.FromResult<Uri?>(gameurl));
                     services.AddSingleton(fakeGameProvidersClient);
-                    services.AddSingleton(fakeGameProvidersClient);
-                    services.AddSingleton(fakeBrandRepository);
-                    services.AddSingleton(fakeGameProviderRepository);
-                    services.AddSingleton(fakeGameRepository);
-                    services.AddSingleton(fakeLicenseeRepository);
-                    services.AddSingleton(faceLogger);
-                    services.AddSingleton(fakePlayerRepository);
-                    services.AddSingleton(fakeResellerRepository);
+
+                    var fakePlayer = Substitute.For<IPlayerService>();
+
+                    _ = fakePlayer
+                        .GetAsync(playerCode)
+                        .Returns(ValueTask.FromResult(player));
+
+                    services.AddSingleton(fakePlayer);
+
+                    var fakeGame = Substitute.For<IGameService>();
+
+                    _ = fakeGame
+                        .GetAsync(gameId)
+                        .Returns(ValueTask.FromResult(game));
+
+                    services.AddSingleton(fakeGame);
+
+                    var fakeBrand = Substitute.For<IBrandService>();
+
+                    _ = fakeBrand
+                        .GetStatusAsync(player.BrandId)
+                        .Returns(ValueTask.FromResult(BrandStatus.Active));
+                    _ = fakeBrand.GetCurrencyCodeAsync(
+                        Arg.Is(player.BrandId),
+                        Arg.Is(player.DefaultWalletCurrencyCode)).Returns(ValueTask.FromResult<string?>(player.DefaultWalletCurrencyCode));
+
+                    services.AddSingleton(fakeBrand);
+
+                    var fakeLicensee = Substitute.For<ILicenseeService>();
+
+                    _ = fakeLicensee
+                        .GetStatusAsync(player.LicenseeId)
+                        .Returns(ValueTask.FromResult(LicenseeStatus.Active));
+
+                    services.AddSingleton(fakeLicensee);
+
+                    var fakeReseller = Substitute.For<IResellerService>();
+
+                    _ = fakeReseller
+                        .GetStatusAsync(player.ResellerId)
+                        .Returns(ValueTask.FromResult(ResellerStatus.Active));
+
+                    services.AddSingleton(fakeReseller);
+
+                    var fakeGameProvider = Substitute.For<IGameProviderService>();
+
+                    _ = fakeGameProvider.GetAsync(
+                        Arg.Is(gameProvider.GameProviderId)).Returns(ValueTask.FromResult(gameProvider));
+
+                    _ = fakeGameProvider.GetCurrencyCodeAsync(
+                        Arg.Is(gameProvider.GameProviderId),
+                        Arg.Is(player.DefaultWalletCurrencyCode)).Returns(ValueTask.FromResult<string?>(player.DefaultWalletCurrencyCode));
+
+                    services.AddSingleton(fakeGameProvider);
+
+                    var fakePlayerVerify = Substitute.For<IPlayerVerifyHanlde>();
+                    _ = fakePlayerVerify.IsPlayerEnableAsync(
+                        player).Returns(ValueTask.FromResult(true));
+
+                    _ = fakePlayerVerify.IsPlayerGameActiveAsync(
+                        player.BrandId,
+                        game).Returns(ValueTask.FromResult(true));
+
+                    _ = fakePlayerVerify.IsPlayerGameProviderCurrencyAsync(
+                        player.BrandId,
+                        gameProvider.GameProviderId,
+                        player.DefaultWalletCurrencyCode).Returns(ValueTask.FromResult(true));
+
+                    services.AddSingleton(fakePlayerVerify);
+
                     services.AddFakeNatsMessageQueue();
                 });
             });
@@ -126,44 +175,6 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
             var httpClient = web.CreateClient();
 
             var sut = new GameProvidersOperatorPluggableClient(httpClient);
-
-            _ = fakePlayerRepository
-                .GetAsync(playerCode)
-                .Returns(ValueTask.FromResult(playerModel));
-
-            _ = fakeGameProviderRepository
-                .GetAsync(gameModel.GameProviderId)
-                .Returns(ValueTask.FromResult(gameProviderModel));
-
-            _ = fakeGameRepository.GetAsync(gameId)
-                .Returns(ValueTask.FromResult(gameModel));
-
-            _ = fakePlayerVerifyService.IsPlayerEnableAsync(
-                Arg.Is(playerCode)).Returns(ValueTask.FromResult(true));
-
-            _ = fakePlayerRepository.GetAsync(
-                Arg.Is(playerCode)).Returns(ValueTask.FromResult(playerModel));
-
-            _ = fakePlayerVerifyService.IsPlayerGameActiveAsync(
-                Arg.Is(playerModel.BrandId),
-                Arg.Is(gameModel.GameId)).Returns(ValueTask.FromResult(true));
-
-            _ = fakeGameProviderRepository.GetCurrencyAsync(
-                Arg.Is(gameProviderCurrencyModel.GameProviderId),
-                Arg.Is(gameProviderCurrencyModel.CurrencyCode))
-                .Returns(ValueTask.FromResult<GameProviderCurrencyModel?>(gameProviderCurrencyModel));
-
-            _ = fakeBrandRepository.GetCurrencyAsync(
-                Arg.Is(playerModel.BrandId),
-                Arg.Is(playerModel.DefaultWalletCurrencyCode)
-                )
-                .Returns(ValueTask.FromResult<string?>(playerModel.DefaultWalletCurrencyCode));
-
-            _ = fakePlayerVerifyService.IsPlayerGameProviderCurrencyAsync(
-                Arg.Is(playerModel.BrandId),
-                Arg.Is(gameModel.GameProviderId),
-                Arg.Is(playerModel.DefaultWalletCurrencyCode)
-                ).Returns(ValueTask.FromResult(true));
 
             var actual = await sut.GetGameUrlAsync(
                 playerCode,
