@@ -142,7 +142,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests
                 fakeLicensee,
                 fakeReseller);
 
-            var gameProviderCode = "KY";
             var brandId = Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af");
             var gameProviderId = Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5");
 
