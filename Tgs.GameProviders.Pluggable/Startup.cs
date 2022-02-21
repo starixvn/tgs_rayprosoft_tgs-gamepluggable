@@ -37,12 +37,9 @@ namespace Tgs.GameProviders.Pluggable
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
             }
             //使用IP解析需要使用
             app.UseForwardedHeaders();
-            //HTTP日誌中間期
-            app.UseHttpLogging();
 
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TGS.GameProviders.PluggableService v1"));
@@ -120,6 +117,7 @@ namespace Tgs.GameProviders.Pluggable
                  {
                      options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                  });
+
             services.AddSwaggerGen(c =>
             {
                 var xmlFileNames = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml");
@@ -173,21 +171,6 @@ namespace Tgs.GameProviders.Pluggable
                 })
                 .ClearAllExchanges()
                 .AddNatsGlobPatternExchange("*");
-
-            services
-                .AddTgsLog();
-
-            services.AddHttpLogging(logging =>
-            {
-                // Customize HTTP logging here.
-                logging.LoggingFields = HttpLoggingFields.All;
-                logging.RequestHeaders.Add("My-Request-Header");
-                logging.ResponseHeaders.Add("My-Response-Header");
-                logging.MediaTypeOptions.AddText("application/javascript");
-                logging.RequestBodyLogLimit = 4096;
-                logging.ResponseBodyLogLimit = 4096;
-            });
-            services.AddControllersWithViews();
 
             services.AddOptions<ForwardedHeadersOptions>()
                 .Configure<IConfiguration>((options, config) =>
