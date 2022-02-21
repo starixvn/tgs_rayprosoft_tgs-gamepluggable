@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
+using Tgs.GameProviders.KickPlayerServer.Client;
 using Tgs.GameProviders.Pluggable.Client;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Players
@@ -18,7 +19,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Players
             {
                 builder.ConfigureServices(services =>
                 {
-                    var fakeKickPlayerServiceClient = Substitute.For<IGameProvidersBackofficePluggableClient>();
+                    var fakeKickPlayerServiceClient = Substitute.For<IKickPlayerServiceClient>();
 
                     fakeKickPlayerServiceClient
                     .KickPlayerAsync(playerCode);
