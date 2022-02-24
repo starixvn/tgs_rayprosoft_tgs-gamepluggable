@@ -25,11 +25,11 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 
                     fakeRoundRepository
                         .GameActionQueryAsync(roundId)
-                        .Returns(Array.Empty<GameActionModel>().ToAsyncEnumerable());
+                        .Returns(Array.Empty<GameActionInfo>().ToAsyncEnumerable());
 
                     fakeRoundRepository
                         .GameActionQueryAsync(Arg.Is(roundId))
-                        .Returns(Array.Empty<GameActionModel>().ToAsyncEnumerable());
+                        .Returns(Array.Empty<GameActionInfo>().ToAsyncEnumerable());
 
                     services.AddSingleton(fakeRoundRepository);
                     services.AddFakeNatsMessageQueue();

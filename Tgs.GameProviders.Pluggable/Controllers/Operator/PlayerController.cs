@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.Pluggable.ViewModels;
 using Tgs.ServiceUtility;
-using TGS.GameProviders.Domains;
+using TGS.GameProviders.Client;
 
 namespace Tgs.GameProviders.Pluggable.Controllers.Operator
 {
@@ -13,6 +15,13 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
     [ApiController]
     public class PlayerController : ControllerBase
     {
+        private readonly ILogger<PlayerController> _logger;
+
+        public PlayerController(ILogger<PlayerController> logger)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
         /// <summary>
         /// Games the provider fund in asynchronous(GameProvider -> Main Wallet).
         /// </summary>
@@ -36,6 +45,17 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
             string gameProviderCode,
             [FromBody] GameProviderFundViewModel model)
         {
+            _logger.Log(LogLevel.Information, new EventId(1000, nameof(PlayerController)),
+                new
+                {
+                    PlayerCode = playerCode,
+                    GameProviderCode = gameProviderCode,
+                    Request = model,
+                    ReceiveTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).ToString("O")
+                },
+                null,
+                (state, ex) => JsonSerializer.Serialize(state));
+
             var result = await service.GetAsync(new(
                 playerCode,
                 gameProviderCode.ToUpper(),
@@ -67,6 +87,17 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
                 string gameProviderCode,
                 [FromBody] GameProviderFundViewModel model)
         {
+            _logger.Log(LogLevel.Information, new EventId(1000, nameof(PlayerController)),
+                new
+                {
+                    PlayerCode = playerCode,
+                    GameProviderCode = gameProviderCode,
+                    Request = model,
+                    ReceiveTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).ToString("O")
+                },
+                null,
+                (state, ex) => JsonSerializer.Serialize(state));
+
             var result = await service.GetAsync(new(
                 playerCode,
                 gameProviderCode.ToUpper(),
@@ -98,7 +129,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
                 gameProviderCode.ToUpper()));
 
         /// <summary>
-        /// Gets the balance asynchronous.
+        /// Gets the game url asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="model">The model.</param>
@@ -119,15 +150,26 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
         /// </remarks>
         [HttpPost("gameurl")]
         public ValueTask<Uri?> GetGameUrlAsync(
-                [FromServices] IGetService<GameUrlQuery, Uri?> service,
-                [FromBody] GameProviderGameUrlViewModel model
-                ) => service.GetAsync(new(
-                     model.PlayerCode,
-                     model.LoginRecordId,
-                     model.IsMobile ? PlatformType.Mobile : PlatformType.Desktop,
-                     model.GameId,
-                     model.Language,
-                     model.IpAddress,
-                     model.BackUrl));
+            [FromServices] IGetService<GameUrlQuery, Uri?> service,
+            [FromBody] GameProviderGameUrlViewModel model)
+        {
+            _logger.Log(LogLevel.Information, new EventId(1000, nameof(PlayerController)),
+                new
+                {
+                    Request = model,
+                    ReceiveTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).ToString("O")
+                },
+                null,
+                (state, ex) => JsonSerializer.Serialize(state));
+            return service
+                  .GetAsync(new(
+                      model.PlayerCode,
+                      model.LoginRecordId,
+                      model.IsMobile ? GameProvidersClientPlatformType.Mobile : GameProvidersClientPlatformType.Desktop,
+                      model.GameId,
+                      model.Language,
+                      model.IpAddress,
+                      model.BackUrl));
+        }
     }
 }

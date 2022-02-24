@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Repositories.Entities;
-using TGS.GameProviders.Domains;
+using Tgs.GameProviders.QueryServer.Models;
 
 namespace Tgs.GameProviders.Pluggable.Repositories
 {
@@ -24,7 +24,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async ValueTask<bool> AdjustClosedRoundAsync(Guid roundId, decimal betAmount, decimal validBetAmount, decimal settleAmount, decimal commission, decimal turnover, decimal winLoss, ClientRoundStatus clientRoundStatus, DateTimeOffset externalClosedOn, Guid operatorId, string remark)
+        public async ValueTask<bool> AdjustClosedRoundAsync(Guid roundId, decimal betAmount, decimal validBetAmount, decimal settleAmount, decimal commission, decimal turnover, decimal winLoss, RoundClientStatus clientRoundStatus, DateTimeOffset externalClosedOn, Guid operatorId, string remark)
         {
             var data = await _betContext.Rounds
                 .Where(x => x.Id == roundId)
@@ -78,7 +78,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             }
         }
 
-        public async ValueTask<bool> ClosedGameRoundAsync(Guid roundId, decimal betAmount, decimal validBetAmount, decimal settleAmount, decimal commission, decimal turnover, decimal winLoss, ClientRoundStatus clientRoundStatus, DateTimeOffset externalClosedOn, Guid operatorId, string remark)
+        public async ValueTask<bool> ClosedGameRoundAsync(Guid roundId, decimal betAmount, decimal validBetAmount, decimal settleAmount, decimal commission, decimal turnover, decimal winLoss, RoundClientStatus clientRoundStatus, DateTimeOffset externalClosedOn, Guid operatorId, string remark)
         {
             var data = await _betContext.Rounds
                 .Where(x => x.Id == roundId)
@@ -131,18 +131,18 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             }
         }
 
-        public IAsyncEnumerable<GameActionModel> GameActionQueryAsync(Guid roundId)
+        public IAsyncEnumerable<GameActionInfo> GameActionQueryAsync(Guid roundId)
             =>
             _betContext
             .GameActions
             .AsAsyncEnumerable()
             .Where(x => x.RoundId == roundId)
-            .Select(x => new GameActionModel(
+            .Select(x => new GameActionInfo(
                  x.Id,
                  x.RoundId,
                  x.PlayerCode,
                  x.ExternalTransactionId,
-                 (GameActionType)x.Type,
+                 (QueryServer.Models.GameActionType)x.Type,
                  x.Amount,
                  x.Turnover,
                  x.WinLoss,
@@ -163,11 +163,11 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                  x.StoredOn
                 ));
 
-        public async ValueTask<GameRoundModel?> GetAsync(Guid roundId)
+        public async ValueTask<GameRoundInfo?> GetAsync(Guid roundId)
             => await _betContext
             .Rounds
             .Where(x => x.Id == roundId)
-            .Select(x => new GameRoundModel(
+            .Select(x => new GameRoundInfo(
                 x.Id,
                 x.ExternalRoundId,
                 x.GameProviderId,
@@ -190,7 +190,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                 x.Turnover,
                 x.WinLoss,
                 x.TieBetAdjustment,
-                (ClientRoundStatus)x.ClientStatus,
+                (RoundClientStatus)x.ClientStatus,
                 x.ReopenTurnoverAdjustment,
                 x.ReopenedOn,
                 x.EffectiveBettingPercentage

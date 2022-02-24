@@ -12,60 +12,60 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
     {
         private readonly ICashServiceClient _cashServiceClient;
         private readonly IGameProviderFundTransferTransactionRepository _gameProviderFundTransferTransactionRepository;
-        private readonly IGameProviderRepository _gameProviderRepository;
         private readonly IGameProvidersClient _gameProvidersClient;
+        private readonly IGameProviderService _gameProviderService;
         private readonly ILogger<FundOutGetService> _logger;
-        private readonly IPlayerRepository _playerRepository;
-        private readonly IPlayerVerifyService _verifyService;
+        private readonly IPlayerService _playerService;
+        private readonly IPlayerVerifyHanlde _playerVerify;
 
         public FundOutGetService(
             ICashServiceClient cashServiceClient,
             IGameProviderFundTransferTransactionRepository gameProviderFundTransferTransactionRepository,
-            IGameProviderRepository gameProviderRepository,
             IGameProvidersClient gameProvidersClient,
+            IGameProviderService gameProviderService,
             ILogger<FundOutGetService> logger,
-            IPlayerRepository playerRepository,
-            IPlayerVerifyService verifyService
+            IPlayerService playerService,
+            IPlayerVerifyHanlde playerVerify
             )
         {
             _cashServiceClient = cashServiceClient ?? throw new ArgumentNullException(nameof(cashServiceClient));
             _gameProviderFundTransferTransactionRepository = gameProviderFundTransferTransactionRepository ?? throw new ArgumentNullException(nameof(gameProviderFundTransferTransactionRepository));
-            _gameProviderRepository = gameProviderRepository ?? throw new ArgumentNullException(nameof(gameProviderRepository));
             _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
+            _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _playerRepository = playerRepository ?? throw new ArgumentNullException(nameof(playerRepository));
-            _verifyService = verifyService ?? throw new ArgumentNullException(nameof(verifyService));
+            _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
+            _playerVerify = playerVerify ?? throw new ArgumentNullException(nameof(playerVerify));
         }
 
         public async ValueTask<FundResult?> GetAsync(FundOutQuery query, CancellationToken cancellationToken = default)
         {
             var amount = Math.Abs(query.Amount);
 
-            if (!await _verifyService.IsPlayerEnableAsync(query.PlayerCode).ConfigureAwait(false))
+            var player = await _playerService.GetAsync(query.PlayerCode).ConfigureAwait(false);
+
+            if (!await _playerVerify.IsPlayerEnableAsync(player).ConfigureAwait(false))
             {
                 throw new Exception($"The player does not exist or the status is not enabled.({query.PlayerCode})");
             }
 
-            var playerModel = await _playerRepository.GetAsync(query.PlayerCode).ConfigureAwait(false);
+            var gameProvider = await _gameProviderService.GetAsync(query.GameProviderCode).ConfigureAwait(false);
 
-            if (!await _verifyService.IsPlayerGameProviderActiveAsync(playerModel.BrandId, query.GameProviderCode).ConfigureAwait(false))
+            if (!await _playerVerify.IsPlayerGameProviderActiveAsync(player.BrandId, gameProvider).ConfigureAwait(false))
             {
                 throw new Exception($"The game manufacturer does not exist or the status is not enabled.({query.GameProviderCode})");
             }
 
-            if (!await _verifyService.IsPlayerGameProviderCurrencyAsync(playerModel.BrandId, query.GameProviderCode, playerModel.DefaultWalletCurrencyCode).ConfigureAwait(false))
+            if (!await _playerVerify.IsPlayerGameProviderCurrencyAsync(player.BrandId, gameProvider.GameProviderId, player.DefaultWalletCurrencyCode).ConfigureAwait(false))
             {
-                throw new Exception($"The game manufacturer does not support this currency.({playerModel.DefaultWalletCurrencyCode})");
+                throw new Exception($"The game manufacturer does not support this currency.({player.DefaultWalletCurrencyCode})");
             }
-
-            var gameProviderModel = await _gameProviderRepository.GetAsync(query.GameProviderCode).ConfigureAwait(false);
 
             var gameProviderBalance = await _gameProvidersClient.PlayerBalanceAsync(
                 query.GameProviderCode,
-                playerModel.PlayerCode)
+                player.PlayerCode)
                 .ConfigureAwait(false);
 
-            var playerBalance = await _cashServiceClient.GetBalanceAsync(playerModel.DefaultWalletId).ConfigureAwait(false);
+            var playerBalance = await _cashServiceClient.GetBalanceAsync(player.DefaultWalletId).ConfigureAwait(false);
 
             if (playerBalance - amount < 0)
             {
@@ -73,18 +73,18 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
             }
 
             var gameProviderFundTransferTransactionId = await _gameProviderFundTransferTransactionRepository.AddFundOutAsync(
-                gameProviderModel.GameProviderId,
-                playerModel.DefaultWalletId,
-                playerModel.PlayerCode,
-                gameProviderModel.GameProviderCode,
+                gameProvider.GameProviderId,
+                player.DefaultWalletId,
+                player.PlayerCode,
+                gameProvider.GameProviderCode,
                 amount * -1,
                 string.Empty)
                 .ConfigureAwait(false);
 
             var transactionResponse = await _cashServiceClient.GameProviderFundOutAsync(
-                playerModel.DefaultWalletId,
+                player.DefaultWalletId,
                 amount,
-                $"【Default】->【{ gameProviderModel.GameProviderCode}】",
+                $"【Default】->【{ gameProvider.GameProviderCode}】",
                 gameProviderFundTransferTransactionId.ToString())
                 .ConfigureAwait(false);
 
@@ -104,10 +104,10 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
             try
             {
                 gameProviderTransactionId = await _gameProvidersClient.PlayerFundOutAsync(
-                   gameProviderModel.GameProviderCode,
-                   playerModel.BrandCode,
-                   playerModel.PlayerCode,
-                   playerModel.DefaultWalletCurrencyCode,
+                   gameProvider.GameProviderCode,
+                   player.BrandCode,
+                   player.PlayerCode,
+                   player.DefaultWalletCurrencyCode,
                    gameProviderFundTransferTransactionId.ToString("N"),
                    amount)
                    .ConfigureAwait(false);

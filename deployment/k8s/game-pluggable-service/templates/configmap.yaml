@@ -6,25 +6,6 @@ metadata:
 data:
   appsettings.json: |
     {
-      "Logging": {
-        "LogLevel": {
-          "Default": "Information",
-          "Microsoft": "Warning",
-          "Microsoft.Hosting.Lifetime": "Information",
-          "Microsoft.AspNetCore.HttpLogging": "Warning"
-        },
-        "TgsLog": {
-          "LogLevel": {
-            "Default": "Information",
-            "Microsoft": "Warning",
-            "Microsoft.Hosting.Lifetime": "None",
-            "TGS": "Information"
-          }
-        },
-        "Console": {
-          "FormatterName": "Simple"
-        }
-      },
       "ForwardedHeaders": {
         "ForwardLimit": 2,
         "KnownProxies": [
@@ -45,8 +26,9 @@ data:
         "NatsMQ": "{{ .Values.nats.urls }}"
       },
       "Pluggable": {
-        "TGSGameProvidersBaseUrl": "http://game-gameproviders",
+        "GameProvidersBaseUrl": "http://game-gameproviders",
         "CashServiceBaseUrl": "http://cashservice-api",
-        "TGSGameProviderKickPlayerServerBaseUrl": "http://game-kickplayer-server"
+        "GameProviderKickPlayerServerBaseUrl": "http://game-kickplayer-server",
+        "GameProvidersQueryServerBaseUrl": "http://game-gameprovider-queryserver"
       }
     }

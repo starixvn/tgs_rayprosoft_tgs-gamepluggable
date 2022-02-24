@@ -19,17 +19,18 @@
 	<ItemGroup>
 		<PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="6.0.1" />
 		<PackageReference Include="AspNetCore.HealthChecks.Uris" Version="6.0.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.2" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-		<PackageReference Include="Tgs.Logging" Version="0.0.13" />
+		<PackageReference Include="Tgs.Logging" Version="0.0.15" />
+		<PackageReference Include="Tgs.MessageQueue" Version="2.0.0" />
+		<PackageReference Include="Tgs.MessageQueue.Nats" Version="2.0.3" />
 		<PackageReference Include="UAParser" Version="3.1.47" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Tgs.GameProviders.Pluggable.Core\Tgs.GameProviders.Pluggable.Core.csproj" />
 		<ProjectReference Include="..\Tgs.GameProviders.Pluggable.Repositories\Tgs.GameProviders.Pluggable.Repositories.csproj" />
-		<ProjectReference Include="..\Tgs.GameProviders.Pluggable.Services\Tgs.GameProviders.Pluggable.Services.csproj" />
 		<ProjectReference Include="..\Tgs.GameProviders.Pluggable.ViewModels\Tgs.GameProviders.Pluggable.ViewModels.csproj" />
 	</ItemGroup>
 

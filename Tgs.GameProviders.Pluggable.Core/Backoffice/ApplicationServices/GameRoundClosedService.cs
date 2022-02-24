@@ -3,8 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Tgs.CashService.Client;
+using Tgs.GameProviders.QueryServer.Models;
 using Tgs.ServiceUtility;
-using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 {
@@ -46,7 +46,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
                  command.Commission,
                  command.Turnover,
                  command.WinLoss,
-                 command.ClientRoundStatus,
+                 command.RoundClientStatus,
                  command.ExternalClosedOn,
                  command.OperatorId,
                  command.Remark

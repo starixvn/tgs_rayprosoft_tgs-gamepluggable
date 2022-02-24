@@ -5,7 +5,7 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 {
-    internal class GameRoundGetService : IGetService<Guid, GameRoundModel>
+    internal class GameRoundGetService : IGetService<Guid, GameRoundInfo>
     {
         private readonly IRoundRepository _roundRepository;
 
@@ -14,7 +14,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
             _roundRepository = roundRepository ?? throw new ArgumentNullException(nameof(roundRepository));
         }
 
-        public async ValueTask<GameRoundModel> GetAsync(Guid query, CancellationToken cancellationToken = default)
+        public async ValueTask<GameRoundInfo> GetAsync(Guid query, CancellationToken cancellationToken = default)
         {
             var data = await _roundRepository
                 .GetAsync(query)
