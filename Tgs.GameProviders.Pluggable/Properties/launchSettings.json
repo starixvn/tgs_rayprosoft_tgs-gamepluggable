@@ -14,7 +14,9 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "OTEL_SERVICE_NAME": "Game-GameProvider-Pluggable(local)",
+        "NODE_IP": "otel.rpgp.cc"
       }
     },
     "TGS.GameProviders.PluggableService": {
@@ -22,7 +24,9 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "OTEL_SERVICE_NAME": "Game-GameProvider-Pluggable(local)",
+        "NODE_IP": "otel.rpgp.cc"
       },
       "dotnetRunMessages": "true",
       "applicationUrl": "https://localhost:4435"
@@ -32,7 +36,12 @@
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
       "publishAllPorts": true,
-      "useSSL": true
+      "useSSL": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "OTEL_SERVICE_NAME": "Game-GameProvider-Pluggable(local)",
+        "NODE_IP": "otel.rpgp.cc"
+      }
     }
   }
 }
