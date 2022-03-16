@@ -9,7 +9,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />    
     <PackageReference Include="Tgs.CashService.Client" Version="0.0.20" />
-    <PackageReference Include="TGS.GameProviders.Client" Version="0.0.26" />
+    <PackageReference Include="TGS.GameProviders.Client" Version="0.0.27" />
     <PackageReference Include="Tgs.GameProviders.KickPlayerServer.Client" Version="0.0.4" />
     <PackageReference Include="Tgs.GameProviders.QueryServer.Client" Version="0.0.9" />
     <PackageReference Include="TGS.ServiceUtility" Version="0.1.0" />
