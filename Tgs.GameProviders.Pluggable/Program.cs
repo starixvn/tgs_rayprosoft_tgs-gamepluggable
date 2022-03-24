@@ -11,27 +11,26 @@ namespace Tgs.GameProviders.Pluggable
             Host.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration(builder =>
             {
-                builder.AddJsonFile("/config/appsettings.json", true);
+                _ = builder.AddJsonFile("/config/appsettings.json", true);
             })
             .ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.UseStartup<Startup>();
+                _ = webBuilder.UseStartup<Startup>();
             })
             .ConfigureLogging((ctx, builder) =>
             {
-                builder.AddTgsLog();
-                builder.AddOpenTelemetry(options =>
-                {
-                    options.IncludeFormattedMessage = true;
-                    options.ParseStateValues = true;
-                    _ = options.AddFluentdForwardExporter(fluentOptions =>
-                     {
-                         var nodeIp = ctx.Configuration.GetValue<string>("NODE_IP");
-                         fluentOptions.Host = nodeIp;
-                         fluentOptions.Tag = ctx.Configuration.GetValue<string>("OTEL_SERVICE_NAME");
-                         fluentOptions.UseMessagePack();
-                     });
-                });
+                _ = builder.AddOpenTelemetry(options =>
+                  {
+                      options.IncludeFormattedMessage = true;
+                      options.ParseStateValues = true;
+                      _ = options.AddFluentdForwardExporter(fluentOptions =>
+                       {
+                           var nodeIp = ctx.Configuration.GetValue<string>("NODE_IP");
+                           fluentOptions.Host = nodeIp;
+                           fluentOptions.Tag = ctx.Configuration.GetValue<string>("OTEL_SERVICE_NAME");
+                           fluentOptions.UseMessagePack();
+                       });
+                  });
             });
 
         public static void Main(string[] args)
