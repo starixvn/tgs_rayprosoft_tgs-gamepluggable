@@ -42,13 +42,13 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                 CreatedOn = systemDateTime,
                 UpdatedOn = systemDateTime
             };
-            await _context.GameProviderFundTransferTransactions
+            _ = await _context.GameProviderFundTransferTransactions
                 .AddAsync(fundTransferTransaction)
                 .ConfigureAwait(false);
 
-            await _context
-                .SaveChangesAsync()
-                .ConfigureAwait(false);
+            _ = await _context
+                 .SaveChangesAsync()
+                 .ConfigureAwait(false);
 
             return gameProviderFundTransferTransactionId;
         }
@@ -78,13 +78,13 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                 CreatedOn = systemDateTime,
                 UpdatedOn = systemDateTime
             };
-            await _context.GameProviderFundTransferTransactions
+            _ = await _context.GameProviderFundTransferTransactions
                 .AddAsync(fundTransferTransaction)
                 .ConfigureAwait(false);
 
-            await _context
-                .SaveChangesAsync()
-                .ConfigureAwait(false);
+            _ = await _context
+                  .SaveChangesAsync()
+                  .ConfigureAwait(false);
 
             return gameProviderFundTransferTransactionId;
         }
@@ -108,12 +108,12 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             fundTransferTransaction.UpdatedOn = DateTime.UtcNow;
             fundTransferTransaction.Description = description;
 
-            _context.GameProviderFundTransferTransactions
+            _ = _context.GameProviderFundTransferTransactions
                .Update(fundTransferTransaction);
 
-            await _context
-                .SaveChangesAsync()
-                .ConfigureAwait(false);
+            _ = await _context
+                 .SaveChangesAsync()
+                 .ConfigureAwait(false);
         }
 
         public async ValueTask UpdateByFailureOnMainWalletAsync(
@@ -135,12 +135,12 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             fundTransferTransaction.UpdatedOn = DateTime.UtcNow;
             fundTransferTransaction.Description = description;
 
-            _context.GameProviderFundTransferTransactions
+            _ = _context.GameProviderFundTransferTransactions
                .Update(fundTransferTransaction);
 
-            await _context
-                .SaveChangesAsync()
-                .ConfigureAwait(false);
+            _ = await _context
+                 .SaveChangesAsync()
+                 .ConfigureAwait(false);
         }
 
         public async ValueTask UpdateBySuccessAsync(
@@ -162,10 +162,10 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             fundTransferTransaction.UpdatedOn = DateTime.UtcNow;
             fundTransferTransaction.Description = description;
 
-            _context.GameProviderFundTransferTransactions
+            _ = _context.GameProviderFundTransferTransactions
                .Update(fundTransferTransaction);
 
-            await _context
+            _ = await _context
                 .SaveChangesAsync()
                 .ConfigureAwait(false);
         }

@@ -54,7 +54,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
             {
                 if (command.AdjustAmount.HasValue)
                 {
-                    await _cashServiceClient.UnsettledBetManualAsync(
+                    _ = await _cashServiceClient.UnsettledBetManualAsync(
                           gameRoundModel.WalletId,
                           command.AdjustAmount.Value,
                           command.Remark,

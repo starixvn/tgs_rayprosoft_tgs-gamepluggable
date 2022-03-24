@@ -34,19 +34,19 @@ namespace Tgs.GameProviders.Pluggable.Core
         public async ValueTask<GameProviderStatus> GetGameProviderStatusAsync(Guid brandId, Guid gameProviderId)
         {
             var status = await _gameProvidersQueryServerClient.BrandGetGameProviderStatusAsync(brandId, gameProviderId).ConfigureAwait(false);
-            return status.HasValue ? status.Value : throw new ArgumentException($"The  game provider status provider doesn't exist.{gameProviderId}");
+            return status ?? throw new ArgumentException($"The  game provider status provider doesn't exist.{gameProviderId}");
         }
 
         public async ValueTask<GameStatus> GetGameStatusAsync(Guid brandId, int gameId)
         {
             var status = await _gameProvidersQueryServerClient.BrandGetGameStatusAsync(brandId, gameId).ConfigureAwait(false);
-            return status.HasValue ? status.Value : throw new ArgumentException($"The  game status provider doesn't exist.{gameId}");
+            return status ?? throw new ArgumentException($"The  game status provider doesn't exist.{gameId}");
         }
 
         public async ValueTask<BrandStatus> GetStatusAsync(Guid brandId)
         {
             var status = await _gameProvidersQueryServerClient.BrandGetStatusAsync(brandId).ConfigureAwait(false);
-            return status.HasValue ? status.Value : throw new ArgumentException($"The  brand status provider doesn't exist.{brandId}");
+            return status ?? throw new ArgumentException($"The  brand status provider doesn't exist.{brandId}");
         }
     }
 }

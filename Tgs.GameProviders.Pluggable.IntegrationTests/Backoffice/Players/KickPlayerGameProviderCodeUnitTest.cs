@@ -18,18 +18,17 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Players
 
             await using var web = new TestPluggableApplication(builder =>
             {
-                builder.ConfigureServices(services =>
-                {
-                    var fakseGameProvidersClient = Substitute.For<IGameProvidersClient>();
+                _ = builder.ConfigureServices(services =>
+                  {
+                      var fakseGameProvidersClient = Substitute.For<IGameProvidersClient>();
 
-                    fakseGameProvidersClient.KickPlayerAsync(gameProviderCode, playerCode);
+                      _ = fakseGameProvidersClient.KickPlayerAsync(gameProviderCode, playerCode);
 
-                    fakseGameProvidersClient
-                    .KickPlayerAsync(Arg.Is(gameProviderCode), Arg.Is(playerCode));
+                      _ = fakseGameProvidersClient.KickPlayerAsync(Arg.Is(gameProviderCode), Arg.Is(playerCode));
 
-                    services.AddSingleton(fakseGameProvidersClient);
-                    services.AddFakeNatsMessageQueue();
-                });
+                      _ = services.AddSingleton(fakseGameProvidersClient);
+                      _ = services.AddFakeNatsMessageQueue();
+                  });
             });
 
             var httpClient = web.CreateClient();

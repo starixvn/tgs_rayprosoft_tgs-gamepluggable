@@ -20,7 +20,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
                 .GetAsync(query)
                 .ConfigureAwait(false);
 
-            return data != null ? data : throw new Exception($"Game Round does not exist.({query})");
+            return data ?? throw new Exception($"Game Round does not exist.({query})");
         }
     }
 }

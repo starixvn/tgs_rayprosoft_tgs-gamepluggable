@@ -49,12 +49,12 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
             {
                 if (command.AdjustAmount.HasValue)
                 {
-                    await _cashServiceClient.AdjustResettledBetManualAsync(
-                          gameRoundModel.WalletId,
-                          command.AdjustAmount.Value,
-                          command.Remark,
-                          gameRoundModel.RoundId.ToString(),
-                          command.OperatorId);
+                    _ = await _cashServiceClient.AdjustResettledBetManualAsync(
+                           gameRoundModel.WalletId,
+                           command.AdjustAmount.Value,
+                           command.Remark,
+                           gameRoundModel.RoundId.ToString(),
+                           command.OperatorId);
                 }
             }
             else

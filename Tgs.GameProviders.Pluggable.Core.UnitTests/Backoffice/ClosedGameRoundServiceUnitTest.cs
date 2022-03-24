@@ -65,7 +65,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
             var remark = "´ú¸Õ½Õ¾ã";
             var adjustAmount = 100m;
 
-            fakeRoundRepository
+            _ = fakeRoundRepository
                 .ClosedGameRoundAsync(
                  roundId,
                  betAmount,

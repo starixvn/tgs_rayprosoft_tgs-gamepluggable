@@ -17,7 +17,7 @@ namespace Tgs.GameProviders.Pluggable.Core
         public async ValueTask<LicenseeStatus> GetStatusAsync(Guid licenseeId)
         {
             var status = await _gameProvidersQueryServerClient.LicenseeGetStatusAsync(licenseeId).ConfigureAwait(false);
-            return status.HasValue ? status.Value : throw new ArgumentException($"The licensee status provider doesn't exist.{licenseeId}");
+            return status ?? throw new ArgumentException($"The licensee status provider doesn't exist.{licenseeId}");
         }
     }
 }

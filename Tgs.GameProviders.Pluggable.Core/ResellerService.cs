@@ -17,7 +17,7 @@ namespace Tgs.GameProviders.Pluggable.Core
         public async ValueTask<ResellerStatus> GetStatusAsync(Guid resellerId)
         {
             var status = await _gameProvidersQueryServerClient.ResellerGetStatusAsync(resellerId).ConfigureAwait(false);
-            return status.HasValue ? status.Value : throw new ArgumentException($"The reseller status provider doesn't exist.{resellerId}");
+            return status ?? throw new ArgumentException($"The reseller status provider doesn't exist.{resellerId}");
         }
     }
 }

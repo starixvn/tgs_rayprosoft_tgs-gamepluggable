@@ -38,15 +38,11 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 
                 var gameProviderId = await _gameProviderService.GetCacheGameProviderIdAsync(query.GameProviderCode).ConfigureAwait(false);
 
-                if (!await _playerVerifyService.IsPlayerGameProviderCurrencyAsync(player.BrandId, gameProviderId, player.DefaultWalletCurrencyCode).ConfigureAwait(false))
-                {
-                    throw new Exception($"The game manufacturer does not support this currency.({player.DefaultWalletCurrencyCode})");
-                }
-
-                return await _gameProvidersClient.PlayerBalanceAsync(
-                    query.GameProviderCode,
-                    query.PlayerCode)
-                    .ConfigureAwait(false);
+                return !await _playerVerifyService.IsPlayerGameProviderCurrencyAsync(player.BrandId, gameProviderId, player.DefaultWalletCurrencyCode).ConfigureAwait(false)
+                    ? throw new Exception($"The game manufacturer does not support this currency.({player.DefaultWalletCurrencyCode})")
+                    : await _gameProvidersClient.PlayerBalanceAsync(
+                        query.GameProviderCode,
+                        query.PlayerCode).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -55,9 +51,9 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
                     new EventId(1000, nameof(PlayerBalanceGetService)),
                     new
                     {
-                        GameProviderCode = query.GameProviderCode,
-                        PlayerCode = query.PlayerCode,
-                        SendDateTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).ToString("O")
+                        query.GameProviderCode,
+                        query.PlayerCode,
+                        LogOn = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).ToString("O")
                     },
                     ex,
                     (state, ex) =>

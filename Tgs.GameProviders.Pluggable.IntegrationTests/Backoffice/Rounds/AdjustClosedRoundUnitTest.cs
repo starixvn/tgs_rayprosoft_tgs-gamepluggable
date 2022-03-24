@@ -32,12 +32,12 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
             var adjustAmount = 100m;
             await using var web = new TestPluggableApplication(builder =>
             {
-                builder.ConfigureServices(services =>
+                _ = builder.ConfigureServices(services =>
                 {
                     var fakeRoundRepository = Substitute.For<IRoundRepository>();
                     var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
 
-                    fakeRoundRepository.AdjustClosedRoundAsync(
+                    _ = fakeRoundRepository.AdjustClosedRoundAsync(
                         roundId,
                         betAmount,
                         validBetAmount,
@@ -50,20 +50,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
                         operatorId,
                         remark);
 
-                    //fakeRoundRepository.ClosedGameRoundAsync(
-                    //    Arg.Is(roundId),
-                    //    Arg.Is(betAmount),
-                    //    Arg.Is(validBetAmount),
-                    //    Arg.Is(settleAmount),
-                    //    Arg.Is(commission),
-                    //    Arg.Is(turnover),
-                    //    Arg.Is(winLoss),
-                    //    Arg.Is(clientRoundStatus),
-                    //    Arg.Is(externalClosedOn),
-                    //    Arg.Is(operatorId),
-                    //    Arg.Is(remark));
-
-                    fakeCashServiceClient
+                    _ = fakeCashServiceClient
                     .AdjustResettledBetManualAsync(
                         walletId,
                         adjustAmount,
@@ -71,18 +58,11 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
                         roundId.ToString(),
                         operatorId
                         );
-                    //fakeCashServiceClient
-                    //.UnsettledBetManualAsync(
-                    //    Arg.Is(walletId),
-                    //    Arg.Is(adjustAmount),
-                    //    Arg.Is(remark),
-                    //    Arg.Is(roundId.ToString()),
-                    //    Arg.Is(operatorId)
-                    //    );
 
-                    services.AddSingleton(fakeRoundRepository);
-                    services.AddSingleton(fakeCashServiceClient);
-                    services.AddFakeNatsMessageQueue();
+
+                    _ = services.AddSingleton(fakeRoundRepository);
+                    _ = services.AddSingleton(fakeCashServiceClient);
+                    _ = services.AddFakeNatsMessageQueue();
                 });
             });
 

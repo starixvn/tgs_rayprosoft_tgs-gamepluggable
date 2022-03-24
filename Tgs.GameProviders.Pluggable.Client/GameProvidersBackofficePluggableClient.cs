@@ -37,7 +37,7 @@ namespace Tgs.GameProviders.Pluggable.Client
                    , requestContent)
                .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+            _ = response.EnsureSuccessStatusCode();
         }
 
         public async IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(Guid roundId)
@@ -47,7 +47,7 @@ namespace Tgs.GameProviders.Pluggable.Client
                 $"/bo/round/{roundId}/gameactionquery")
                .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+            _ = response.EnsureSuccessStatusCode();
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -68,7 +68,7 @@ namespace Tgs.GameProviders.Pluggable.Client
                    , requestContent)
                .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+            _ = response.EnsureSuccessStatusCode();
         }
 
         public async ValueTask<JsonDocument?> GameRoundDetailGetAsync(Guid roundId, string language)
@@ -78,7 +78,7 @@ namespace Tgs.GameProviders.Pluggable.Client
                 $"/bo/round/{roundId}/gamerounddetail?language={language}")
                .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+            _ = response.EnsureSuccessStatusCode();
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -92,7 +92,7 @@ namespace Tgs.GameProviders.Pluggable.Client
                 $"/bo/round/{roundId}")
                .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+            _ = response.EnsureSuccessStatusCode();
 
             var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -108,7 +108,7 @@ namespace Tgs.GameProviders.Pluggable.Client
                 $"/bo/player/balance/{playerCode}/{gameProviderCode}")
                 .ConfigureAwait(false);
 
-                response.EnsureSuccessStatusCode();
+                _ = response.EnsureSuccessStatusCode();
 
                 var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 

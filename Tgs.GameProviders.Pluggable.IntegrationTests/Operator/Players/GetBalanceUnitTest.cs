@@ -53,7 +53,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
 
             await using var web = new TestPluggableApplication(builder =>
             {
-                builder.ConfigureServices(services =>
+                _ = builder.ConfigureServices(services =>
                 {
                     var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
 
@@ -61,7 +61,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                      .PlayerBalanceAsync(gameProviderCode, playerCode)
                      .Returns(ValueTask.FromResult(gameProviderBalance));
 
-                    services.AddSingleton(fakeGameProvidersClient);
+                    _ = services.AddSingleton(fakeGameProvidersClient);
 
                     var fakePlayer = Substitute.For<IPlayerService>();
 
@@ -69,7 +69,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                         .GetAsync(playerCode)
                         .Returns(ValueTask.FromResult(player));
 
-                    services.AddSingleton(fakePlayer);
+                    _ = services.AddSingleton(fakePlayer);
 
                     var fakeBrand = Substitute.For<IBrandService>();
 
@@ -80,7 +80,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                         Arg.Is(player.BrandId),
                         Arg.Is(player.DefaultWalletCurrencyCode)).Returns(ValueTask.FromResult<string?>(player.DefaultWalletCurrencyCode));
 
-                    services.AddSingleton(fakeBrand);
+                    _ = services.AddSingleton(fakeBrand);
 
                     var fakeLicensee = Substitute.For<ILicenseeService>();
 
@@ -88,7 +88,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                         .GetStatusAsync(player.LicenseeId)
                         .Returns(ValueTask.FromResult(LicenseeStatus.Active));
 
-                    services.AddSingleton(fakeLicensee);
+                    _ = services.AddSingleton(fakeLicensee);
 
                     var fakeReseller = Substitute.For<IResellerService>();
 
@@ -96,7 +96,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                         .GetStatusAsync(player.ResellerId)
                         .Returns(ValueTask.FromResult(ResellerStatus.Active));
 
-                    services.AddSingleton(fakeReseller);
+                    _ = services.AddSingleton(fakeReseller);
 
                     var fakeGameProvider = Substitute.For<IGameProviderService>();
 
@@ -107,7 +107,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                         Arg.Is(gameProvider.GameProviderId),
                         Arg.Is(player.DefaultWalletCurrencyCode)).Returns(ValueTask.FromResult<string?>(player.DefaultWalletCurrencyCode));
 
-                    services.AddSingleton(fakeGameProvider);
+                    _ = services.AddSingleton(fakeGameProvider);
 
                     var fakePlayerVerify = Substitute.For<IPlayerVerifyHanlde>();
                     _ = fakePlayerVerify.IsPlayerEnableAsync(
@@ -122,9 +122,9 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                         gameProvider.GameProviderId,
                         player.DefaultWalletCurrencyCode).Returns(ValueTask.FromResult(true));
 
-                    services.AddSingleton(fakePlayerVerify);
+                    _ = services.AddSingleton(fakePlayerVerify);
 
-                    services.AddFakeNatsMessageQueue();
+                    _ = services.AddFakeNatsMessageQueue();
                 });
             });
 

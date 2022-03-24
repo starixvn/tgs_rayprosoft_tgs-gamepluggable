@@ -26,7 +26,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories.UnitTests
             DateTimeOffset externalClosedOn = DateTimeOffset.UtcNow;
             var operatorId = Guid.NewGuid();
             string remark = "測試關閉遊戲";
-            await fakeRepository.ClosedGameRoundAsync(
+            _ = await fakeRepository.ClosedGameRoundAsync(
                Arg.Is(roundId),
                Arg.Is(betAmount),
                Arg.Is(validBetAmount),
@@ -45,9 +45,8 @@ namespace Tgs.GameProviders.Pluggable.Repositories.UnitTests
         public async Task GetAsync()
         {
             var fakeRepository = Substitute.For<IRoundRepository>();
-            await fakeRepository.GetAsync(
-               Arg.Any<Guid>()
-               ).ConfigureAwait(false);
+            _ = await fakeRepository.GetAsync(
+                Arg.Any<Guid>()).ConfigureAwait(false);
         }
     }
 }
