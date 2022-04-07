@@ -53,7 +53,7 @@ spec:
             - name: ConnectionStrings__Tgs
               valueFrom:
                 secretKeyRef:
-                  name: tgs-game-connection
+                  name: tgs-connection
                   key: tgs
           livenessProbe:
             httpGet:
