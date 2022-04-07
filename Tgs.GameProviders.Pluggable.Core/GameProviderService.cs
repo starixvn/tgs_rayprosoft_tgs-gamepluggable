@@ -19,7 +19,7 @@ namespace Tgs.GameProviders.Pluggable.Core
 
         public async ValueTask<GameProviderInfo> GetAsync(Guid gameProviderId)
         {
-            var data = await _gameProvidersQueryServerClient.GameProviderGetAsync(gameProviderId).ConfigureAwait(false);
+            var data = await _gameProvidersQueryServerClient.GameProviderGetInfoAsync(gameProviderId).ConfigureAwait(false);
 
             return data != null
                 ? (new(
@@ -44,16 +44,6 @@ namespace Tgs.GameProviders.Pluggable.Core
             var gameProviderId = await GetCacheGameProviderIdAsync(gameProviderCode).ConfigureAwait(false);
 
             return await GetAsync(gameProviderId).ConfigureAwait(false);
-        }
-
-        public async ValueTask<string> GetCacheGameProviderCodeAsync(Guid gameProviderId)
-        {
-            if (!_memoryCache.TryGetValue(gameProviderId, out string gameProviderCode))
-            {
-                gameProviderCode = (await GetAsync(gameProviderId).ConfigureAwait(false)).GameProviderCode;
-                _ = _memoryCache.Set(gameProviderCode, gameProviderCode, TimeSpan.FromDays(1));
-            }
-            return gameProviderCode;
         }
 
         public async ValueTask<Guid> GetCacheGameProviderIdAsync(string gameProviderCode)
@@ -84,15 +74,6 @@ namespace Tgs.GameProviders.Pluggable.Core
                 data.ConfigurationData,
                 data.IsDefault))
                 : throw new ArgumentException($"game provider config doesn't exist.{gameProviderConfigId}");
-        }
-
-        public ValueTask<string?> GetCurrencyCodeAsync(Guid gameProviderId, string currencyCode)
-            => _gameProvidersQueryServerClient.GameProviderGetCurrencyCodeAsync(gameProviderId, currencyCode);
-
-        public async ValueTask<string?> GetCurrencyCodeAsync(string gameProviderCode, string currencyCode)
-        {
-            var gameProviderId = await GetCacheGameProviderIdAsync(gameProviderCode).ConfigureAwait(false);
-            return await GetCurrencyCodeAsync(gameProviderId, currencyCode).ConfigureAwait(false);
         }
     }
 }

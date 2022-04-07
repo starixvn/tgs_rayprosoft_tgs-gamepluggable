@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Repositories.Entities;
+using Tgs.SerialNumberGenerator;
 using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Repositories
@@ -11,10 +12,12 @@ namespace Tgs.GameProviders.Pluggable.Repositories
     internal class GameProviderFundTransferTransactionRepository : IGameProviderFundTransferTransactionRepository
     {
         private readonly TgsContext _context;
+        private readonly ISerialNumberGenerator _serialNumberGenerator;
 
-        public GameProviderFundTransferTransactionRepository(TgsContext context)
+        public GameProviderFundTransferTransactionRepository(TgsContext context, ISerialNumberGenerator serialNumberGenerator)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _serialNumberGenerator = serialNumberGenerator ?? throw new ArgumentNullException(nameof(serialNumberGenerator));
         }
 
         public async ValueTask<Guid> AddFundInAsync(
@@ -25,7 +28,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             decimal amount,
             string description)
         {
-            var gameProviderFundTransferTransactionId = Guid.NewGuid();
+            var gameProviderFundTransferTransactionId = await _serialNumberGenerator.GenerateAsync().ConfigureAwait(false);
             var systemDateTime = DateTime.UtcNow;
             var fundTransferTransaction = new GameProviderFundTransferTransaction()
             {
@@ -61,7 +64,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             decimal amount,
             string description)
         {
-            var gameProviderFundTransferTransactionId = Guid.NewGuid();
+            var gameProviderFundTransferTransactionId = await _serialNumberGenerator.GenerateAsync().ConfigureAwait(false);
             var systemDateTime = DateTime.UtcNow;
             var fundTransferTransaction = new GameProviderFundTransferTransaction()
             {

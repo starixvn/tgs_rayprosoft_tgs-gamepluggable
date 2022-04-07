@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Repositories.Entities;
 using Tgs.GameProviders.QueryServer.Models;
+using Tgs.SerialNumberGenerator;
 
 namespace Tgs.GameProviders.Pluggable.Repositories
 {
@@ -15,13 +16,16 @@ namespace Tgs.GameProviders.Pluggable.Repositories
     {
         private readonly BetContext _betContext;
         private readonly ILogger<RoundRepository> _logger;
+        private readonly ISerialNumberGenerator _serialNumberGenerator;
 
         public RoundRepository(
             BetContext betContext,
-            ILogger<RoundRepository> logger)
+            ILogger<RoundRepository> logger,
+            ISerialNumberGenerator serialNumberGenerator)
         {
             _betContext = betContext ?? throw new ArgumentNullException(nameof(betContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _serialNumberGenerator = serialNumberGenerator ?? throw new ArgumentNullException(nameof(serialNumberGenerator));
         }
 
         public async ValueTask<bool> AdjustClosedRoundAsync(Guid roundId, decimal betAmount, decimal validBetAmount, decimal settleAmount, decimal commission, decimal turnover, decimal winLoss, RoundClientStatus clientRoundStatus, DateTimeOffset externalClosedOn, Guid operatorId, string remark)
@@ -54,7 +58,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
 
                 _ = await _betContext.RoundOperationRecords.AddAsync(new()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = await _serialNumberGenerator.GenerateAsync().ConfigureAwait(false),
                     RoundId = roundId,
                     OperatorId = operatorId,
                     OldData = JsonSerializer.Serialize(oldData),
@@ -71,7 +75,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             catch (Exception ex)
             {
                 await transaction.RollbackAsync().ConfigureAwait(false);
-                _logger.LogError($"An exception occurs when adjusting the closed game record.({roundId})", ex);
+                _logger.LogError(exception: ex, "An exception occurs when adjusting the closed game record.({roundId})", roundId);
                 return false;
             }
         }
@@ -105,7 +109,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
 
                 _ = await _betContext.RoundOperationRecords.AddAsync(new()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = await _serialNumberGenerator.GenerateAsync().ConfigureAwait(false),
                     RoundId = roundId,
                     OperatorId = operatorId,
                     OldData = JsonSerializer.Serialize(oldDate),
@@ -122,7 +126,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             catch (Exception ex)
             {
                 await transaction.RollbackAsync().ConfigureAwait(false);
-                _logger.LogError($"An exception occurs when closing the game record.({roundId})", ex);
+                _logger.LogError(exception: ex, "An exception occurs when closing the game record.({roundId})", roundId);
                 return false;
             }
         }

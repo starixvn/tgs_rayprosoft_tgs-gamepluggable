@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.QueryServer.Models;
+using Tgs.GameVerifys.Client;
 using TGS.GameProviders.Client;
 using TGS.GameProviders.Domains;
 
@@ -16,20 +16,18 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
         [Test]
         public async Task Player_Balance()
         {
-            var faceLogger = NullLogger<PlayerBalanceGetService>.Instance;
             var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameProvider = Substitute.For<IGameProviderService>();
             var fakePlayer = Substitute.For<IPlayerService>();
-            var fakePlayerVerify = Substitute.For<IPlayerVerifyHanlde>();
+            var fakeGameVerifysClient = Substitute.For<IGameVerifysClient>();
 
             var fakeService = new PlayerBalanceGetService(
                   fakeGameProvidersClient,
                   fakeGameProvider,
-                  faceLogger,
                   fakePlayer,
-                  fakePlayerVerify);
+                  fakeGameVerifysClient);
 
-            var query = new PlayerBalanceQuery("KY", "4ucmqplxb029");
+            var query = new PlayerBalanceQuery("4ucmqplxb029", "KY");
 
             var player = new PlayerInfo(
                 Guid.Parse("b5a2c708-ab70-4316-9f4d-5d2ad0e77460"),
@@ -66,21 +64,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             _ = fakePlayer.GetAsync(
                 Arg.Is(query.PlayerCode)).Returns(ValueTask.FromResult(player));
 
-            _ = fakePlayerVerify.IsPlayerEnableAsync(
-                Arg.Is(player)).Returns(ValueTask.FromResult(true));
-
             _ = fakeGameProvider.GetAsync(
                 query.GameProviderCode).Returns(ValueTask.FromResult(gameProvider));
 
-            _ = fakePlayerVerify.IsPlayerGameProviderActiveAsync(
-                Arg.Is(player.BrandId),
-                Arg.Is(gameProvider)).Returns(ValueTask.FromResult(true));
-
-            _ = fakePlayerVerify.IsPlayerGameProviderCurrencyAsync(
-                player.BrandId,
-                gameProvider.GameProviderId,
-                player.DefaultWalletCurrencyCode
-                ).Returns(ValueTask.FromResult(true));
+            _ = fakeGameVerifysClient.VerifyPlayerBalanceAsync(
+                player.PlayerCode, gameProvider.GameProviderId).Returns(ValueTask.FromResult(true));
 
             _ = fakeGameProvidersClient.PlayerBalanceAsync(
                 Arg.Is(query.GameProviderCode),

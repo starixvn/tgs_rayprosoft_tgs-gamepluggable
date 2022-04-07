@@ -28,7 +28,6 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Players
                     .KickPlayerAsync(Arg.Is(playerCode));
 
                     _ = services.AddSingleton(fakeKickPlayerServiceClient);
-                    _ = services.AddFakeNatsMessageQueue();
                 });
             });
 

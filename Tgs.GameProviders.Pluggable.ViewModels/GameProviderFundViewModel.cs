@@ -5,7 +5,7 @@ namespace Tgs.GameProviders.Pluggable.ViewModels
     public record GameProviderFundViewModel
     {
         [Required]
-        [Range(minimum: 0, maximum: (double)decimal.MaxValue)]
+        [Range(minimum: (int)decimal.Zero, maximum: (double)decimal.MaxValue)]
         public decimal Amount { get; init; }
     }
 }
