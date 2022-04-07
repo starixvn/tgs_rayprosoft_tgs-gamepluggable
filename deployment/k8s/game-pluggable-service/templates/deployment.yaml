@@ -45,7 +45,7 @@ spec:
               subPath: appsettings.json
           env:
             - name: OTEL_SERVICE_NAME
-              value: Game-GameProvider-Pluggable({{ .Values.namespace }})
+              value: Game-GameProvider-Pluggable({{ .Release.Namespace }})
             - name: NODE_IP
               valueFrom:
                 fieldRef:
@@ -69,21 +69,15 @@ spec:
         - name: appsettings
           configMap:
             name: configmap-{{ include "game-pluggable-service.fullname" . }}
-      {{ if eq .Values.namespace "staging" }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
-        dedicated: nonprod
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
       tolerations:
-      - effect: NoSchedule
-        key: dedicated
-        operator: Equal
-        value: nonprod
-      {{ end }}
-      {{ if eq .Values.namespace "prod" }}
-      nodeSelector:
-        dedicated: prod
-      tolerations:
-      - effect: NoSchedule
-        key: dedicated
-        operator: Equal
-        value: prod
-      {{ end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
