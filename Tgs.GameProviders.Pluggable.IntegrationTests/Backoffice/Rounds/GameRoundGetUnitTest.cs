@@ -59,7 +59,6 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
                         .Returns(ValueTask.FromResult<GameRoundInfo?>(gameRoundModel));
 
                     _ = services.AddSingleton(fakeRoundRepository);
-                    _ = services.AddFakeNatsMessageQueue();
                 });
             });
 

@@ -50,6 +50,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.hostIP
+            - name: ConnectionStrings__Tgs
+              valueFrom:
+                secretKeyRef:
+                  name: tgs-game-connection
+                  key: tgs
           livenessProbe:
             httpGet:
               path: /healthz

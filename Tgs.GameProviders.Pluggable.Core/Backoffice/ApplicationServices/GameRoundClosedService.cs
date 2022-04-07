@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Tgs.CashService.Client;
 using Tgs.GameProviders.QueryServer.Models;
 using Tgs.ServiceUtility;
@@ -11,17 +10,14 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
     internal class GameRoundClosedService : ICommandService<GameRoundClosedCommand>
     {
         private readonly ICashServiceClient _cashServiceClient;
-        private readonly ILogger<GameRoundClosedService> _logger;
         private readonly IRoundRepository _roundRepository;
 
         public GameRoundClosedService(
             ICashServiceClient cashServiceClient,
-            ILogger<GameRoundClosedService> logger,
             IRoundRepository roundRepository
             )
         {
             _cashServiceClient = cashServiceClient ?? throw new ArgumentNullException(nameof(cashServiceClient));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _roundRepository = roundRepository ?? throw new ArgumentNullException(nameof(roundRepository));
         }
 

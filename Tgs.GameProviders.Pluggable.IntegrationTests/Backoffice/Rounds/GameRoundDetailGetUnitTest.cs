@@ -72,42 +72,43 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 
             await using var web = new TestPluggableApplication(builder =>
             {
-                builder.ConfigureServices(services =>
-                {
-                    var fakeRoundRepository = Substitute.For<IRoundRepository>();
+                _ = builder.ConfigureServices(services =>
+                  {
+                      var fakeRoundRepository = Substitute.For<IRoundRepository>();
 
-                    _ = fakeRoundRepository
-                        .GetAsync(roundId)
-                        .Returns(ValueTask.FromResult<GameRoundInfo?>(gameRoundModel));
+                      _ = fakeRoundRepository
+                          .GetAsync(roundId)
+                          .Returns(ValueTask.FromResult<GameRoundInfo?>(gameRoundModel));
 
-                    _ = fakeRoundRepository
-                        .GetAsync(roundId)
-                        .Returns(ValueTask.FromResult<GameRoundInfo?>(gameRoundModel));
+                      _ = fakeRoundRepository
+                          .GetAsync(roundId)
+                          .Returns(ValueTask.FromResult<GameRoundInfo?>(gameRoundModel));
 
-                    var fakeGameProvider = Substitute.For<IGameProviderService>();
+                      _ = services.AddSingleton(fakeRoundRepository);
 
-                    _ = fakeGameProvider
-                        .GetAsync(gameProviderId)
-                        .Returns(ValueTask.FromResult<GameProviderInfo>(gameProvider));
+                      var fakeGameProvider = Substitute.For<IGameProviderService>();
 
-                    _ = fakeGameProvider
-                        .GetAsync(gameProviderId)
-                        .Returns(ValueTask.FromResult<GameProviderInfo>(gameProvider));
+                      _ = fakeGameProvider
+                          .GetAsync(gameProviderId)
+                          .Returns(ValueTask.FromResult(gameProvider));
 
-                    var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
+                      _ = fakeGameProvider
+                          .GetAsync(gameProviderId)
+                          .Returns(ValueTask.FromResult(gameProvider));
 
-                    _ = fakeGameProvidersClient
-                       .RoundDetailAsync(gameProvider.GameProviderCode, roundId, language)
-                       .Returns(ValueTask.FromResult<RoundDetailResult?>(roundDetailResult));
-                    _ = fakeGameProvidersClient
-                       .RoundDetailAsync(gameProvider.GameProviderCode, roundId, language)
-                       .Returns(ValueTask.FromResult<RoundDetailResult?>(roundDetailResult));
+                      _ = services.AddSingleton(fakeGameProvider);
 
-                    services.AddSingleton(fakeRoundRepository);
-                    services.AddSingleton(fakeGameProvider);
-                    services.AddSingleton(fakeGameProvidersClient);
-                    services.AddFakeNatsMessageQueue();
-                });
+                      var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
+
+                      _ = fakeGameProvidersClient
+                         .RoundDetailAsync(gameProvider.GameProviderCode, roundId, language)
+                         .Returns(ValueTask.FromResult<RoundDetailResult?>(roundDetailResult));
+                      _ = fakeGameProvidersClient
+                         .RoundDetailAsync(gameProvider.GameProviderCode, roundId, language)
+                         .Returns(ValueTask.FromResult<RoundDetailResult?>(roundDetailResult));
+
+                      _ = services.AddSingleton(fakeGameProvidersClient);
+                  });
             });
 
             var httpClient = web.CreateClient();

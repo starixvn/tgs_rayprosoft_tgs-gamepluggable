@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.QueryServer.Models;
+using Tgs.GameVerifys.Client;
 using TGS.GameProviders.Client;
 using TGS.GameProviders.Domains;
 using GamePlatformType = Tgs.GameProviders.QueryServer.Models.GamePlatformType;
@@ -22,14 +22,13 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
         [Test]
         public async Task Game_Url()
         {
-            var faceLogger = NullLogger<GameUrlGetService>.Instance;
             var fakeBrand = Substitute.For<IBrandService>();
             var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
             var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameProvider = Substitute.For<IGameProviderService>();
             var fakeGame = Substitute.For<IGameService>();
             var fakePlayerService = Substitute.For<IPlayerService>();
-            var fakePlayerVerify = Substitute.For<IPlayerVerifyHanlde>();
+            var fakeGameVerifysClient = Substitute.For<IGameVerifysClient>();
 
             var gameUrl = new Uri("https://www.google.com/");
 
@@ -96,22 +95,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             _ = fakePlayerService
                 .GetAsync(Arg.Is(query.PlayerCode)).Returns(ValueTask.FromResult(player));
 
-            _ = fakePlayerVerify
-                .IsPlayerEnableAsync(
-                Arg.Is(player)).Returns(ValueTask.FromResult(true));
+            _ = fakeGameVerifysClient
+                .VerifyPlayerGameUrlAsync(query.PlayerCode, query.GameId).Returns(ValueTask.FromResult(true));
 
             _ = fakeGame.GetAsync(
                 Arg.Is(query.GameId)).Returns(ValueTask.FromResult(game));
-
-            _ = fakePlayerVerify
-                .IsPlayerGameActiveAsync(
-                Arg.Is(player.BrandId),
-                Arg.Is(game)).Returns(ValueTask.FromResult(true));
-
-            _ = fakePlayerVerify.IsPlayerGameProviderCurrencyAsync(
-                Arg.Is(player.BrandId),
-                Arg.Is(game.GameProviderId),
-                Arg.Is(player.DefaultWalletCurrencyCode)).Returns(ValueTask.FromResult(true));
 
             _ = fakeGameProvider
                 .GetAsync(Arg.Is(game.GameProviderId))
@@ -136,9 +124,8 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 fakeGameProvidersClient,
                 fakeGameProvider,
                 fakeGame,
-                faceLogger,
                 fakePlayerService,
-                fakePlayerVerify
+                fakeGameVerifysClient
                 );
 
             var actual = await sut.GetAsync(query).ConfigureAwait(false);
@@ -149,14 +136,13 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
         [Test]
         public async Task Get_AsiaGaming_Game_Url()
         {
-            var faceLogger = NullLogger<GameUrlGetService>.Instance;
             var fakeBrand = Substitute.For<IBrandService>();
             var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
             var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameProvider = Substitute.For<IGameProviderService>();
             var fakeGame = Substitute.For<IGameService>();
             var fakePlayerService = Substitute.For<IPlayerService>();
-            var fakePlayerVerify = Substitute.For<IPlayerVerifyHanlde>();
+            var fakeGameVerifysClient = Substitute.For<IGameVerifysClient>();
 
             var playerBalance = 1000m;
             var gameUrl = new Uri("http://www.google.com");
@@ -220,46 +206,13 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 new("https://dev-t1.rpgp.cc/"));
 
             _ = fakePlayerService
-                           .GetAsync(Arg.Is(query.PlayerCode))
-                           .Returns(ValueTask.FromResult(player));
-
-            _ = fakePlayerVerify
-                .IsPlayerEnableAsync(
-                Arg.Is(player)
-                ).Returns(ValueTask.FromResult(true));
-
-            _ = fakeGame.GetAsync(
-                Arg.Is(query.GameId)).Returns(ValueTask.FromResult(game));
-
-            _ = fakePlayerVerify
-                .IsPlayerGameActiveAsync(
-                Arg.Is(player.BrandId),
-                Arg.Is(game)).Returns(ValueTask.FromResult(true));
-
-            _ = fakePlayerVerify.IsPlayerGameProviderCurrencyAsync(
-                Arg.Is(player.BrandId),
-                Arg.Is(game.GameProviderId),
-                Arg.Is(player.DefaultWalletCurrencyCode)
-                ).Returns(ValueTask.FromResult(true));
-
-            _ = fakeGameProvider
-                .GetAsync(Arg.Is(game.GameProviderId))
-                .Returns(ValueTask.FromResult(gameProvider));
-
-            _ = fakePlayerService
                 .GetAsync(Arg.Is(query.PlayerCode)).Returns(ValueTask.FromResult(player));
 
-            _ = fakePlayerVerify
-                .IsPlayerEnableAsync(
-                Arg.Is(player)).Returns(ValueTask.FromResult(true));
+            _ = fakeGameVerifysClient
+                .VerifyPlayerGameUrlAsync(query.PlayerCode, query.GameId).Returns(ValueTask.FromResult(true));
 
             _ = fakeGame.GetAsync(
                 Arg.Is(query.GameId)).Returns(ValueTask.FromResult(game));
-
-            _ = fakePlayerVerify.IsPlayerGameProviderCurrencyAsync(
-                Arg.Is(player.BrandId),
-                Arg.Is(game.GameProviderId),
-                Arg.Is(player.DefaultWalletCurrencyCode)).Returns(ValueTask.FromResult(true));
 
             _ = fakeGameProvider
                 .GetAsync(Arg.Is(game.GameProviderId))
@@ -290,9 +243,8 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 fakeGameProvidersClient,
                 fakeGameProvider,
                 fakeGame,
-                faceLogger,
                 fakePlayerService,
-                fakePlayerVerify
+                fakeGameVerifysClient
                 );
 
             var actual = await sut.GetAsync(query).ConfigureAwait(false);
@@ -303,14 +255,13 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
         [Test]
         public async Task Get_BetConstruct_Game_Url()
         {
-            var faceLogger = NullLogger<GameUrlGetService>.Instance;
             var fakeBrand = Substitute.For<IBrandService>();
             var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
             var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
-            var fakeGameProviderService = Substitute.For<IGameProviderService>();
+            var fakeGameProvider = Substitute.For<IGameProviderService>();
             var fakeGame = Substitute.For<IGameService>();
             var fakePlayerService = Substitute.For<IPlayerService>();
-            var fakePlayerVerify = Substitute.For<IPlayerVerifyHanlde>();
+            var fakeGameVerifysClient = Substitute.For<IGameVerifysClient>();
 
             var lobbyDomain = "https://desktop.com";
             var gameUrl = new Uri("https://www.google.com");
@@ -375,31 +326,15 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 null);
 
             _ = fakePlayerService
-                .GetAsync(Arg.Is(query.PlayerCode))
-                .Returns(ValueTask.FromResult(player));
+    .GetAsync(Arg.Is(query.PlayerCode)).Returns(ValueTask.FromResult(player));
 
-            _ = fakePlayerVerify
-                .IsPlayerEnableAsync(
-                Arg.Is(player)).Returns(ValueTask.FromResult(true));
+            _ = fakeGameVerifysClient
+                .VerifyPlayerGameUrlAsync(query.PlayerCode, query.GameId).Returns(ValueTask.FromResult(true));
 
             _ = fakeGame.GetAsync(
                 Arg.Is(query.GameId)).Returns(ValueTask.FromResult(game));
 
-            _ = fakePlayerVerify
-                .IsPlayerGameActiveAsync(
-                Arg.Is(player.BrandId),
-                Arg.Is(game)).Returns(ValueTask.FromResult(true));
-
-            _ = fakeGame.GetAsync(
-                Arg.Is(query.GameId)).Returns(ValueTask.FromResult(game));
-
-            _ = fakePlayerVerify.IsPlayerGameProviderCurrencyAsync(
-                Arg.Is(player.BrandId),
-                Arg.Is(game.GameProviderId),
-                Arg.Is(player.DefaultWalletCurrencyCode)
-                ).Returns(ValueTask.FromResult(true));
-
-            _ = fakeGameProviderService
+            _ = fakeGameProvider
                 .GetAsync(Arg.Is(game.GameProviderId))
                 .Returns(ValueTask.FromResult(gameProvider));
 
@@ -415,7 +350,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                         MobileQueryString: lobbyDomain
                         )));
 
-            _ = fakeGameProviderService
+            _ = fakeGameProvider
                 .GetConfigurationAsync(gameProviderConfigurationId)
                 .Returns(ValueTask.FromResult(new GameProviderConfigInfo(
                     gameProviderConfigurationId,
@@ -449,11 +384,10 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 fakeBrand,
                 fakeCashServiceClient,
                 fakeGameProvidersClient,
-                fakeGameProviderService,
+                fakeGameProvider,
                 fakeGame,
-                faceLogger,
                 fakePlayerService,
-                fakePlayerVerify
+                fakeGameVerifysClient
                 );
 
             var actual = await sut.GetAsync(query).ConfigureAwait(false);

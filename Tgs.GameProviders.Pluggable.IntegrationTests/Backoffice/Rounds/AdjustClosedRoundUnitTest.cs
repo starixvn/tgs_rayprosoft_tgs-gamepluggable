@@ -59,10 +59,8 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
                         operatorId
                         );
 
-
                     _ = services.AddSingleton(fakeRoundRepository);
                     _ = services.AddSingleton(fakeCashServiceClient);
-                    _ = services.AddFakeNatsMessageQueue();
                 });
             });
 
