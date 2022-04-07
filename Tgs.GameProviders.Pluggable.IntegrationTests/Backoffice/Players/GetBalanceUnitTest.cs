@@ -90,8 +90,6 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Players
                                     ).Returns(ValueTask.FromResult(true));
 
                     _ = services.AddSingleton(fakeGameVerifysClient);
-
-                    _ = services.AddFakeNatsMessageQueue();
                 });
             });
 
