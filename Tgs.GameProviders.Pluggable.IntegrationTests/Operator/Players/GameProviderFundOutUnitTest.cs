@@ -4,11 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Tgs.CashService.Client;
+using Tgs.GameProviders.Client;
+using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
-using Tgs.GameProviders.QueryServer.Models;
-using TGS.GameProviders.Client;
-using TGS.GameProviders.Domains;
+using Tgs.GameVerifys.Client;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
 {
@@ -66,123 +66,83 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
 
             await using var web = new TestPluggableApplication(builder =>
             {
-                builder.ConfigureServices(services =>
-                {
-                    var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
+                _ = builder.ConfigureServices(services =>
+                  {
+                      var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
 
-                    _ = fakeGameProvidersClient
-                    .PlayerBalanceAsync(
-                       gameProviderCode,
-                       playerCode)
-                    .Returns(ValueTask.FromResult<decimal?>(gameProviderBalance));
+                      _ = fakeGameProvidersClient
+                      .PlayerBalanceAsync(
+                         gameProviderCode,
+                         playerCode)
+                      .Returns(ValueTask.FromResult<decimal?>(gameProviderBalance));
 
-                    _ = fakeGameProvidersClient
-                     .PlayerFundOutAsync(
-                        gameProviderCode,
-                        brandCode,
-                        playerCode,
-                        currencyCode,
-                        orderId,
-                        amount).Returns(ValueTask.FromResult<string?>(orderId));
+                      _ = fakeGameProvidersClient
+                       .PlayerFundOutAsync(
+                          gameProviderCode,
+                          brandCode,
+                          playerCode,
+                          currencyCode,
+                          orderId,
+                          amount).Returns(ValueTask.FromResult<string?>(orderId));
 
-                    services.AddSingleton(fakeGameProvidersClient);
+                      _ = services.AddSingleton(fakeGameProvidersClient);
 
-                    var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
+                      var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
 
-                    _ = fakeCashServiceClient.GameProviderFundOutAsync(
-                        player.DefaultWalletId,
-                        amount,
-                        $"【Default】->【{ gameProvider.GameProviderCode}】",
-                        gameProviderFundTransferTransactionId.ToString()
-                        ).Returns(ValueTask.FromResult(transactionResponse));
+                      _ = fakeCashServiceClient.GameProviderFundOutAsync(
+                          player.DefaultWalletId,
+                          amount,
+                          $"【Default】->【{ gameProvider.GameProviderCode}】",
+                          gameProviderFundTransferTransactionId.ToString()
+                          ).Returns(ValueTask.FromResult(transactionResponse));
 
-                    _ = fakeCashServiceClient.GetBalanceAsync(
-                        player.DefaultWalletId
-                        ).Returns(ValueTask.FromResult(playerBalance));
+                      _ = fakeCashServiceClient.GetBalanceAsync(
+                          player.DefaultWalletId
+                          ).Returns(ValueTask.FromResult(playerBalance));
 
-                    services.AddSingleton(fakeCashServiceClient);
+                      _ = services.AddSingleton(fakeCashServiceClient);
 
-                    var fakePlayer = Substitute.For<IPlayerService>();
+                      var fakePlayer = Substitute.For<IPlayerService>();
 
-                    _ = fakePlayer
-                        .GetAsync(playerCode)
-                        .Returns(ValueTask.FromResult(player));
+                      _ = fakePlayer
+                          .GetAsync(playerCode)
+                          .Returns(ValueTask.FromResult(player));
 
-                    services.AddSingleton(fakePlayer);
+                      _ = services.AddSingleton(fakePlayer);
 
-                    var fakeBrand = Substitute.For<IBrandService>();
+                      var fakeGameProvider = Substitute.For<IGameProviderService>();
 
-                    _ = fakeBrand
-                        .GetStatusAsync(player.BrandId)
-                        .Returns(ValueTask.FromResult(BrandStatus.Active));
-                    _ = fakeBrand.GetCurrencyCodeAsync(
-                        Arg.Is(player.BrandId),
-                        Arg.Is(player.DefaultWalletCurrencyCode)).Returns(ValueTask.FromResult<string?>(player.DefaultWalletCurrencyCode));
+                      _ = fakeGameProvider.GetAsync(
+                          Arg.Is(gameProviderCode)).Returns(ValueTask.FromResult(gameProvider));
 
-                    services.AddSingleton(fakeBrand);
+                      _ = services.AddSingleton(fakeGameProvider);
 
-                    var fakeLicensee = Substitute.For<ILicenseeService>();
+                      var fakeGameVerifysClient = Substitute.For<IGameVerifysClient>();
 
-                    _ = fakeLicensee
-                        .GetStatusAsync(player.LicenseeId)
-                        .Returns(ValueTask.FromResult(LicenseeStatus.Active));
+                      _ = fakeGameVerifysClient.VerifyPlayerFundAsync(
+                          player.PlayerCode, gameProvider.GameProviderId).Returns(true);
 
-                    services.AddSingleton(fakeLicensee);
+                      _ = services.AddSingleton(fakeGameVerifysClient);
 
-                    var fakeReseller = Substitute.For<IResellerService>();
+                      var fakeGameProviderFundTransferTransactionRepository = Substitute.For<IGameProviderFundTransferTransactionRepository>();
 
-                    _ = fakeReseller
-                        .GetStatusAsync(player.ResellerId)
-                        .Returns(ValueTask.FromResult(ResellerStatus.Active));
+                      _ = fakeGameProviderFundTransferTransactionRepository.AddFundOutAsync(
+                          Arg.Is(gameProvider.GameProviderId),
+                          Arg.Is(player.DefaultWalletId),
+                          Arg.Is(player.PlayerCode),
+                          Arg.Is(gameProvider.GameProviderCode),
+                          Arg.Is(amount * -1),
+                          Arg.Is(string.Empty)).Returns(ValueTask.FromResult(gameProviderFundTransferTransactionId));
 
-                    services.AddSingleton(fakeReseller);
+                      _ = fakeGameProviderFundTransferTransactionRepository.UpdateBySuccessAsync(
+                          Arg.Is(gameProviderFundTransferTransactionId),
+                          Arg.Is(transactionResponse.TransactionId),
+                          Arg.Is(orderId),
+                          Arg.Is(transactionResponse.Balance),
+                          Arg.Is(string.Empty));
 
-                    var fakeGameProvider = Substitute.For<IGameProviderService>();
-
-                    _ = fakeGameProvider.GetAsync(
-                        Arg.Is(gameProviderCode)).Returns(ValueTask.FromResult(gameProvider));
-
-                    _ = fakeGameProvider.GetCurrencyCodeAsync(
-                        Arg.Is(gameProvider.GameProviderId),
-                        Arg.Is(player.DefaultWalletCurrencyCode)).Returns(ValueTask.FromResult<string?>(player.DefaultWalletCurrencyCode));
-
-                    services.AddSingleton(fakeGameProvider);
-
-                    var fakePlayerVerify = Substitute.For<IPlayerVerifyHanlde>();
-                    _ = fakePlayerVerify.IsPlayerEnableAsync(
-                        player).Returns(ValueTask.FromResult(true));
-
-                    _ = fakePlayerVerify.IsPlayerGameProviderActiveAsync(
-                        player.BrandId,
-                        gameProvider).Returns(ValueTask.FromResult(true));
-
-                    _ = fakePlayerVerify.IsPlayerGameProviderCurrencyAsync(
-                        player.BrandId,
-                        gameProvider.GameProviderId,
-                        player.DefaultWalletCurrencyCode).Returns(ValueTask.FromResult(true));
-
-                    services.AddSingleton(fakePlayerVerify);
-
-                    var fakeGameProviderFundTransferTransactionRepository = Substitute.For<IGameProviderFundTransferTransactionRepository>();
-
-                    _ = fakeGameProviderFundTransferTransactionRepository.AddFundOutAsync(
-                        Arg.Is(gameProvider.GameProviderId),
-                        Arg.Is(player.DefaultWalletId),
-                        Arg.Is(player.PlayerCode),
-                        Arg.Is(gameProvider.GameProviderCode),
-                        Arg.Is(amount * -1),
-                        Arg.Is(string.Empty)).Returns(ValueTask.FromResult(gameProviderFundTransferTransactionId));
-
-                    _ = fakeGameProviderFundTransferTransactionRepository.UpdateBySuccessAsync(
-                        Arg.Is(gameProviderFundTransferTransactionId),
-                        Arg.Is(transactionResponse.TransactionId),
-                        Arg.Is(orderId),
-                        Arg.Is(transactionResponse.Balance),
-                        Arg.Is(string.Empty));
-
-                    services.AddSingleton(fakeGameProviderFundTransferTransactionRepository);
-                    services.AddFakeNatsMessageQueue();
-                });
+                      _ = services.AddSingleton(fakeGameProviderFundTransferTransactionRepository);
+                  });
             });
 
             var httpClient = web.CreateClient();

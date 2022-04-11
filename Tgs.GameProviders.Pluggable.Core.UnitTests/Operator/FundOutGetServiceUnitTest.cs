@@ -4,10 +4,11 @@ using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Client;
+using Tgs.GameProviders.Client;
+using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.QueryServer.Models;
-using TGS.GameProviders.Client;
-using TGS.GameProviders.Domains;
+using Tgs.GameVerifys.Client;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
 {
@@ -23,7 +24,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameProviderService = Substitute.For<IGameProviderService>();
             var fakePlayerService = Substitute.For<IPlayerService>();
-            var fakePlayerVerify = Substitute.For<IPlayerVerifyHanlde>();
+            var fakeGameVerifysClient = Substitute.For<IGameVerifysClient>();
 
             var query = new FundOutQuery(
                 GameProviderType.KY,
@@ -63,7 +64,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             decimal? gameProviderBalance = 0m;
             var balance = 10.0m;
             var gameProviderFundTransferTransactionId = Guid.NewGuid();
-            var gameProviderTransactionId = $"72412{DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).ToString("yyyyMMddHHmmssfff")}4udwnknl3eg7";
+            var gameProviderTransactionId = $"72412{DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)):yyyyMMddHHmmssfff}4udwnknl3eg7";
 
             var transactionResponse = new TransactionResponse()
             {
@@ -74,20 +75,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             _ = fakePlayerService.GetAsync(
                 Arg.Is(query.PlayerCode)).Returns(ValueTask.FromResult(player));
 
-            _ = fakePlayerVerify.IsPlayerEnableAsync(
-                Arg.Is(player)).Returns(ValueTask.FromResult(true));
-
             _ = fakeGameProviderService.GetAsync(
                 Arg.Is(query.GameProviderCode)).Returns(ValueTask.FromResult(gameProvider));
 
-            _ = fakePlayerVerify.IsPlayerGameProviderActiveAsync(
-                Arg.Is(player.BrandId),
-                Arg.Is(gameProvider)).Returns(ValueTask.FromResult(true));
-
-            _ = fakePlayerVerify.IsPlayerGameProviderCurrencyAsync(
-                Arg.Is(player.BrandId),
-                Arg.Is(gameProvider.GameProviderId),
-                Arg.Is(player.DefaultWalletCurrencyCode)).Returns(ValueTask.FromResult(true));
+            _ = fakeGameVerifysClient.VerifyPlayerFundAsync(
+                Arg.Is(player.PlayerCode), Arg.Is(gameProvider.GameProviderId)).Returns(ValueTask.FromResult(true));
 
             _ = fakeGameProvidersClient.PlayerBalanceAsync(
                 Arg.Is(query.GameProviderCode),
@@ -133,7 +125,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 fakeGameProviderService,
                 faceLogger,
                 fakePlayerService,
-                fakePlayerVerify);
+                fakeGameVerifysClient);
 
             _ = await fakeService.GetAsync(query).ConfigureAwait(false);
         }

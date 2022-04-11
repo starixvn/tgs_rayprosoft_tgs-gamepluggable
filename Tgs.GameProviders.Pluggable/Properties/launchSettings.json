@@ -19,7 +19,7 @@
         "NODE_IP": "otel.rpgp.cc"
       }
     },
-    "TGS.GameProviders.PluggableService": {
+    "Tgs.GameProviders.Pluggable": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",

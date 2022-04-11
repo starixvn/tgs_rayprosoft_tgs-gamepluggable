@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Tgs.GameProviders.QueryServer.Client;
-using Tgs.GameProviders.QueryServer.Models;
 
 namespace Tgs.GameProviders.Pluggable.Core
 {
@@ -40,8 +39,5 @@ namespace Tgs.GameProviders.Pluggable.Core
                     data.SubGameProviderCode))
                 : throw new ArgumentException($"The game doesn't exist.{gameId}");
         }
-
-        public async ValueTask<GameStatus> GetStatusAsync(int gameId)
-            => (await GetAsync(gameId).ConfigureAwait(false)).Status;
     }
 }

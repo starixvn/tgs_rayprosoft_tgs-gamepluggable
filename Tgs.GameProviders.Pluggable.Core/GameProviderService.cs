@@ -19,7 +19,7 @@ namespace Tgs.GameProviders.Pluggable.Core
 
         public async ValueTask<GameProviderInfo> GetAsync(Guid gameProviderId)
         {
-            var data = await _gameProvidersQueryServerClient.GameProviderGetAsync(gameProviderId).ConfigureAwait(false);
+            var data = await _gameProvidersQueryServerClient.GameProviderGetInfoAsync(gameProviderId).ConfigureAwait(false);
 
             return data != null
                 ? (new(
@@ -46,24 +46,14 @@ namespace Tgs.GameProviders.Pluggable.Core
             return await GetAsync(gameProviderId).ConfigureAwait(false);
         }
 
-        public async ValueTask<string> GetCacheGameProviderCodeAsync(Guid gameProviderId)
-        {
-            if (!_memoryCache.TryGetValue(gameProviderId, out string gameProviderCode))
-            {
-                gameProviderCode = (await GetAsync(gameProviderId).ConfigureAwait(false)).GameProviderCode;
-                _memoryCache.Set(gameProviderCode, gameProviderCode, TimeSpan.FromDays(1));
-            }
-            return gameProviderCode;
-        }
-
         public async ValueTask<Guid> GetCacheGameProviderIdAsync(string gameProviderCode)
         {
             if (!_memoryCache.TryGetValue(gameProviderCode, out Guid? gameProviderId))
             {
                 gameProviderId = await _gameProvidersQueryServerClient.GameProviderGetGameProviderIdAsync(gameProviderCode).ConfigureAwait(false);
-                _memoryCache.Set(gameProviderCode, gameProviderId, TimeSpan.FromDays(1));
+                _ = _memoryCache.Set(gameProviderCode, gameProviderId, TimeSpan.FromDays(1));
             }
-            return !gameProviderId.HasValue ? throw new Exception($"game provider does not exist.({gameProviderCode})") : gameProviderId.Value;
+            return gameProviderId ?? throw new Exception($"game provider does not exist.({gameProviderCode})");
         }
 
         public async ValueTask<GameProviderConfigInfo> GetConfigurationAsync(Guid gameProviderConfigId)
@@ -84,15 +74,6 @@ namespace Tgs.GameProviders.Pluggable.Core
                 data.ConfigurationData,
                 data.IsDefault))
                 : throw new ArgumentException($"game provider config doesn't exist.{gameProviderConfigId}");
-        }
-
-        public ValueTask<string?> GetCurrencyCodeAsync(Guid gameProviderId, string currencyCode)
-            => _gameProvidersQueryServerClient.GameProviderGetCurrencyCodeAsync(gameProviderId, currencyCode);
-
-        public async ValueTask<string?> GetCurrencyCodeAsync(string gameProviderCode, string currencyCode)
-        {
-            var gameProviderId = await GetCacheGameProviderIdAsync(gameProviderCode).ConfigureAwait(false);
-            return await GetCurrencyCodeAsync(gameProviderId, currencyCode).ConfigureAwait(false);
         }
     }
 }

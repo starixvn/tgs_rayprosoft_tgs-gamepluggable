@@ -19,21 +19,20 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 
             await using var web = new TestPluggableApplication(builder =>
             {
-                builder.ConfigureServices(services =>
-                {
-                    var fakeRoundRepository = Substitute.For<IRoundRepository>();
+                _ = builder.ConfigureServices(services =>
+                  {
+                      var fakeRoundRepository = Substitute.For<IRoundRepository>();
 
-                    fakeRoundRepository
-                        .GameActionQueryAsync(roundId)
-                        .Returns(Array.Empty<GameActionInfo>().ToAsyncEnumerable());
+                      _ = fakeRoundRepository
+                          .GameActionQueryAsync(roundId)
+                          .Returns(Array.Empty<GameActionInfo>().ToAsyncEnumerable());
 
-                    fakeRoundRepository
-                        .GameActionQueryAsync(Arg.Is(roundId))
-                        .Returns(Array.Empty<GameActionInfo>().ToAsyncEnumerable());
+                      _ = fakeRoundRepository
+                          .GameActionQueryAsync(Arg.Is(roundId))
+                          .Returns(Array.Empty<GameActionInfo>().ToAsyncEnumerable());
 
-                    services.AddSingleton(fakeRoundRepository);
-                    services.AddFakeNatsMessageQueue();
-                });
+                      _ = services.AddSingleton(fakeRoundRepository);
+                  });
             });
 
             var httpClient = web.CreateClient();

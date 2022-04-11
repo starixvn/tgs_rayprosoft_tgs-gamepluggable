@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Client;
@@ -15,11 +14,10 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
         [Test]
         public async Task Closed_Game_Round()
         {
-            var faceLogger = NullLogger<GameRoundClosedService>.Instance;
             var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
             var fakeRoundRepository = Substitute.For<IRoundRepository>();
 
-            var fakeService = new GameRoundClosedService(fakeCashServiceClient, faceLogger, fakeRoundRepository);
+            var fakeService = new GameRoundClosedService(fakeCashServiceClient, fakeRoundRepository);
 
             var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
             var gameRoundModel = new GameRoundInfo(RoundId: Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02"),
@@ -65,7 +63,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
             var remark = "´ú¸Õ½Õ¾ã";
             var adjustAmount = 100m;
 
-            fakeRoundRepository
+            _ = fakeRoundRepository
                 .ClosedGameRoundAsync(
                  roundId,
                  betAmount,

@@ -46,7 +46,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 
             await using var web = new TestPluggableApplication(builder =>
             {
-                builder.ConfigureServices(services =>
+                _ = builder.ConfigureServices(services =>
                 {
                     var fakeRoundRepository = Substitute.For<IRoundRepository>();
 
@@ -58,8 +58,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
                         .GetAsync(roundId)
                         .Returns(ValueTask.FromResult<GameRoundInfo?>(gameRoundModel));
 
-                    services.AddSingleton(fakeRoundRepository);
-                    services.AddFakeNatsMessageQueue();
+                    _ = services.AddSingleton(fakeRoundRepository);
                 });
             });
 
