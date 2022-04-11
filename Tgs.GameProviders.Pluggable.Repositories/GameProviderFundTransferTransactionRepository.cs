@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Repositories.Entities;
 using Tgs.SerialNumberGenerator;
-using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Repositories
 {

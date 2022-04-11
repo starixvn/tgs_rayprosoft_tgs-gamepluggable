@@ -2,8 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
+using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Pluggable.Client;
-using TGS.GameProviders.Client;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Players
 {

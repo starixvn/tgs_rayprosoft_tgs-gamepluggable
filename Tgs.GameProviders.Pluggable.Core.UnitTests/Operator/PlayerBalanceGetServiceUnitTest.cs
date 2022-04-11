@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
+using Tgs.GameProviders.Client;
+using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.QueryServer.Models;
 using Tgs.GameVerifys.Client;
-using TGS.GameProviders.Client;
-using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
 {

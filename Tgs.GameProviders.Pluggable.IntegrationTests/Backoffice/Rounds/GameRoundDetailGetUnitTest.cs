@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
+using Tgs.GameProviders.Client;
+using Tgs.GameProviders.Domains;
+using Tgs.GameProviders.Domains.RoundDetail;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.QueryServer.Models;
-using TGS.GameProviders.Client;
-using TGS.GameProviders.Domains;
-using TGS.GameProviders.Domains.RoundDetail;
 using RoundClientStatus = Tgs.GameProviders.QueryServer.Models.RoundClientStatus;
 using RoundStatus = Tgs.GameProviders.QueryServer.Models.RoundStatus;
 

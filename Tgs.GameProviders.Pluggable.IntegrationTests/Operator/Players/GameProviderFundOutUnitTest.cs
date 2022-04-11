@@ -4,11 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Tgs.CashService.Client;
+using Tgs.GameProviders.Client;
+using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameVerifys.Client;
-using TGS.GameProviders.Client;
-using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
 {

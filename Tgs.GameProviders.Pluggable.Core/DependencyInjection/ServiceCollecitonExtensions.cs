@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Reflection;
 using Tgs.CashService.Client;
+using Tgs.GameProviders.Client;
 using Tgs.GameProviders.KickPlayerServer.Client;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.QueryServer.Client;
 using Tgs.GameVerifys.Client;
-using TGS.GameProviders.Client;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

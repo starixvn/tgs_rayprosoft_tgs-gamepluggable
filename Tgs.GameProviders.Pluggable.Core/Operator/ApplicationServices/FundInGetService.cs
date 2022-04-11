@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Tgs.CashService.Client;
+using Tgs.GameProviders.Client;
 using Tgs.GameVerifys.Client;
 using Tgs.ServiceUtility;
-using TGS.GameProviders.Client;
 
 namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 {

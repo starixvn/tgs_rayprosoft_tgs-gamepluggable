@@ -4,11 +4,11 @@ using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Client;
+using Tgs.GameProviders.Client;
+using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.QueryServer.Models;
 using Tgs.GameVerifys.Client;
-using TGS.GameProviders.Client;
-using TGS.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
 {

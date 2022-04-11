@@ -3,11 +3,11 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.Pluggable.ViewModels;
 using Tgs.ServiceUtility;
-using TGS.GameProviders.Client;
 
 namespace Tgs.GameProviders.Pluggable.Controllers.Operator
 {
