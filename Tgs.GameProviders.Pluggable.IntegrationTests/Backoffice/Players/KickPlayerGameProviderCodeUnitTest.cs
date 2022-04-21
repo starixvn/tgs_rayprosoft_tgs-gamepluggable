@@ -2,8 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
+using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Pluggable.Client;
-using TGS.GameProviders.Client;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Players
 {
@@ -18,18 +18,16 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Players
 
             await using var web = new TestPluggableApplication(builder =>
             {
-                builder.ConfigureServices(services =>
-                {
-                    var fakseGameProvidersClient = Substitute.For<IGameProvidersClient>();
+                _ = builder.ConfigureServices(services =>
+                  {
+                      var fakseGameProvidersClient = Substitute.For<IGameProvidersClient>();
 
-                    fakseGameProvidersClient.KickPlayerAsync(gameProviderCode, playerCode);
+                      _ = fakseGameProvidersClient.KickPlayerAsync(gameProviderCode, playerCode);
 
-                    fakseGameProvidersClient
-                    .KickPlayerAsync(Arg.Is(gameProviderCode), Arg.Is(playerCode));
+                      _ = fakseGameProvidersClient.KickPlayerAsync(Arg.Is(gameProviderCode), Arg.Is(playerCode));
 
-                    services.AddSingleton(fakseGameProvidersClient);
-                    services.AddFakeNatsMessageQueue();
-                });
+                      _ = services.AddSingleton(fakseGameProvidersClient);
+                  });
             });
 
             var httpClient = web.CreateClient();

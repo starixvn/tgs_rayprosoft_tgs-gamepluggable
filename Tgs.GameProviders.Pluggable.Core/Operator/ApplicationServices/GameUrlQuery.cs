@@ -1,5 +1,5 @@
 ﻿using System;
-using TGS.GameProviders.Client;
+using Tgs.GameProviders.Client;
 
 namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 

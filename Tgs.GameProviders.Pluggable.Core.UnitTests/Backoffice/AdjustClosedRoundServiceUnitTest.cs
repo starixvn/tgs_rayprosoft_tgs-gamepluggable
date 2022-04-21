@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Client;
@@ -15,13 +14,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
         [Test]
         public async Task Can_Resettle_Closed_Game_Round()
         {
-            var fakeLogger = NullLogger<AdjustClosedRoundService>.Instance;
             var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
             var fakeRoundRepository = Substitute.For<IRoundRepository>();
 
             var sut = new AdjustClosedRoundService(
                 fakeCashServiceClient,
-                fakeLogger,
                 fakeRoundRepository);
 
             var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
@@ -67,11 +64,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                 EffectiveBettingPercentage: null
             );
 
-            fakeRoundRepository
+            _ = fakeRoundRepository
                 .GetAsync(roundId)
                 .Returns(gameRoundModel);
 
-            fakeRoundRepository
+            _ = fakeRoundRepository
                 .AdjustClosedRoundAsync(
                     roundId,
                     betAmount,

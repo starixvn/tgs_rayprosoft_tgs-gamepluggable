@@ -10,20 +10,15 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddDbBetRepository(this IServiceCollection services,
             Action<IServiceProvider, DbContextOptionsBuilder> efConfigure)
-        {
-            services.AddDbContext<BetContext>(efConfigure);
-
-            return services
+            => services
+                .AddDbContext<BetContext>(efConfigure)
                 .AddTransient<IRoundRepository, RoundRepository>();
-        }
 
         public static IServiceCollection AddDbTgsRepository(this IServiceCollection services,
                     Action<IServiceProvider, DbContextOptionsBuilder> efConfigure)
-        {
-            services.AddDbContext<TgsContext>(efConfigure);
-
-            return services
+            => services
+                .AddSerialNumberGenerator()
+                .AddDbContext<TgsContext>(efConfigure)
                 .AddTransient<IGameProviderFundTransferTransactionRepository, GameProviderFundTransferTransactionRepository>();
-        }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Repositories.Entities;
 using Tgs.GameProviders.QueryServer.Models;
+using Tgs.SerialNumberGenerator;
 
 namespace Tgs.GameProviders.Pluggable.Repositories
 {
@@ -15,13 +16,16 @@ namespace Tgs.GameProviders.Pluggable.Repositories
     {
         private readonly BetContext _betContext;
         private readonly ILogger<RoundRepository> _logger;
+        private readonly ISerialNumberGenerator _serialNumberGenerator;
 
         public RoundRepository(
             BetContext betContext,
-            ILogger<RoundRepository> logger)
+            ILogger<RoundRepository> logger,
+            ISerialNumberGenerator serialNumberGenerator)
         {
             _betContext = betContext ?? throw new ArgumentNullException(nameof(betContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _serialNumberGenerator = serialNumberGenerator ?? throw new ArgumentNullException(nameof(serialNumberGenerator));
         }
 
         public async ValueTask<bool> AdjustClosedRoundAsync(Guid roundId, decimal betAmount, decimal validBetAmount, decimal settleAmount, decimal commission, decimal turnover, decimal winLoss, RoundClientStatus clientRoundStatus, DateTimeOffset externalClosedOn, Guid operatorId, string remark)
@@ -33,48 +37,46 @@ namespace Tgs.GameProviders.Pluggable.Repositories
 
             var oldData = data;
 
-            using (var transaction = _betContext.Database.BeginTransaction())
+            using var transaction = _betContext.Database.BeginTransaction();
+            try
             {
-                try
+                var systemDateTimeOffset = DateTime.UtcNow;
+                data.UpdatedOn = systemDateTimeOffset;
+                data.ClosedOn = systemDateTimeOffset;
+                data.ExternalClosedOn = externalClosedOn.UtcDateTime;
+                data.BetAmount = betAmount;
+                data.ValidBetAmount = validBetAmount;
+                data.SettleAmount = settleAmount;
+                data.Commission = commission;
+                data.ReopenTurnoverAdjustment = data.Turnover;
+                data.ReopenedOn = systemDateTimeOffset;
+                data.Turnover = turnover;
+                data.WinLoss = winLoss;
+                data.ClientStatus = (short)clientRoundStatus;
+                _ = _betContext.Update(data);
+                _ = await _betContext.SaveChangesAsync().ConfigureAwait(false);
+
+                _ = await _betContext.RoundOperationRecords.AddAsync(new()
                 {
-                    var systemDateTimeOffset = DateTime.UtcNow;
-                    data.UpdatedOn = systemDateTimeOffset;
-                    data.ClosedOn = systemDateTimeOffset;
-                    data.ExternalClosedOn = externalClosedOn.UtcDateTime;
-                    data.BetAmount = betAmount;
-                    data.ValidBetAmount = validBetAmount;
-                    data.SettleAmount = settleAmount;
-                    data.Commission = commission;
-                    data.ReopenTurnoverAdjustment = data.Turnover;
-                    data.ReopenedOn = systemDateTimeOffset;
-                    data.Turnover = turnover;
-                    data.WinLoss = winLoss;
-                    data.ClientStatus = (short)clientRoundStatus;
-                    _betContext.Update(data);
-                    _ = await _betContext.SaveChangesAsync().ConfigureAwait(false);
+                    Id = await _serialNumberGenerator.GenerateAsync().ConfigureAwait(false),
+                    RoundId = roundId,
+                    OperatorId = operatorId,
+                    OldData = JsonSerializer.Serialize(oldData),
+                    NewData = JsonSerializer.Serialize(data),
+                    CreatedOn = systemDateTimeOffset,
+                    Remark = remark
+                }).ConfigureAwait(false);
+                _ = await _betContext.SaveChangesAsync().ConfigureAwait(false);
 
-                    _ = await _betContext.RoundOperationRecords.AddAsync(new()
-                    {
-                        Id = Guid.NewGuid(),
-                        RoundId = roundId,
-                        OperatorId = operatorId,
-                        OldData = JsonSerializer.Serialize(oldData),
-                        NewData = JsonSerializer.Serialize(data),
-                        CreatedOn = systemDateTimeOffset,
-                        Remark = remark
-                    }).ConfigureAwait(false);
-                    _ = await _betContext.SaveChangesAsync().ConfigureAwait(false);
+                await transaction.CommitAsync().ConfigureAwait(false);
 
-                    await transaction.CommitAsync().ConfigureAwait(false);
-
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync().ConfigureAwait(false);
-                    _logger.LogError($"An exception occurs when adjusting the closed game record.({roundId})", ex);
-                    return false;
-                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                _logger.LogError(exception: ex, "An exception occurs when adjusting the closed game record.({roundId})", roundId);
+                return false;
             }
         }
 
@@ -87,47 +89,45 @@ namespace Tgs.GameProviders.Pluggable.Repositories
 
             var oldDate = data;
 
-            using (var transaction = _betContext.Database.BeginTransaction())
+            using var transaction = _betContext.Database.BeginTransaction();
+            try
             {
-                try
+                var systemDateTimeOffset = DateTime.UtcNow;
+                data.Status = (short)RoundStatus.Closed;
+                data.UpdatedOn = systemDateTimeOffset;
+                data.ClosedOn = systemDateTimeOffset;
+                data.ExternalClosedOn = externalClosedOn.UtcDateTime;
+                data.BetAmount = betAmount;
+                data.ValidBetAmount = validBetAmount;
+                data.SettleAmount = settleAmount;
+                data.Commission = commission;
+                data.Turnover = turnover;
+                data.WinLoss = winLoss;
+                data.ClientStatus = (short)clientRoundStatus;
+                _ = _betContext.Update(data);
+                _ = await _betContext.SaveChangesAsync().ConfigureAwait(false);
+
+                _ = await _betContext.RoundOperationRecords.AddAsync(new()
                 {
-                    var systemDateTimeOffset = DateTime.UtcNow;
-                    data.Status = (short)RoundStatus.Closed;
-                    data.UpdatedOn = systemDateTimeOffset;
-                    data.ClosedOn = systemDateTimeOffset;
-                    data.ExternalClosedOn = externalClosedOn.UtcDateTime;
-                    data.BetAmount = betAmount;
-                    data.ValidBetAmount = validBetAmount;
-                    data.SettleAmount = settleAmount;
-                    data.Commission = commission;
-                    data.Turnover = turnover;
-                    data.WinLoss = winLoss;
-                    data.ClientStatus = (short)clientRoundStatus;
-                    _betContext.Update(data);
-                    _ = await _betContext.SaveChangesAsync().ConfigureAwait(false);
+                    Id = await _serialNumberGenerator.GenerateAsync().ConfigureAwait(false),
+                    RoundId = roundId,
+                    OperatorId = operatorId,
+                    OldData = JsonSerializer.Serialize(oldDate),
+                    NewData = JsonSerializer.Serialize(data),
+                    CreatedOn = systemDateTimeOffset,
+                    Remark = remark
+                }).ConfigureAwait(false);
+                _ = await _betContext.SaveChangesAsync().ConfigureAwait(false);
 
-                    _ = await _betContext.RoundOperationRecords.AddAsync(new()
-                    {
-                        Id = Guid.NewGuid(),
-                        RoundId = roundId,
-                        OperatorId = operatorId,
-                        OldData = JsonSerializer.Serialize(oldDate),
-                        NewData = JsonSerializer.Serialize(data),
-                        CreatedOn = systemDateTimeOffset,
-                        Remark = remark
-                    }).ConfigureAwait(false);
-                    _ = await _betContext.SaveChangesAsync().ConfigureAwait(false);
+                await transaction.CommitAsync().ConfigureAwait(false);
 
-                    await transaction.CommitAsync().ConfigureAwait(false);
-
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync().ConfigureAwait(false);
-                    _logger.LogError($"An exception occurs when closing the game record.({roundId})", ex);
-                    return false;
-                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync().ConfigureAwait(false);
+                _logger.LogError(exception: ex, "An exception occurs when closing the game record.({roundId})", roundId);
+                return false;
             }
         }
 

@@ -41,7 +41,7 @@ namespace Tgs.GameProviders.Pluggable.Client
                 $"/op/player/fundin/{playerCode}/{gameProviderCode}",
                 requestContent).ConfigureAwait(false);
 
-                response.EnsureSuccessStatusCode();
+                _ = response.EnsureSuccessStatusCode();
 
                 var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -69,7 +69,7 @@ namespace Tgs.GameProviders.Pluggable.Client
                 $"/op/player/fundout/{playerCode}/{gameProviderCode}",
                 requestContent).ConfigureAwait(false);
 
-                response.EnsureSuccessStatusCode();
+                _ = response.EnsureSuccessStatusCode();
 
                 var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -89,7 +89,7 @@ namespace Tgs.GameProviders.Pluggable.Client
                 .GetAsync(
                 $"/op/player/balance/{playerCode}/{gameProviderCode}").ConfigureAwait(false);
 
-                response.EnsureSuccessStatusCode();
+                _ = response.EnsureSuccessStatusCode();
 
                 var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -123,7 +123,7 @@ namespace Tgs.GameProviders.Pluggable.Client
                     $"/op/player/gameurl"
                     , requestContent).ConfigureAwait(false);
 
-                response.EnsureSuccessStatusCode();
+                _ = response.EnsureSuccessStatusCode();
 
                 var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 

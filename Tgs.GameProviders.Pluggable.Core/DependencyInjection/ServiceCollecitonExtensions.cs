@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Reflection;
 using Tgs.CashService.Client;
+using Tgs.GameProviders.Client;
 using Tgs.GameProviders.KickPlayerServer.Client;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.QueryServer.Client;
-using TGS.GameProviders.Client;
+using Tgs.GameVerifys.Client;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -15,7 +16,8 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<CashServiceClientOptions, IServiceProvider> cashServiceClientOptions,
             Action<GameProvidersClientOptions, IServiceProvider> gameProvidersClientOptions,
             Action<GameProvidersQueryServerClientOptions, IServiceProvider> gameProvidersQueryServerClientOptions,
-            Action<KickPlayerServiceClientOptions, IServiceProvider> kickPlayerServiceClientOptions
+            Action<KickPlayerServiceClientOptions, IServiceProvider> kickPlayerServiceClientOptions,
+            Action<GameVerifysClientOptions, IServiceProvider> gameVerifysClientOptions
             )
             => services
             .RegisterAllServiceUtilityTypes(
@@ -26,12 +28,10 @@ namespace Microsoft.Extensions.DependencyInjection
             .AddGameProvidersClient(gameProvidersClientOptions)
             .AddGameProvidersQueryServerClient(gameProvidersQueryServerClientOptions)
             .AddKickPlayerServerClient(kickPlayerServiceClientOptions)
+            .AddGameVerifysClient(gameVerifysClientOptions)
             .AddTransient<IBrandService, BrandService>()
             .AddTransient<IGameProviderService, GameProviderService>()
             .AddTransient<IGameService, GameService>()
-            .AddTransient<ILicenseeService, LicenseeService>()
-            .AddTransient<IPlayerService, PlayerService>()
-            .AddTransient<IResellerService, ResellerService>()
-            .AddScoped<IPlayerVerifyHanlde, PlayerVerifyHanlde>();
+            .AddTransient<IPlayerService, PlayerService>();
     }
 }
