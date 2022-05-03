@@ -55,7 +55,8 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
                           command.AdjustAmount.Value,
                           command.Remark,
                           gameRoundModel.RoundId.ToString(),
-                          command.OperatorId);
+                          command.OperatorId,
+                          cancellationToken);
                 }
             }
             else

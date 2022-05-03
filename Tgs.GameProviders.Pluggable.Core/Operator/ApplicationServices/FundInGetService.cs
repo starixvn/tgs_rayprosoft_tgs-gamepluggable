@@ -97,7 +97,8 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
                    player.DefaultWalletId,
                    amount,
                    $"【{ gameProvider.GameProviderCode}】->【Default】",
-                   gameProviderFundTransferTransactionId.ToString())
+                   gameProviderFundTransferTransactionId.ToString(),
+                   cancellationToken)
                    .ConfigureAwait(false);
             }
             catch (Exception ex)
