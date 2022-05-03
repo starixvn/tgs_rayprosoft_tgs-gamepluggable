@@ -40,8 +40,6 @@ namespace Tgs.GameProviders.Pluggable
             _ = app.UseSwagger();
             _ = app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tgs.GameProviders.PluggableService v1"));
 
-            _ = app.UseHttpsRedirection();
-
             _ = app.UseRouting();
 
             _ = app.UseAuthorization();
