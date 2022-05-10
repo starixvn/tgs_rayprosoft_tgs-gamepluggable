@@ -56,7 +56,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
                player.PlayerCode)
                .ConfigureAwait(false);
 
-            var playerBalance = await _cashServiceClient.GetBalanceAsync(player.DefaultWalletId).ConfigureAwait(false);
+            var playerBalance = await _cashServiceClient.GetBalanceAsync(player.DefaultWalletId, cancellationToken).ConfigureAwait(false);
 
             if (playerBalance - amount < 0)
             {
@@ -76,7 +76,8 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
                 player.DefaultWalletId,
                 amount,
                 $"【Default】->【{ gameProvider.GameProviderCode}】",
-                gameProviderFundTransferTransactionId.ToString())
+                gameProviderFundTransferTransactionId.ToString(),
+                cancellationToken)
                 .ConfigureAwait(false);
 
             if (transactionResponse == null)
