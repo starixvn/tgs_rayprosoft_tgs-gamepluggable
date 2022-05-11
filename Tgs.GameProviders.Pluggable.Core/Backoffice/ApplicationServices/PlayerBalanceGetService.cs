@@ -2,7 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Tgs.GameProviders.Client;
-using Tgs.GameVerifys.Client;
+using Tgs.GameVerification.Client;
+
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
@@ -11,19 +12,19 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
     {
         private readonly IGameProvidersClient _gameProvidersClient;
         private readonly IGameProviderService _gameProviderService;
-        private readonly IGameVerifysClient _gameVerifysClient;
+        private readonly IGameVerificationGrpc _gameVerificationGrpc;
         private readonly IPlayerService _playerService;
 
         public PlayerBalanceGetService(
             IGameProvidersClient gameProvidersClient,
             IGameProviderService gameProviderService,
             IPlayerService playerService,
-            IGameVerifysClient gameVerifysClient)
+            IGameVerificationGrpc gameVerificationGrpc)
         {
             _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
             _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
             _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
-            _gameVerifysClient = gameVerifysClient ?? throw new ArgumentNullException(nameof(gameVerifysClient));
+            _gameVerificationGrpc = gameVerificationGrpc ?? throw new ArgumentNullException(nameof(gameVerificationGrpc));
         }
 
         public async ValueTask<decimal?> GetAsync(PlayerBalanceQuery query, CancellationToken cancellationToken = default)
@@ -32,7 +33,11 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 
             var gameProviderId = await _gameProviderService.GetCacheGameProviderIdAsync(query.GameProviderCode).ConfigureAwait(false);
 
-            return !await _gameVerifysClient.VerifyPlayerGameProviderCurrencyAsync(player.BrandId, gameProviderId, player.DefaultWalletCurrencyCode).ConfigureAwait(false)
+            return !_gameVerificationGrpc.VerifyPlayerGameProviderCurrency(
+                player.BrandId,
+                gameProviderId,
+                player.DefaultWalletCurrencyCode,
+                cancellationToken)
                 ? null
                 : await _gameProvidersClient.PlayerBalanceAsync(
                     query.GameProviderCode,

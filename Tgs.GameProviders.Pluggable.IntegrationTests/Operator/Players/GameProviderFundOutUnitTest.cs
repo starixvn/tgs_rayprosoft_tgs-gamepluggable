@@ -8,7 +8,7 @@ using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
-using Tgs.GameVerifys.Client;
+using Tgs.GameVerification.Client;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
 {
@@ -117,12 +117,12 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
 
                       _ = services.AddSingleton(fakeGameProvider);
 
-                      var fakeGameVerifysClient = Substitute.For<IGameVerifysClient>();
+                      var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
 
-                      _ = fakeGameVerifysClient.VerifyPlayerFundAsync(
+                      _ = fakeGameVerificationGrpc.VerifyPlayerFund(
                           player.PlayerCode, gameProvider.GameProviderId).Returns(true);
 
-                      _ = services.AddSingleton(fakeGameVerifysClient);
+                      _ = services.AddSingleton(fakeGameVerificationGrpc);
 
                       var fakeGameProviderFundTransferTransactionRepository = Substitute.For<IGameProviderFundTransferTransactionRepository>();
 

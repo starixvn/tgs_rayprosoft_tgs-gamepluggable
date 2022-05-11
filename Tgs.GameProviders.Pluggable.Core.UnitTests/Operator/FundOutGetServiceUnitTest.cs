@@ -8,7 +8,7 @@ using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.QueryServer.Models;
-using Tgs.GameVerifys.Client;
+using Tgs.GameVerification.Client;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
 {
@@ -24,7 +24,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameProviderService = Substitute.For<IGameProviderService>();
             var fakePlayerService = Substitute.For<IPlayerService>();
-            var fakeGameVerifysClient = Substitute.For<IGameVerifysClient>();
+            var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
 
             var query = new FundOutQuery(
                 GameProviderType.KY,
@@ -78,8 +78,8 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             _ = fakeGameProviderService.GetAsync(
                 Arg.Is(query.GameProviderCode)).Returns(ValueTask.FromResult(gameProvider));
 
-            _ = fakeGameVerifysClient.VerifyPlayerFundAsync(
-                Arg.Is(player.PlayerCode), Arg.Is(gameProvider.GameProviderId)).Returns(ValueTask.FromResult(true));
+            _ = fakeGameVerificationGrpc.VerifyPlayerFund(
+                Arg.Is(player.PlayerCode), Arg.Is(gameProvider.GameProviderId)).Returns(true);
 
             _ = fakeGameProvidersClient.PlayerBalanceAsync(
                 Arg.Is(query.GameProviderCode),
@@ -123,9 +123,9 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 fakeGameProviderFundTransferTransactionRepository,
                 fakeGameProvidersClient,
                 fakeGameProviderService,
+                fakeGameVerificationGrpc,
                 faceLogger,
-                fakePlayerService,
-                fakeGameVerifysClient);
+                fakePlayerService);
 
             _ = await fakeService.GetAsync(query).ConfigureAwait(false);
         }

@@ -6,7 +6,7 @@ using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.QueryServer.Models;
-using Tgs.GameVerifys.Client;
+using Tgs.GameVerification.Client;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
 {
@@ -19,13 +19,13 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameProvider = Substitute.For<IGameProviderService>();
             var fakePlayer = Substitute.For<IPlayerService>();
-            var fakeGameVerifysClient = Substitute.For<IGameVerifysClient>();
+            var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
 
             var fakeService = new PlayerBalanceGetService(
                   fakeGameProvidersClient,
                   fakeGameProvider,
-                  fakePlayer,
-                  fakeGameVerifysClient);
+                  fakeGameVerificationGrpc,
+                  fakePlayer);
 
             var query = new PlayerBalanceQuery("4ucmqplxb029", "KY");
 
@@ -67,8 +67,8 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             _ = fakeGameProvider.GetAsync(
                 query.GameProviderCode).Returns(ValueTask.FromResult(gameProvider));
 
-            _ = fakeGameVerifysClient.VerifyPlayerBalanceAsync(
-                player.PlayerCode, gameProvider.GameProviderId).Returns(ValueTask.FromResult(true));
+            _ = fakeGameVerificationGrpc.VerifyPlayerBalance(
+                player.PlayerCode, gameProvider.GameProviderId).Returns(true);
 
             _ = fakeGameProvidersClient.PlayerBalanceAsync(
                 Arg.Is(query.GameProviderCode),
