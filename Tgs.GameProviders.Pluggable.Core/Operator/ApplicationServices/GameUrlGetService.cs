@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Tgs.CashService.Client;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
-using Tgs.GameVerifys.Client;
+using Tgs.GameVerification.Client;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
@@ -16,7 +16,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
         private readonly IGameProvidersClient _gameProvidersClient;
         private readonly IGameProviderService _gameProviderService;
         private readonly IGameService _gameService;
-        private readonly IGameVerifysClient _gameVerifysClient;
+        private readonly IGameVerificationGrpc _gameVerificationGrpc;
         private readonly IPlayerService _playerService;
 
         public GameUrlGetService(
@@ -25,8 +25,8 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
             IGameProvidersClient gameProvidersClient,
             IGameProviderService gameProviderService,
             IGameService gameService,
-            IPlayerService playerService,
-            IGameVerifysClient gameVerifysClient)
+            IGameVerificationGrpc gameVerificationGrpc,
+            IPlayerService playerService)
         {
             _brandService = brandService ?? throw new ArgumentNullException(nameof(brandService));
             _cashServiceClient = cashServiceClient ?? throw new ArgumentNullException(nameof(cashServiceClient));
@@ -34,14 +34,14 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
             _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
             _gameService = gameService ?? throw new ArgumentNullException(nameof(gameService));
             _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
-            _gameVerifysClient = gameVerifysClient ?? throw new ArgumentNullException(nameof(gameVerifysClient));
+            _gameVerificationGrpc = gameVerificationGrpc ?? throw new ArgumentNullException(nameof(gameVerificationGrpc));
         }
 
         public async ValueTask<Uri?> GetAsync(GameUrlQuery query, CancellationToken cancellationToken = default)
         {
             var player = await _playerService.GetAsync(query.PlayerCode).ConfigureAwait(false);
 
-            if (!await _gameVerifysClient.VerifyPlayerGameUrlAsync(player.PlayerCode, query.GameId).ConfigureAwait(false))
+            if (!await _gameVerificationGrpc.VerifyPlayerGameUrlAsync(query.PlayerCode, query.GameId).ConfigureAwait(false))
             {
                 throw new Exception($"Failed to get game URL. (1. The player does not exist or is not enabled. 2. The game does not exist or is not enabled. 3. The game does not support this currency.)");
             }
