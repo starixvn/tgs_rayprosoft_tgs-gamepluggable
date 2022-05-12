@@ -33,15 +33,11 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 
             var gameProviderId = await _gameProviderService.GetCacheGameProviderIdAsync(query.GameProviderCode).ConfigureAwait(false);
 
-            return !_gameVerificationGrpc.VerifyPlayerGameProviderCurrency(
-                player.BrandId,
-                gameProviderId,
-                player.DefaultWalletCurrencyCode,
-                cancellationToken)
-                ? null
-                : await _gameProvidersClient.PlayerBalanceAsync(
+            return !await _gameVerificationGrpc.VerifyPlayerGameProviderCurrencyAsync(player.BrandId, gameProviderId, player.DefaultWalletCurrencyCode).ConfigureAwait(false)
+                ? await _gameProvidersClient.PlayerBalanceAsync(
                     query.GameProviderCode,
-                    query.PlayerCode).ConfigureAwait(false);
+                    query.PlayerCode).ConfigureAwait(false)
+                : null;
         }
     }
 }

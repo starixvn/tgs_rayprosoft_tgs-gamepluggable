@@ -83,7 +83,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Players
 
                     var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
 
-                    _ = fakeGameVerificationGrpc.VerifyPlayerGameProviderCurrency(
+                    _ = fakeGameVerificationGrpc.VerifyPlayerGameProviderCurrencyAsync(
                                     player.BrandId,
                                     gameProvider.GameProviderId,
                                     player.DefaultWalletCurrencyCode

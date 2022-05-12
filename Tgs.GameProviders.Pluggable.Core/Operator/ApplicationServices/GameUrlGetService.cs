@@ -41,7 +41,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
         {
             var player = await _playerService.GetAsync(query.PlayerCode).ConfigureAwait(false);
 
-            if (!_gameVerificationGrpc.VerifyPlayerGameUrl(player.PlayerCode, query.GameId, cancellationToken))
+            if (!await _gameVerificationGrpc.VerifyPlayerGameUrlAsync(query.PlayerCode, query.GameId).ConfigureAwait(false))
             {
                 throw new Exception($"Failed to get game URL. (1. The player does not exist or is not enabled. 2. The game does not exist or is not enabled. 3. The game does not support this currency.)");
             }

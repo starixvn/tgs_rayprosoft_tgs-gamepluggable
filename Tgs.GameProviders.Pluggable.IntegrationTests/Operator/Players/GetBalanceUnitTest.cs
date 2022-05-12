@@ -80,7 +80,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
 
                     var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
 
-                    _ = fakeGameVerificationGrpc.VerifyPlayerBalance(
+                    _ = fakeGameVerificationGrpc.VerifyPlayerBalanceAsync(
                         player.PlayerCode, gameProvider.GameProviderId).Returns(true);
 
                     _ = services.AddSingleton(fakeGameVerificationGrpc);

@@ -33,7 +33,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 
             var gameProvider = await _gameProviderService.GetAsync(query.GameProviderCode).ConfigureAwait(false);
 
-            return _gameVerificationGrpc.VerifyPlayerBalance(player.PlayerCode, gameProvider.GameProviderId, cancellationToken)
+            return (await _gameVerificationGrpc.VerifyPlayerBalanceAsync(player.PlayerCode, gameProvider.GameProviderId).ConfigureAwait(false))
                 ? await _gameProvidersClient.PlayerBalanceAsync(
                     gameProvider.GameProviderCode,
                     player.PlayerCode).ConfigureAwait(false)

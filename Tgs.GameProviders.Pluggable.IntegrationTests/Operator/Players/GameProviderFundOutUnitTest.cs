@@ -119,7 +119,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
 
                       var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
 
-                      _ = fakeGameVerificationGrpc.VerifyPlayerFund(
+                      _ = fakeGameVerificationGrpc.VerifyPlayerFundAsync(
                           player.PlayerCode, gameProvider.GameProviderId).Returns(true);
 
                       _ = services.AddSingleton(fakeGameVerificationGrpc);
