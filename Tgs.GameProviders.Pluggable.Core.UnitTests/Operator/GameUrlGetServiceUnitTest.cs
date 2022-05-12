@@ -96,7 +96,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 .GetAsync(Arg.Is(query.PlayerCode)).Returns(ValueTask.FromResult(player));
 
             _ = fakeGameVerificationGrpc
-                .VerifyPlayerGameUrl(query.PlayerCode, query.GameId).Returns(true);
+                .VerifyPlayerGameUrlAsync(query.PlayerCode, query.GameId).Returns(true);
 
             _ = fakeGame.GetAsync(
                 Arg.Is(query.GameId)).Returns(ValueTask.FromResult(game));
@@ -208,7 +208,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 .GetAsync(Arg.Is(query.PlayerCode)).Returns(ValueTask.FromResult(player));
 
             _ = fakeGameVerificationGrpc
-                .VerifyPlayerGameUrl(query.PlayerCode, query.GameId).Returns(true);
+                .VerifyPlayerGameUrlAsync(query.PlayerCode, query.GameId).Returns(true);
 
             _ = fakeGame.GetAsync(
                 Arg.Is(query.GameId)).Returns(ValueTask.FromResult(game));
@@ -324,10 +324,10 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 null);
 
             _ = fakePlayerService
-    .GetAsync(Arg.Is(query.PlayerCode)).Returns(ValueTask.FromResult(player));
+                .GetAsync(Arg.Is(query.PlayerCode)).Returns(ValueTask.FromResult(player));
 
             _ = fakeGameVerificationGrpc
-                .VerifyPlayerGameUrl(query.PlayerCode, query.GameId).Returns(true);
+                .VerifyPlayerGameUrlAsync(query.PlayerCode, query.GameId).Returns(true);
 
             _ = fakeGame.GetAsync(
                 Arg.Is(query.GameId)).Returns(ValueTask.FromResult(game));

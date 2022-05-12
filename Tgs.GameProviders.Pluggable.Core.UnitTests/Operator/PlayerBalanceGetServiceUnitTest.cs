@@ -67,7 +67,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             _ = fakeGameProvider.GetAsync(
                 query.GameProviderCode).Returns(ValueTask.FromResult(gameProvider));
 
-            _ = fakeGameVerificationGrpc.VerifyPlayerBalance(
+            _ = fakeGameVerificationGrpc.VerifyPlayerBalanceAsync(
                 player.PlayerCode, gameProvider.GameProviderId).Returns(true);
 
             _ = fakeGameProvidersClient.PlayerBalanceAsync(
