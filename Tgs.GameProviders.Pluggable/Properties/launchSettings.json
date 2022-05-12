@@ -9,16 +9,6 @@
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "OTEL_SERVICE_NAME": "Game-GameProvider-Pluggable(local)",
-        "NODE_IP": "otel.rpgp.cc"
-      }
-    },
     "Tgs.GameProviders.Pluggable": {
       "commandName": "Project",
       "launchBrowser": true,
