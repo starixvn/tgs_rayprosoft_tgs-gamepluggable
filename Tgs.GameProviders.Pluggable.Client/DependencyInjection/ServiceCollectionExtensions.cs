@@ -10,24 +10,23 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services,
             Action<GameProvidersPluggableClientOptions, IServiceProvider> configure)
         {
-            services
+            _ = services
                 .AddOptions<GameProvidersPluggableClientOptions>()
                 .Configure(configure);
-            services
+            _ = services
                 .AddHttpClient<IGameProvidersOperatorPluggableClient, GameProvidersOperatorPluggableClient>()
                 .ConfigureHttpClient((sp, httpClient) =>
                 {
                     var options = sp.GetRequiredService<IOptions<GameProvidersPluggableClientOptions>>().Value;
                     httpClient.BaseAddress = options.BaseUrl;
                 });
-            services
-            .AddHttpClient<IGameProvidersBackofficePluggableClient, GameProvidersBackofficePluggableClient>()
-            .ConfigureHttpClient((sp, httpClient) =>
-            {
-                var options = sp.GetRequiredService<IOptions<GameProvidersPluggableClientOptions>>().Value;
-
-                httpClient.BaseAddress = options.BaseUrl;
-            });
+            _ = services
+                .AddHttpClient<IGameProvidersBackofficePluggableClient, GameProvidersBackofficePluggableClient>()
+                .ConfigureHttpClient((sp, httpClient) =>
+                {
+                    var options = sp.GetRequiredService<IOptions<GameProvidersPluggableClientOptions>>().Value;
+                    httpClient.BaseAddress = options.BaseUrl;
+                });
 
             return services;
         }
