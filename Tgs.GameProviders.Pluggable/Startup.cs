@@ -151,6 +151,7 @@ namespace Tgs.GameProviders.Pluggable
                       .AddEnvironmentVariableDetector())
                       .AddSource("Tgs.*")
                       .AddSource("TGS.*")
+                      .AddGrpcClientInstrumentation()
                       .AddAspNetCoreInstrumentation()
                       .AddHttpClientInstrumentation()
                       .AddNpgsql()
