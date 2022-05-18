@@ -50,20 +50,20 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 
             var gameProvider = await _gameProviderService.GetAsync(game.GameProviderId).ConfigureAwait(false);
 
+
             return gameProvider.GameProviderCode switch
             {
-                GameProviderType.AsiaGaming => await GetAsiaGamingUrlAsync(
+                var o when o == GameProviderType.AsiaGaming => await GetAsiaGamingUrlAsync(
                         query,
                         player,
                         gameProvider,
                         game).ConfigureAwait(false),
-                GameProviderType.BetConstruct => await GetBetConstructUrlAsync(
+                var o when o == GameProviderType.BetConstruct => await GetBetConstructUrlAsync(
                         query,
                         player,
                         gameProvider,
                         game).ConfigureAwait(false),
-                _ => await _gameProvidersClient
-                .GameUrlAsync(
+                _ => await _gameProvidersClient.GameUrlAsync(
                     gameProvider.GameProviderCode,
                     (GameProvidersClientGameType)game.GameType,
                     query.GameId,
