@@ -7,7 +7,7 @@ using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
-using Tgs.GameVerifys.Client;
+using Tgs.GameVerification.Client;
 using GameProviderStatus = Tgs.GameProviders.QueryServer.Models.GameProviderStatus;
 using PlayerStatus = Tgs.GameProviders.QueryServer.Models.PlayerStatus;
 
@@ -81,15 +81,15 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Players
 
                     _ = services.AddSingleton(fakeGameProvider);
 
-                    var fakeGameVerifysClient = Substitute.For<IGameVerifysClient>();
+                    var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
 
-                    _ = fakeGameVerifysClient.VerifyPlayerGameProviderCurrencyAsync(
+                    _ = fakeGameVerificationGrpc.VerifyPlayerGameProviderCurrencyAsync(
                                     player.BrandId,
                                     gameProvider.GameProviderId,
                                     player.DefaultWalletCurrencyCode
-                                    ).Returns(ValueTask.FromResult(true));
+                                    ).Returns(true);
 
-                    _ = services.AddSingleton(fakeGameVerifysClient);
+                    _ = services.AddSingleton(fakeGameVerificationGrpc);
                 });
             });
 

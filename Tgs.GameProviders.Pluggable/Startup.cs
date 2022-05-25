@@ -15,7 +15,6 @@ using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using Prometheus;
 
 namespace Tgs.GameProviders.Pluggable
 {
@@ -48,7 +47,6 @@ namespace Tgs.GameProviders.Pluggable
               {
                   _ = endpoints.MapControllers();
                   _ = endpoints.MapHealthChecks("/healthz");
-                  _ = endpoints.MapMetrics();
                   endpoints.MapProfileViewer();
               });
         }
@@ -131,7 +129,7 @@ namespace Tgs.GameProviders.Pluggable
                   (options, sp) =>
                   {
                       var configuration = sp.GetRequiredService<IConfiguration>();
-                      options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameVerifysBaseUrl");
+                      options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameVerificationBaseUrl");
                   });
 
             _ = services
@@ -153,6 +151,7 @@ namespace Tgs.GameProviders.Pluggable
                       .AddEnvironmentVariableDetector())
                       .AddSource("Tgs.*")
                       .AddSource("TGS.*")
+                      .AddGrpcClientInstrumentation()
                       .AddAspNetCoreInstrumentation()
                       .AddHttpClientInstrumentation()
                       .AddNpgsql()
@@ -183,8 +182,7 @@ namespace Tgs.GameProviders.Pluggable
                   .AddServiceUtiltiyInterceptors();
 
             _ = services
-                  .AddHealthChecks()
-                  .ForwardToPrometheus();
+                  .AddHealthChecks();
         }
     }
 }
