@@ -59,10 +59,10 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
                  false,
                  0,
                  0,
-                 (int)GameProviderUnique.KY,
+                 (int)10,
                  true,
                  GameProviderType.KY,
-                 GameProviderUnique.KY.ToString(),
+                 10.ToString(),
                  string.Empty
                 );
             var roundDetailResult = new RoundDetailResult()
