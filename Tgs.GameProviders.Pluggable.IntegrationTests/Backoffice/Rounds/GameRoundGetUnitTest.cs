@@ -5,7 +5,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
-using Tgs.GameProviders.QueryServer.Models;
 using Tgs.GameRounds.Common;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds

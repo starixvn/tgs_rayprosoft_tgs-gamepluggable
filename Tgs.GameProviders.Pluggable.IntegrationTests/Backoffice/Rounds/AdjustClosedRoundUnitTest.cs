@@ -7,7 +7,6 @@ using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.ViewModels;
-using Tgs.GameProviders.QueryServer.Models;
 using Tgs.GameRounds.Common;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds

@@ -1,5 +1,4 @@
 ﻿using System;
-using Tgs.GameProviders.QueryServer.Models;
 using Tgs.GameRounds.Common;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices

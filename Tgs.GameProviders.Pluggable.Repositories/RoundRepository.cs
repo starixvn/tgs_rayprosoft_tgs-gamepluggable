@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Repositories.Entities;
-using Tgs.GameProviders.QueryServer.Models;
 using Tgs.GameRounds.Common;
 using Tgs.SerialNumberGenerator;
 

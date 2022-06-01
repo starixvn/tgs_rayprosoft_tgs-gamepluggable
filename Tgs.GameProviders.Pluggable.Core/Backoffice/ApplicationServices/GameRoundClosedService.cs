@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Tgs.CashService.Client;
-using Tgs.GameProviders.QueryServer.Models;
 using Tgs.GameRounds.Common;
 using Tgs.ServiceUtility;
 

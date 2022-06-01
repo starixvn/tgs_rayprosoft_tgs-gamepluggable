@@ -4,7 +4,6 @@ using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
-using Tgs.GameProviders.QueryServer.Models;
 using Tgs.GameRounds.Common;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
