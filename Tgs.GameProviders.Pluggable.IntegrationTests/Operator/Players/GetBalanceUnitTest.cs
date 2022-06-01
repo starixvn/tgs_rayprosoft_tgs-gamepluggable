@@ -44,10 +44,10 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                false,
                0,
                0,
-               (int)GameProviderUnique.VR,
+               (int)11,
                true,
                GameProviderType.VR,
-               GameProviderUnique.VR.ToString(),
+               11.ToString(),
                string.Empty
               );
 

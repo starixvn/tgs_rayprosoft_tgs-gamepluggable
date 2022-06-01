@@ -85,10 +85,10 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                  false,
                  0,
                  0,
-                 (int)GameProviderUnique.KY,
+                 (int)10,
                  true,
                  GameProviderType.KY,
-                 GameProviderUnique.KY.ToString(),
+                 10.ToString(),
                  string.Empty
                  );
 
@@ -168,7 +168,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                  false,
                  0,
                  0,
-                 (int)GameProviderUnique.AsiaGaming,
+                 (int)4,
                  true,
                  GameProviderType.AsiaGaming,
                  nameof(GameProviderType.AsiaGaming),
@@ -296,10 +296,10 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                  false,
                  0,
                  0,
-                 (int)GameProviderUnique.BetConstruct,
+                 (int)21,
                  true,
                  GameProviderType.BetConstruct,
-                 GameProviderUnique.BetConstruct.ToString(),
+                 21.ToString(),
                  string.Empty
                  );
 
