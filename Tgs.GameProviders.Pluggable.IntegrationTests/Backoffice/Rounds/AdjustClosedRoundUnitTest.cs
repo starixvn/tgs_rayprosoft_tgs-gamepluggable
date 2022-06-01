@@ -8,6 +8,7 @@ using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.ViewModels;
 using Tgs.GameProviders.QueryServer.Models;
+using Tgs.GameRounds.Common;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 {
@@ -25,7 +26,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
             var commission = 0.0m;
             var turnover = 0.06m;
             var winLoss = -0.06m;
-            var clientRoundStatus = RoundClientStatus.Loss;
+            var clientRoundStatus = GameRoundClientStatus.Loss;
             var externalClosedOn = DateTimeOffset.Parse("2021-06-03 13:57:05.000 +0800");
             var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
             var remark = "測試調整Closed Round";

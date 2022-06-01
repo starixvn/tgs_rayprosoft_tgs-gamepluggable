@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.QueryServer.Models;
+using Tgs.GameRounds.Common;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
 {
@@ -26,7 +27,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                 PlayerCode: "4uf6j0t01809",
                 GameId: 1000015,
                 CurrencyCode: "CNY",
-                Status: RoundStatus.Open,
+                Status: GameRoundStatus.Open,
                 GameProviderConfigurationId: Guid.Parse("fa0d7706-f910-4e98-bf71-bd7084140304"),
                 WalletId: Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9"),
                 CreatedOn: DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
@@ -42,7 +43,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                 Turnover: null,
                 WinLoss: null,
                 TieBetAdjustment: null,
-                ClientStatus: RoundClientStatus.Open,
+                ClientStatus: GameRoundClientStatus.Open,
                 ReopenTurnoverAdjustment: null,
                 ReopenedOn: null,
                 EffectiveBettingPercentage: null);
@@ -57,7 +58,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
             var commission = 0.0m;
             var turnover = 0.06m;
             var winLoss = -0.06m;
-            var clientRoundStatus = RoundClientStatus.Loss;
+            var clientRoundStatus = GameRoundClientStatus.Loss;
             var externalClosedOn = DateTimeOffset.Parse("2021-06-03 13:57:05.000 +0800");
             var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
             var remark = "´ú¸Õ½Õ¾ã";
@@ -78,7 +79,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                  remark
                  ).Returns(ValueTask.FromResult(true));
 
-            await fakeService.ExecuteAsync(new()
+            await fakeService.ExecuteAsync(new GameRoundClosedCommand()
             {
                 RoundId = roundId,
                 BetAmount = betAmount,

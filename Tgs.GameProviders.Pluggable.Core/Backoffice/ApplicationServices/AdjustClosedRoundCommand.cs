@@ -1,5 +1,6 @@
 ﻿using System;
 using Tgs.GameProviders.QueryServer.Models;
+using Tgs.GameRounds.Common;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 {
@@ -12,7 +13,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
         public decimal Commission { get; init; }
         public decimal Turnover { get; init; }
         public decimal WinLoss { get; init; }
-        public RoundClientStatus RoundClientStatus { get; init; }
+        public GameRoundClientStatus RoundClientStatus { get; init; }
 
         public DateTimeOffset ExternalClosedOn { get; init; }
         public Guid OperatorId { get; init; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Tgs.GameProviders.QueryServer.Models;
+using Tgs.GameRounds.Common;
 
 namespace Tgs.GameProviders.Pluggable.Core
 {
@@ -10,7 +11,7 @@ namespace Tgs.GameProviders.Pluggable.Core
         string PlayerCode,
         int GameId,
         string CurrencyCode,
-        RoundStatus Status,
+        GameRoundStatus Status,
         Guid GameProviderConfigurationId,
         Guid WalletId,
         DateTimeOffset CreatedOn,
@@ -26,7 +27,7 @@ namespace Tgs.GameProviders.Pluggable.Core
         decimal? Turnover,
         decimal? WinLoss,
         decimal? TieBetAdjustment,
-        RoundClientStatus ClientStatus,
+        GameRoundClientStatus ClientStatus,
         decimal? ReopenTurnoverAdjustment,
         DateTimeOffset? ReopenedOn,
         decimal? EffectiveBettingPercentage
