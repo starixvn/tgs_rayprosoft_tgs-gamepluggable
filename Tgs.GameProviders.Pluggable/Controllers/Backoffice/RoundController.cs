@@ -8,6 +8,7 @@ using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.Pluggable.ViewModels;
 using Tgs.GameProviders.QueryServer.Models;
+using Tgs.GameRounds.Common;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
@@ -21,7 +22,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
                     [FromServices] ICommandService<AdjustClosedRoundCommand> commandService,
                     Guid roundId,
                     [FromBody] AdjustClosedRoundViewModel viewModel)
-                    => commandService.ExecuteAsync(new()
+                    => commandService.ExecuteAsync(new AdjustClosedRoundCommand()
                     {
                         RoundId = roundId,
                         BetAmount = viewModel.BetAmount,
@@ -30,7 +31,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
                         Commission = viewModel.Commission,
                         Turnover = viewModel.Turnover,
                         WinLoss = viewModel.WinLoss,
-                        RoundClientStatus = (RoundClientStatus)viewModel.ClientRoundStatus,
+                        RoundClientStatus = (GameRoundClientStatus)viewModel.ClientRoundStatus,
                         ExternalClosedOn = viewModel.ExternalClosedOn,
                         OperatorId = viewModel.OperatorId,
                         Remark = viewModel.Remark,
@@ -118,7 +119,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
                             Commission = viewModel.Commission,
                             Turnover = viewModel.Turnover,
                             WinLoss = viewModel.WinLoss,
-                            RoundClientStatus = (RoundClientStatus)viewModel.ClientRoundStatus,
+                            RoundClientStatus = (GameRoundClientStatus)viewModel.ClientRoundStatus,
                             ExternalClosedOn = viewModel.ExternalClosedOn,
                             OperatorId = viewModel.OperatorId,
                             Remark = viewModel.Remark,
