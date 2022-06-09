@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Repositories.Entities;
-using Tgs.GameProviders.QueryServer.Models;
+using Tgs.GameRounds.Common;
 using Tgs.SerialNumberGenerator;
 
 namespace Tgs.GameProviders.Pluggable.Repositories
@@ -28,7 +28,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             _serialNumberGenerator = serialNumberGenerator ?? throw new ArgumentNullException(nameof(serialNumberGenerator));
         }
 
-        public async ValueTask<bool> AdjustClosedRoundAsync(Guid roundId, decimal betAmount, decimal validBetAmount, decimal settleAmount, decimal commission, decimal turnover, decimal winLoss, RoundClientStatus clientRoundStatus, DateTimeOffset externalClosedOn, Guid operatorId, string remark)
+        public async ValueTask<bool> AdjustClosedRoundAsync(Guid roundId, decimal betAmount, decimal validBetAmount, decimal settleAmount, decimal commission, decimal turnover, decimal winLoss, GameRoundClientStatus clientRoundStatus, DateTimeOffset externalClosedOn, Guid operatorId, string remark)
         {
             var data = await _betContext.Rounds
                 .Where(x => x.Id == roundId)
@@ -80,7 +80,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             }
         }
 
-        public async ValueTask<bool> ClosedGameRoundAsync(Guid roundId, decimal betAmount, decimal validBetAmount, decimal settleAmount, decimal commission, decimal turnover, decimal winLoss, RoundClientStatus clientRoundStatus, DateTimeOffset externalClosedOn, Guid operatorId, string remark)
+        public async ValueTask<bool> ClosedGameRoundAsync(Guid roundId, decimal betAmount, decimal validBetAmount, decimal settleAmount, decimal commission, decimal turnover, decimal winLoss, GameRoundClientStatus clientRoundStatus, DateTimeOffset externalClosedOn, Guid operatorId, string remark)
         {
             var data = await _betContext.Rounds
                 .Where(x => x.Id == roundId)
@@ -93,7 +93,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             try
             {
                 var systemDateTimeOffset = DateTime.UtcNow;
-                data.Status = (short)RoundStatus.Closed;
+                data.Status = (short)GameRoundStatus.Closed;
                 data.UpdatedOn = systemDateTimeOffset;
                 data.ClosedOn = systemDateTimeOffset;
                 data.ExternalClosedOn = externalClosedOn.UtcDateTime;
@@ -174,7 +174,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                 x.PlayerCode,
                 x.GameId,
                 x.CurrencyCode,
-                (RoundStatus)x.Status,
+                (GameRoundStatus)x.Status,
                 x.GameProviderConfigurationId,
                 x.WalletId,
                 x.CreatedOn,
@@ -190,7 +190,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                 x.Turnover,
                 x.WinLoss,
                 x.TieBetAdjustment,
-                (RoundClientStatus)x.ClientStatus,
+                (GameRoundClientStatus)x.ClientStatus,
                 x.ReopenTurnoverAdjustment,
                 x.ReopenedOn,
                 x.EffectiveBettingPercentage

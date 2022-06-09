@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Tgs.CashService.Client;
-using Tgs.GameProviders.QueryServer.Models;
+using Tgs.GameRounds.Common;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
@@ -28,7 +28,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
             {
                 throw new Exception($"Game round number does not exist.({command.RoundId})");
             }
-            if (gameRoundModel.Status == RoundStatus.Closed)
+            if (gameRoundModel.Status == GameRoundStatus.Closed)
             {
                 throw new Exception($"Game round number has been closed.({command.RoundId})");
             }

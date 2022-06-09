@@ -50,7 +50,6 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 
             var gameProvider = await _gameProviderService.GetAsync(game.GameProviderId).ConfigureAwait(false);
 
-
             return gameProvider.GameProviderCode switch
             {
                 var o when o == GameProviderType.AsiaGaming => await GetAsiaGamingUrlAsync(

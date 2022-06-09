@@ -57,7 +57,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                false,
                0,
                0,
-               (int)GameProviderUnique.KY,
+               (int)10,
                true,
                GameProviderType.KY,
                GameProviderType.KY,
