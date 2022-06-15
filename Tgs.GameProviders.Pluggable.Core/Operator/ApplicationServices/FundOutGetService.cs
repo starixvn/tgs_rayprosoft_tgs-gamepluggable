@@ -74,7 +74,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
             var transactionResponse = await _cashServiceClient.GameProviderFundOutAsync(
                 player.DefaultWalletId,
                 amount,
-                $"【Default】->【{ gameProvider.GameProviderCode}】",
+                $"【Default】->【{gameProvider.GameProviderCode}】",
                 gameProviderFundTransferTransactionId.ToString(),
                 cancellationToken)
                 .ConfigureAwait(false);

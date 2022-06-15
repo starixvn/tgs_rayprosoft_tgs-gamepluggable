@@ -92,7 +92,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                       _ = fakeCashServiceClient.GameProviderFundOutAsync(
                           player.DefaultWalletId,
                           amount,
-                          $"【Default】->【{ gameProvider.GameProviderCode}】",
+                          $"【Default】->【{gameProvider.GameProviderCode}】",
                           gameProviderFundTransferTransactionId.ToString()
                           ).Returns(ValueTask.FromResult(transactionResponse));
 

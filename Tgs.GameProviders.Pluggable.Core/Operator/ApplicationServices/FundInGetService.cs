@@ -95,7 +95,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
                 transactionResponse = await _cashServiceClient.GameProviderFundInAsync(
                    player.DefaultWalletId,
                    amount,
-                   $"【{ gameProvider.GameProviderCode}】->【Default】",
+                   $"【{gameProvider.GameProviderCode}】->【Default】",
                    gameProviderFundTransferTransactionId.ToString(),
                    cancellationToken)
                    .ConfigureAwait(false);

@@ -103,7 +103,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             _ = fakeCashServiceClient.GameProviderFundInAsync(
                  Arg.Is(player.DefaultWalletId),
                  Arg.Is(query.Amount),
-                 Arg.Is($"【{ gameProvider.GameProviderCode}】->【Default】"),
+                 Arg.Is($"【{gameProvider.GameProviderCode}】->【Default】"),
                  Arg.Is(gameProviderFundTransferTransactionId.ToString())).Returns(ValueTask.FromResult(transactionResponse));
 
             await fakeGameProviderFundTransferTransactionRepository.UpdateBySuccessAsync(
