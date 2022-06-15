@@ -90,14 +90,14 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                       _ = fakeCashServiceClient.GameProviderFundInAsync(
                           player.DefaultWalletId,
                           amount,
-                          $"【{ gameProvider.GameProviderCode}】->【Default】",
+                          $"【{gameProvider.GameProviderCode}】->【Default】",
                           gameProviderFundTransferTransactionId.ToString()
                           ).Returns(ValueTask.FromResult(transactionResponse));
 
                       _ = fakeCashServiceClient.GameProviderFundInAsync(
                           Arg.Is(player.DefaultWalletId),
                           Arg.Is(amount),
-                          Arg.Is($"【{ gameProvider.GameProviderCode}】->【Default】"),
+                          Arg.Is($"【{gameProvider.GameProviderCode}】->【Default】"),
                           Arg.Is(gameProviderFundTransferTransactionId.ToString())
                          ).Returns(ValueTask.FromResult(transactionResponse));
 
