@@ -19,7 +19,7 @@ namespace Tgs.GameProviders.Pluggable.Core
 
         public async ValueTask<GameProviderInfo> GetAsync(Guid gameProviderId)
         {
-            var data = await _gameProvidersQueryServerClient.GameProviderGetInfoAsync(gameProviderId).ConfigureAwait(false);
+            var data = await _gameProvidersQueryServerClient.GameProviderGetAsync(gameProviderId).ConfigureAwait(false);
 
             return data != null
                 ? (new(
@@ -58,7 +58,7 @@ namespace Tgs.GameProviders.Pluggable.Core
 
         public async ValueTask<GameProviderConfigInfo> GetConfigurationAsync(Guid gameProviderConfigId)
         {
-            var data = await _gameProvidersQueryServerClient.GameProviderGetGameProviderConfigAsync(gameProviderConfigId).ConfigureAwait(false);
+            var data = await _gameProvidersQueryServerClient.GameProviderConfigurationGetAsync(gameProviderConfigId).ConfigureAwait(false);
 
             return data != null
                 ? (new(
