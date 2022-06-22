@@ -1,6 +1,6 @@
 ﻿namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 {
-    public record FundInQuery(
+    public record FundInCommand(
         string PlayerCode,
         string GameProviderCode);
 }

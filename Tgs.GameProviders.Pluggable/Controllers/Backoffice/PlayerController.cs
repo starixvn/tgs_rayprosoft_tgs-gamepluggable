@@ -11,7 +11,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
     public class PlayerController : ControllerBase
     {
         /// <summary>
-        /// Kicks the player asynchronous.
+        /// Funds the in asynchronous.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="model">The model.</param>
@@ -26,10 +26,10 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
         ///         }
         /// </remarks>
         [HttpPost("fund/in", Name = "Backoffice_Player_FundIn")]
-        public ValueTask<bool> FundInAsync(
-            [FromServices] IGetService<FundInQuery, bool> service,
-              FundInQueryViewModel model)
-            => service.GetAsync(new FundInQuery(
+        public ValueTask FundInAsync(
+            [FromServices] ICommandService<FundInCommand> service,
+             FundInQueryViewModel model)
+            => service.ExecuteAsync(new FundInCommand(
                 model.PlayerCode,
                 model.GameProviderCode));
 

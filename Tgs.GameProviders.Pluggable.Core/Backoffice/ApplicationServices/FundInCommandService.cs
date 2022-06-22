@@ -8,21 +8,21 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 {
-    internal class FundInGetService : IGetService<FundInQuery, bool>
+    internal class FundInCommandService : ICommandService<FundInCommand>
     {
         private readonly ICashServiceClient _cashServiceClient;
         private readonly IGameProviderFundTransferTransactionRepository _gameProviderFundTransferTransactionRepository;
         private readonly IGameProvidersClient _gameProvidersClient;
         private readonly IGameProviderService _gameProviderService;
-        private readonly ILogger<FundInGetService> _logger;
+        private readonly ILogger<FundInCommandService> _logger;
         private readonly IPlayerService _playerService;
 
-        public FundInGetService(
+        public FundInCommandService(
             ICashServiceClient cashServiceClient,
             IGameProviderFundTransferTransactionRepository gameProviderFundTransferTransactionRepository,
             IGameProvidersClient gameProvidersClient,
             IGameProviderService gameProviderService,
-            ILogger<FundInGetService> logger,
+            ILogger<FundInCommandService> logger,
             IPlayerService playerService)
         {
             _cashServiceClient = cashServiceClient ?? throw new ArgumentNullException(nameof(cashServiceClient));
@@ -33,7 +33,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
             _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
         }
 
-        public async ValueTask<bool> GetAsync(FundInQuery query, CancellationToken cancellationToken = default)
+        public async ValueTask ExecuteAsync(FundInCommand query, CancellationToken cancellationToken = default)
         {
             var player = await _playerService.GetAsync(query.PlayerCode).ConfigureAwait(false);
 
@@ -55,7 +55,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 
             if (amount == 0)
             {
-                return true;
+                return;
             }
 
             var gameProviderFundTransferTransactionId = await _gameProviderFundTransferTransactionRepository.AddFundInAsync(
@@ -83,6 +83,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
                     -1,
                     string.Empty
                      ).ConfigureAwait(false);
+
                 throw new Exception("The game manufacturer's transfer failed.");
             }
 
@@ -96,15 +97,13 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
                     cancellationToken).ConfigureAwait(false);
 
                 await _gameProviderFundTransferTransactionRepository.UpdateBySuccessAsync(
-                                gameProviderFundTransferTransactionId,
+                    gameProviderFundTransferTransactionId,
                                 transactionResponse.TransactionId,
                                 gameProviderTransactionId,
                                 transactionResponse.Balance,
                                 string.Empty
                                 )
                                 .ConfigureAwait(false);
-
-                return true;
             }
             catch (Exception ex)
             {
