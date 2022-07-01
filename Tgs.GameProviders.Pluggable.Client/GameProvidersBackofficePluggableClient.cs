@@ -40,6 +40,26 @@ namespace Tgs.GameProviders.Pluggable.Client
             _ = response.EnsureSuccessStatusCode();
         }
 
+        public async ValueTask FundInAsync(string playerCode, string gameProviderCode)
+        {
+            var request = new
+            {
+                playerCode,
+                gameProviderCode
+            };
+
+            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+            var response = await _httpClient
+               .PostAsync(
+                    "/bo/player/fund/in"
+                   , requestContent)
+               .ConfigureAwait(false);
+
+            _ = response.EnsureSuccessStatusCode();
+        }
+
         public async IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(Guid roundId)
         {
             var response = await _httpClient

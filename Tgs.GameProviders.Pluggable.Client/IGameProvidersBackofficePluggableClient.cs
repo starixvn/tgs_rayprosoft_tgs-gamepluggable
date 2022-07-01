@@ -10,6 +10,8 @@ namespace Tgs.GameProviders.Pluggable.Client
     {
         ValueTask AdjustClosedRoundAsync(Guid RoundId, AdjustClosedRoundViewModel viewModel);
 
+        ValueTask FundInAsync(string playerCode, string gameProviderCode);
+
         IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(Guid roundId);
 
         ValueTask GameRoundClosedAsync(Guid RoundId, GameRoundClosedViewModel viewModel);
