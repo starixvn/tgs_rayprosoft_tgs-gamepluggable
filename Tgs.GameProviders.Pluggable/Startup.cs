@@ -3,13 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 using Npgsql;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
@@ -28,16 +24,10 @@ namespace Tgs.GameProviders.Pluggable
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
-            {
-            }
-            // 啟用 HTTP 記錄
-            _ = app.UseHttpLogging();
-
             _ = app.UseSwagger();
-            _ = app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tgs.GameProviders.PluggableService v1"));
+            _ = app.UseSwaggerUI();
 
             _ = app.UseRouting();
 
@@ -54,13 +44,6 @@ namespace Tgs.GameProviders.Pluggable
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            _ = services.AddHttpLogging(httpLogging =>
-            {
-                httpLogging.LoggingFields = HttpLoggingFields.All;
-                httpLogging.RequestBodyLogLimit = 4096;
-                httpLogging.ResponseBodyLogLimit = 4096;
-            });
-
             _ = services
                  .AddRouting(options => options.LowercaseUrls = true)
                  .AddControllers(configure =>
@@ -76,34 +59,16 @@ namespace Tgs.GameProviders.Pluggable
               {
                   var xmlFileNames = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml");
                   foreach (var xmlFileName in xmlFileNames) c.IncludeXmlComments(xmlFileName);
-
-                  c.SwaggerDoc("v1",
-                      new OpenApiInfo
-                      {
-                          Title = "Tgs.GameProviders.Pluggable",
-                          Version = "v1"
-                      });
               });
 
-            _ = services.AddDbTgsRepository((
-                 sp,
-                 dbBuilder) =>
-              {
-                  var config = sp.GetRequiredService<IConfiguration>();
+            _ = services.AddDbBetRepository(
+                (sp, dbBuilder) =>
+                {
+                    var config = sp.GetRequiredService<IConfiguration>();
 
-                  _ = dbBuilder.UseNpgsql(config.GetConnectionString("Tgs"));
-              });
-
-            _ = services
-                 .AddDbBetRepository((
-                     sp,
-                     dbBuilder) =>
-                 {
-                     var config = sp.GetRequiredService<IConfiguration>();
-
-                     _ = dbBuilder.UseNpgsql(
-                         config.GetConnectionString("Tgs"));
-                 });
+                    _ = dbBuilder.UseNpgsql(
+                        config.GetConnectionString("Tgs"));
+                });
 
             _ = services.AddGameProvidersCore(
                   (options, sp) =>
@@ -130,6 +95,11 @@ namespace Tgs.GameProviders.Pluggable
                   {
                       var configuration = sp.GetRequiredService<IConfiguration>();
                       options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameVerificationBaseUrl");
+                  },
+                  (options, sp) =>
+                  {
+                      var configuration = sp.GetRequiredService<IConfiguration>();
+                      options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameFundTransferBaseUrl");
                   });
 
             _ = services

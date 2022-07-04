@@ -36,7 +36,8 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
             return await _gameVerificationGrpc.VerifyPlayerGameProviderCurrencyAsync(player.BrandId, gameProviderId, player.DefaultWalletCurrencyCode).ConfigureAwait(false)
                 ? await _gameProvidersClient.PlayerBalanceAsync(
                     query.GameProviderCode,
-                    query.PlayerCode).ConfigureAwait(false)
+                    query.PlayerCode,
+                    cancellationToken: cancellationToken).ConfigureAwait(false)
                 : null;
         }
     }

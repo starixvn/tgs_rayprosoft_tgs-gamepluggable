@@ -36,10 +36,10 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 
             var roundDetailResult = await _gameProvidersClient
                 .RoundDetailAsync(
-                gameProviderModel!.GameProviderCode,
-                roundModel.RoundId,
-                query.Language)
-                .ConfigureAwait(false);
+                    gameProviderModel!.GameProviderCode,
+                    roundModel.RoundId,
+                    query.Language,
+                    cancellationToken: cancellationToken).ConfigureAwait(false);
 
             return JsonDocument.Parse(JsonSerializer.Serialize(roundDetailResult));
         }

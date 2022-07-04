@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Tgs.GameProviders.Pluggable.ViewModels
+namespace Tgs.GameProviders.Pluggable.ViewModels.Operator
 {
     public record GameProviderFundViewModel
     {

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Client;
+using Tgs.GameFundTransfer.Client;
+using Tgs.GameFundTransfer.Protos;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
@@ -18,9 +19,8 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
         [Test]
         public async Task Fund_In()
         {
-            var faceLogger = NullLogger<FundInGetService>.Instance;
             var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-            var fakeGameProviderFundTransferTransactionRepository = Substitute.For<IGameProviderFundTransferTransactionRepository>();
+            var fakeGameFundTransferGrpcService = Substitute.For<IGameFundTransferGrpcService>();
             var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameProviderService = Substitute.For<IGameProviderService>();
             var fakePlayerService = Substitute.For<IPlayerService>();
@@ -84,14 +84,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 Arg.Is(query.GameProviderCode),
                 Arg.Is(player.PlayerCode)).Returns(ValueTask.FromResult(gameProviderBalance));
 
-            _ = fakeGameProviderFundTransferTransactionRepository.AddFundInAsync(
-                Arg.Is(gameProvider.GameProviderId),
-                Arg.Is(player.DefaultWalletId),
-                Arg.Is(player.PlayerCode),
-                Arg.Is(gameProvider.GameProviderCode),
-                Arg.Is(query.Amount),
-                Arg.Is(string.Empty)).Returns(ValueTask.FromResult(gameProviderFundTransferTransactionId));
-
             _ = fakeGameProvidersClient.PlayerFundInAsync(
                 Arg.Is(gameProvider.GameProviderCode),
                 Arg.Is(player.BrandCode),
@@ -106,23 +98,27 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                  Arg.Is($"【{gameProvider.GameProviderCode}】->【Default】"),
                  Arg.Is(gameProviderFundTransferTransactionId.ToString())).Returns(ValueTask.FromResult(transactionResponse));
 
-            await fakeGameProviderFundTransferTransactionRepository.UpdateBySuccessAsync(
-                 Arg.Is(gameProviderFundTransferTransactionId),
-                 Arg.Is(transactionResponse.TransactionId),
-                 Arg.Is(gameProviderTransactionId),
-                 Arg.Is(transactionResponse.Balance),
-                 Arg.Is(string.Empty));
-
             var fakeService = new FundInGetService(
-                fakeCashServiceClient,
-                fakeGameProviderFundTransferTransactionRepository,
+                fakeGameFundTransferGrpcService,
                 fakeGameProvidersClient,
                 fakeGameProviderService,
                 fakeGameVerificationGrpc,
-                faceLogger,
                 fakePlayerService);
 
-            _ = await fakeService.GetAsync(query).ConfigureAwait(false);
+            await fakeService.ExecuteAsync(query).ConfigureAwait(false);
+
+            var request = new GameFundTransferFundRequest()
+            {
+                GameProviderId = gameProvider.GameProviderId,
+                GameProviderCode = gameProvider.GameProviderCode,
+                BrandCode = player.BrandCode,
+                PlayerCode = player.PlayerCode,
+                CurrencyCode = player.DefaultWalletCurrencyCode,
+                WalletId = player.DefaultWalletId,
+                Amount = query.Amount
+            };
+
+            _ = fakeGameFundTransferGrpcService.Received(1).FundInAsync(request);
         }
     }
 }

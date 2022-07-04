@@ -11,6 +11,7 @@ data:
         "CashServiceBaseUrl": "http://cashservice-api",
         "GameProviderKickPlayerServerBaseUrl": "http://game-kickplayer-server",
         "GameProvidersQueryServerBaseUrl": "http://game-gameprovider-queryserver",
-        "GameVerificationBaseUrl": "http://game-gameverification:9090"
+        "GameVerificationBaseUrl": "http://game-gameverification:9090",
+        "GameFundTransferBaseUrl": "https://game-gamefundtransfer:9090"
       }
     }
