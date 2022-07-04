@@ -11,14 +11,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddDbBetRepository(this IServiceCollection services,
             Action<IServiceProvider, DbContextOptionsBuilder> efConfigure)
             => services
+                .AddSerialNumberGenerator()
                 .AddDbContext<BetContext>(efConfigure)
                 .AddTransient<IRoundRepository, RoundRepository>();
-
-        public static IServiceCollection AddDbTgsRepository(this IServiceCollection services,
-                    Action<IServiceProvider, DbContextOptionsBuilder> efConfigure)
-            => services
-                .AddSerialNumberGenerator()
-                .AddDbContext<TgsContext>(efConfigure)
-                .AddTransient<IGameProviderFundTransferTransactionRepository, GameProviderFundTransferTransactionRepository>();
     }
 }

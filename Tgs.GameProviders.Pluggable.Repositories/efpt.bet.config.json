@@ -18,19 +18,7 @@
   "SelectedToBeGenerated": 0,
   "Tables": [
     {
-      "Name": "bet.failed_game_record_operations",
-      "ObjectType": 0
-    },
-    {
-      "Name": "bet.game_action_batches",
-      "ObjectType": 0
-    },
-    {
       "Name": "bet.rounds",
-      "ObjectType": 0
-    },
-    {
-      "Name": "bet.round_details",
       "ObjectType": 0
     },
     {
@@ -42,14 +30,16 @@
       "ObjectType": 0
     }
   ],
-  "UiHint": ".tgs",
+  "UiHint": "tgs",
   "UseBoolPropertiesWithoutDefaultSql": true,
   "UseDatabaseNames": false,
   "UseDbContextSplitting": true,
   "UseFluentApiOnly": true,
   "UseHandleBars": false,
+  "UseHierarchyId": false,
   "UseInflector": true,
   "UseLegacyPluralizer": false,
+  "UseManyToManyEntity": false,
   "UseNoConstructor": true,
   "UseNoDefaultConstructor": false,
   "UseNoNavigations": true,

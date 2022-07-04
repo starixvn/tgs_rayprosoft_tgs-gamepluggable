@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore;
 using System;
 using Tgs.GameProviders.Pluggable.Repositories.Entities.Configurations;
+#nullable enable
 
 #nullable disable
 
@@ -19,23 +20,18 @@ namespace Tgs.GameProviders.Pluggable.Repositories.Entities
         {
         }
 
-        public virtual DbSet<FailedGameRecordOperation> FailedGameRecordOperations { get; set; }
         public virtual DbSet<GameAction> GameActions { get; set; }
-        public virtual DbSet<GameActionBatch> GameActionBatches { get; set; }
         public virtual DbSet<Round> Rounds { get; set; }
-        public virtual DbSet<RoundDetail> RoundDetails { get; set; }
         public virtual DbSet<RoundOperationRecord> RoundOperationRecords { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasPostgresExtension("pg_trgm")
+            modelBuilder.HasPostgresExtension("ltree")
+                .HasPostgresExtension("pg_trgm")
                 .HasAnnotation("Relational:Collation", "en_US.utf8");
 
-            modelBuilder.ApplyConfiguration(new Configurations.FailedGameRecordOperationConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.GameActionConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.GameActionBatchConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.RoundConfiguration());
-            modelBuilder.ApplyConfiguration(new Configurations.RoundDetailConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.RoundOperationRecordConfiguration());
             OnModelCreatingPartial(modelBuilder);
         }

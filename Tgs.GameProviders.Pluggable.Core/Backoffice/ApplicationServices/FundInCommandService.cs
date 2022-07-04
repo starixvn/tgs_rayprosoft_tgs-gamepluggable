@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Tgs.CashService.Client;
+using Tgs.GameFundTransfer.Client;
+using Tgs.GameFundTransfer.Protos;
 using Tgs.GameProviders.Client;
 using Tgs.ServiceUtility;
 
@@ -10,26 +10,20 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 {
     internal class FundInCommandService : ICommandService<FundInCommand>
     {
-        private readonly ICashServiceClient _cashServiceClient;
-        private readonly IGameProviderFundTransferTransactionRepository _gameProviderFundTransferTransactionRepository;
         private readonly IGameProvidersClient _gameProvidersClient;
         private readonly IGameProviderService _gameProviderService;
-        private readonly ILogger<FundInCommandService> _logger;
+        private readonly IGameFundTransferGrpcService _grpcService;
         private readonly IPlayerService _playerService;
 
         public FundInCommandService(
-            ICashServiceClient cashServiceClient,
-            IGameProviderFundTransferTransactionRepository gameProviderFundTransferTransactionRepository,
+            IGameFundTransferGrpcService grpcService,
             IGameProvidersClient gameProvidersClient,
             IGameProviderService gameProviderService,
-            ILogger<FundInCommandService> logger,
             IPlayerService playerService)
         {
-            _cashServiceClient = cashServiceClient ?? throw new ArgumentNullException(nameof(cashServiceClient));
-            _gameProviderFundTransferTransactionRepository = gameProviderFundTransferTransactionRepository ?? throw new ArgumentNullException(nameof(gameProviderFundTransferTransactionRepository));
+            _grpcService = grpcService ?? throw new ArgumentNullException(nameof(grpcService));
             _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
             _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
         }
 
@@ -40,8 +34,9 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
             var gameProvider = await _gameProviderService.GetAsync(query.GameProviderCode).ConfigureAwait(false);
 
             var gameProviderBalance = await _gameProvidersClient.PlayerBalanceAsync(
-                query.GameProviderCode,
-                player.PlayerCode).ConfigureAwait(false);
+                gameProviderCode: query.GameProviderCode,
+                playerCode: player.PlayerCode,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var amount = gameProviderBalance.GetValueOrDefault(0);
 
@@ -58,68 +53,20 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
                 return;
             }
 
-            var gameProviderFundTransferTransactionId = await _gameProviderFundTransferTransactionRepository.AddFundInAsync(
-                gameProvider.GameProviderId,
-                player.DefaultWalletId,
-                player.PlayerCode,
-                gameProvider.GameProviderCode,
-                amount,
-                string.Empty).ConfigureAwait(false);
-
-            var gameProviderTransactionId = await _gameProvidersClient.PlayerFundInAsync(
-                gameProvider.GameProviderCode,
-                player.BrandCode,
-                player.PlayerCode,
-                player.DefaultWalletCurrencyCode,
-                gameProviderFundTransferTransactionId.ToString("N"),
-                amount).ConfigureAwait(false);
-
-            if (string.IsNullOrEmpty(gameProviderTransactionId))
+            var request = new GameFundTransferFundRequest()
             {
-                await _gameProviderFundTransferTransactionRepository.UpdateByFailureOnGameProviderAsync(
-                    gameProviderFundTransferTransactionId,
-                    null,
-                    string.Empty,
-                    -1,
-                    string.Empty
-                     ).ConfigureAwait(false);
+                GameProviderId = gameProvider.GameProviderId,
+                GameProviderCode = gameProvider.GameProviderCode,
+                BrandCode = player.BrandCode,
+                PlayerCode = player.PlayerCode,
+                CurrencyCode = player.DefaultWalletCurrencyCode,
+                WalletId = player.DefaultWalletId,
+                Amount = amount
+            };
 
-                throw new Exception("The game manufacturer's transfer failed.");
-            }
-
-            try
-            {
-                var transactionResponse = await _cashServiceClient.GameProviderFundInAsync(
-                    player.DefaultWalletId,
-                    amount,
-                    $"【{gameProvider.GameProviderCode}】->【Default】",
-                    gameProviderFundTransferTransactionId.ToString(),
-                    cancellationToken).ConfigureAwait(false);
-
-                await _gameProviderFundTransferTransactionRepository.UpdateBySuccessAsync(
-                    gameProviderFundTransferTransactionId,
-                                transactionResponse.TransactionId,
-                                gameProviderTransactionId,
-                                transactionResponse.Balance,
-                                string.Empty
-                                )
-                                .ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(exception: ex, "The main wallet transfer failed.({gameProviderFundTransferTransactionId})", gameProviderFundTransferTransactionId);
-
-                await _gameProviderFundTransferTransactionRepository.UpdateByFailureOnMainWalletAsync(
-                    gameProviderFundTransferTransactionId,
-                    null,
-                    gameProviderTransactionId,
-                    -1,
-                    string.Empty
-                    )
-                    .ConfigureAwait(false);
-
-                throw new Exception($"The main wallet transfer failed.({gameProviderFundTransferTransactionId})");
-            }
+            _ = await _grpcService.FundInAsync(
+                 request: request,
+                 cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
 }
