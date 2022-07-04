@@ -55,7 +55,6 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
                 var o when o == GameProviderType.AsiaGaming => await GetAsiaGamingUrlAsync(
                         query,
                         player,
-                        gameProvider,
                         game).ConfigureAwait(false),
                 var o when o == GameProviderType.BetConstruct => await GetBetConstructUrlAsync(
                         query,
@@ -73,14 +72,14 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
                     query.PlatformType,
                     query.Language,
                     query.IpAddress,
-                    query.BackUrl).ConfigureAwait(false)
+                    query.BackUrl,
+                    cancellationToken: cancellationToken).ConfigureAwait(false)
             };
         }
 
         private async ValueTask<Uri?> GetAsiaGamingUrlAsync(
             GameUrlQuery query,
             PlayerInfo player,
-            GameProviderInfo gameProviderInfo,
             GameInfo gameModel)
         {
             var playerBalance = await _cashServiceClient
@@ -89,7 +88,6 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 
             return await _gameProvidersClient
                 .GameUrlByAsiaGamingAsync(
-                    gameProviderInfo.GameProviderCode,
                     (GameProvidersClientGameType)gameModel.GameType,
                     query.GameId,
                     player.BrandCode,
@@ -127,7 +125,6 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 
             return await _gameProvidersClient
                 .GameUrlByBetConstructAsync(
-                    gameProviderInfo.GameProviderCode,
                     (GameProvidersClientGameType)gameModel.GameType,
                     query.GameId,
                     player.BrandCode,

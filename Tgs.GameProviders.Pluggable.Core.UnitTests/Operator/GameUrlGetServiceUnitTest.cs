@@ -223,7 +223,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 .Returns(ValueTask.FromResult(playerBalance));
 
             _ = fakeGameProvidersClient.GameUrlByAsiaGamingAsync(
-                gameProvider.GameProviderCode,
                 (GameProvidersClientGameType)game.GameType,
                 Arg.Is(query.GameId),
                 Arg.Is(player.BrandCode),
@@ -364,7 +363,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                     IsDefault: false)));
 
             _ = fakeGameProvidersClient.GameUrlByBetConstructAsync(
-                gameProvider.GameProviderCode,
                 (GameProvidersClientGameType)game.GameType,
                 Arg.Is(query.GameId),
                 Arg.Is(player.BrandCode),
