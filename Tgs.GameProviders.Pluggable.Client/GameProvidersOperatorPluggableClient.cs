@@ -4,8 +4,8 @@ using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
-using Tgs.GameProviders.Pluggable.ViewModels;
 
 namespace Tgs.GameProviders.Pluggable.Client
 {
@@ -25,114 +25,82 @@ namespace Tgs.GameProviders.Pluggable.Client
         public GameProvidersOperatorPluggableClient(HttpClient httpClient)
             => _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
-        public async ValueTask<GameProviderFundResultViewModel?> GameProviderFundInAsync(string playerCode, string gameProviderCode, decimal amount)
+        public async ValueTask GameProviderFundInAsync(string playerCode, string gameProviderCode, decimal amount, CancellationToken cancellationToken = default)
         {
-            try
+            var request = new
             {
-                var request = new
-                {
-                    Amount = amount
-                };
-                var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-                requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+                Amount = amount
+            };
+            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-                var response = await _httpClient
+            var response = await _httpClient
                 .PostAsync(
-                $"/op/player/fundin/{playerCode}/{gameProviderCode}",
-                requestContent).ConfigureAwait(false);
+                    requestUri: $"/op/player/fundin/{playerCode}/{gameProviderCode}",
+                    content: requestContent,
+                    cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                _ = response.EnsureSuccessStatusCode();
-
-                var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                return JsonSerializer.Deserialize<GameProviderFundResultViewModel?>(contentJson, _SerializerOptions);
-            }
-            catch
-            {
-                return null;
-            }
+            _ = response.EnsureSuccessStatusCode();
         }
 
-        public async ValueTask<GameProviderFundResultViewModel?> GameProviderFundOutAsync(string playerCode, string gameProviderCode, decimal amount)
+        public async ValueTask GameProviderFundOutAsync(string playerCode, string gameProviderCode, decimal amount, CancellationToken cancellationToken = default)
         {
-            try
+            var request = new
             {
-                var request = new
-                {
-                    Amount = amount
-                };
-                var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-                requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+                Amount = amount
+            };
+            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-                var response = await _httpClient
+            var response = await _httpClient
                 .PostAsync(
-                $"/op/player/fundout/{playerCode}/{gameProviderCode}",
-                requestContent).ConfigureAwait(false);
+                    requestUri: $"/op/player/fundout/{playerCode}/{gameProviderCode}",
+                    content: requestContent,
+                    cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                _ = response.EnsureSuccessStatusCode();
-
-                var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                return JsonSerializer.Deserialize<GameProviderFundResultViewModel?>(contentJson, _SerializerOptions);
-            }
-            catch
-            {
-                return null;
-            }
+            _ = response.EnsureSuccessStatusCode();
         }
 
-        public async ValueTask<decimal?> GetBalanceAsync(string playerCode, string gameProviderCode)
+        public async ValueTask<decimal> GetBalanceAsync(string playerCode, string gameProviderCode, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var response = await _httpClient
+            var response = await _httpClient
                 .GetAsync(
-                $"/op/player/balance/{playerCode}/{gameProviderCode}").ConfigureAwait(false);
+                    requestUri: $"/op/player/balance/{playerCode}/{gameProviderCode}",
+                    cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                _ = response.EnsureSuccessStatusCode();
+            _ = response.EnsureSuccessStatusCode();
 
-                var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var contentJson = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                return JsonSerializer.Deserialize<decimal?>(contentJson, _SerializerOptions);
-            }
-            catch
-            {
-                return null;
-            }
+            return JsonSerializer.Deserialize<decimal>(contentJson, _SerializerOptions)!;
         }
 
-        public async ValueTask<Uri?> GetGameUrlAsync(string playerCode, Guid loginRecordId, bool isMobile, int gameId, string language, string ipAddress, Uri? backUrl)
+        public async ValueTask<Uri> GetGameUrlAsync(string playerCode, Guid loginRecordId, bool isMobile, int gameId, string language, string ipAddress, Uri? backUrl = null, CancellationToken cancellationToken = default)
         {
-            try
+            var request = new
             {
-                var request = new
-                {
-                    PlayerCode = playerCode,
-                    LoginRecordId = loginRecordId,
-                    IsMobile = isMobile,
-                    GameId = gameId,
-                    Language = language,
-                    IpAddress = ipAddress,
-                    BackUrl = backUrl
-                };
-                var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
-                requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+                PlayerCode = playerCode,
+                LoginRecordId = loginRecordId,
+                IsMobile = isMobile,
+                GameId = gameId,
+                Language = language,
+                IpAddress = ipAddress,
+                BackUrl = backUrl
+            };
+            var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
-                var response = await _httpClient
+            var response = await _httpClient
                 .PostAsync(
-                    $"/op/player/gameurl"
-                    , requestContent).ConfigureAwait(false);
+                    requestUri: "/op/player/gameurl",
+                    content: requestContent,
+                    cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                _ = response.EnsureSuccessStatusCode();
+            _ = response.EnsureSuccessStatusCode();
 
-                var contentJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var contentJson = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                return JsonSerializer.Deserialize<Uri?>(contentJson, _SerializerOptions);
-            }
-            catch
-            {
-                return null;
-            }
+            return JsonSerializer.Deserialize<Uri>(contentJson, _SerializerOptions)!;
         }
     }
 }

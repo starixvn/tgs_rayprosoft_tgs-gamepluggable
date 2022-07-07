@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Tgs.GameProviders.Pluggable.ViewModels
+namespace Tgs.GameProviders.Pluggable.ViewModels.Operator
 {
-    public class GameProviderGameUrlViewModel
+    public record GameProviderGameUrlViewModel
     {
         public Uri? BackUrl { get; init; }
 

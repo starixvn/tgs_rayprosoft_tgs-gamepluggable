@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Tgs.GameProviders.Client;
-using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
-using Tgs.GameProviders.Pluggable.ViewModels;
+using Tgs.GameProviders.Pluggable.ViewModels.Operator;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Controllers.Operator
@@ -39,8 +38,8 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
         ///         }
         /// </remarks>
         [HttpPost("fundin/{playerCode}/{gameProviderCode}")]
-        public async ValueTask<GameProviderFundResultViewModel?> GameProviderFundInAsync(
-            [FromServices] IGetService<FundInQuery, FundResult?> service,
+        public async ValueTask GameProviderFundInAsync(
+            [FromServices] ICommandService<FundInQuery> service,
             string playerCode,
             string gameProviderCode,
             [FromBody] GameProviderFundViewModel model)
@@ -56,12 +55,10 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
                 null,
                 (state, ex) => JsonSerializer.Serialize(state));
 
-            var result = await service.GetAsync(new(
+            await service.ExecuteAsync(new(
                 playerCode,
                 gameProviderCode.ToUpper(),
                 model.Amount)).ConfigureAwait(false);
-
-            return result == null ? null : new(result.TransactionsId, result.GameProviderTransactionId);
         }
 
         /// <summary>
@@ -81,8 +78,8 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
         ///         }
         /// </remarks>
         [HttpPost("fundout/{playerCode}/{gameProviderCode}")]
-        public async ValueTask<GameProviderFundResultViewModel?> GameProviderFundOutAsync(
-                [FromServices] IGetService<FundOutQuery, FundResult?> service,
+        public async ValueTask GameProviderFundOutAsync(
+                [FromServices] ICommandService<FundOutQuery> service,
                 string playerCode,
                 string gameProviderCode,
                 [FromBody] GameProviderFundViewModel model)
@@ -98,12 +95,10 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
                 null,
                 (state, ex) => JsonSerializer.Serialize(state));
 
-            var result = await service.GetAsync(new(
+            await service.ExecuteAsync(new(
                 playerCode,
                 gameProviderCode.ToUpper(),
                 model.Amount)).ConfigureAwait(false);
-
-            return result == null ? null : new(result.TransactionsId, result.GameProviderTransactionId);
         }
 
         /// <summary>

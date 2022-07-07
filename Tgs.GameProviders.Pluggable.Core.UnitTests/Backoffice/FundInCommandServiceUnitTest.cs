@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
-using Tgs.CashService.Client;
+using Tgs.GameFundTransfer.Client;
+using Tgs.GameFundTransfer.Protos;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.QueryServer.Models;
@@ -17,11 +17,9 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
         [Test]
         public async Task Game_Provider_Balance_0_006_Transferred_To_Main_Wallet()
         {
-            var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-            var fakeGameProviderFundTransferTransactionRepository = Substitute.For<IGameProviderFundTransferTransactionRepository>();
+            var fakeGameFundTransferGrpcService = Substitute.For<IGameFundTransferGrpcService>();
             var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameGameProviderService = Substitute.For<IGameProviderService>();
-            var fakeLogger = NullLogger<FundInCommandService>.Instance;
             var fakePlayerService = Substitute.For<IPlayerService>();
 
             var playerCode = "4ucmqplxb029";
@@ -66,11 +64,9 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                 Arg.Is(playerCode)).Returns(gameProviderBalance);
 
             var service = new FundInCommandService(
-                fakeCashServiceClient,
-                fakeGameProviderFundTransferTransactionRepository,
+                fakeGameFundTransferGrpcService,
                 fakeGameProvidersClient,
                 fakeGameGameProviderService,
-                fakeLogger,
                 fakePlayerService);
 
             await service.ExecuteAsync(new FundInCommand(
@@ -81,11 +77,9 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
         [Test]
         public async Task Game_Provider_Balance_0_Transferred_To_Main_Wallet()
         {
-            var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-            var fakeGameProviderFundTransferTransactionRepository = Substitute.For<IGameProviderFundTransferTransactionRepository>();
+            var fakeGameFundTransferGrpcService = Substitute.For<IGameFundTransferGrpcService>();
             var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameGameProviderService = Substitute.For<IGameProviderService>();
-            var fakeLogger = NullLogger<FundInCommandService>.Instance;
             var fakePlayerService = Substitute.For<IPlayerService>();
 
             var playerCode = "4ucmqplxb029";
@@ -130,11 +124,9 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                 Arg.Is(playerCode)).Returns(gameProviderBalance);
 
             var service = new FundInCommandService(
-                fakeCashServiceClient,
-                fakeGameProviderFundTransferTransactionRepository,
+                fakeGameFundTransferGrpcService,
                 fakeGameProvidersClient,
                 fakeGameGameProviderService,
-                fakeLogger,
                 fakePlayerService);
 
             await service.ExecuteAsync(new FundInCommand(
@@ -145,11 +137,9 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
         [Test]
         public async Task Game_Provider_Balance_100_Transferred_To_Main_Wallet()
         {
-            var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-            var fakeGameProviderFundTransferTransactionRepository = Substitute.For<IGameProviderFundTransferTransactionRepository>();
+            var fakeGameFundTransferGrpcService = Substitute.For<IGameFundTransferGrpcService>();
             var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameGameProviderService = Substitute.For<IGameProviderService>();
-            var fakeLogger = NullLogger<FundInCommandService>.Instance;
             var fakePlayerService = Substitute.For<IPlayerService>();
 
             var playerCode = "4ucmqplxb029";
@@ -195,66 +185,36 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
 
             var amount = gameProviderBalance;
 
-            var gameProviderFundTransferTransactionId = Guid.NewGuid();
-            _ = fakeGameProviderFundTransferTransactionRepository.AddFundInAsync(
-                Arg.Is(gameProviderInfo.GameProviderId),
-                Arg.Is(defaultWalletId),
-                Arg.Is(playerInfo.PlayerCode),
-                Arg.Is(gameProviderCode),
-                Arg.Is(amount),
-                Arg.Any<string>()
-                ).Returns(gameProviderFundTransferTransactionId);
-
-            var gameProviderTransactionId = Guid.NewGuid().ToString("N");
-            _ = fakeGameProvidersClient.PlayerFundInAsync(
-                Arg.Is(gameProviderInfo.GameProviderCode),
-                Arg.Is(playerInfo.BrandCode),
-                Arg.Is(playerInfo.PlayerCode),
-                Arg.Is(playerInfo.DefaultWalletCurrencyCode),
-                Arg.Is(gameProviderFundTransferTransactionId.ToString("N")),
-                Arg.Is(amount)).Returns(gameProviderTransactionId);
-
-            var transactionResponse = new TransactionResponse()
-            {
-                TransactionId = Guid.NewGuid(),
-                Balance = 100,
-                LockedBalance = 0
-            };
-            _ = fakeCashServiceClient.GameProviderFundInAsync(
-                Arg.Is(defaultWalletId),
-                Arg.Is(amount),
-                Arg.Any<string>(),
-                Arg.Is(gameProviderFundTransferTransactionId.ToString())).Returns(transactionResponse);
-
             var service = new FundInCommandService(
-                fakeCashServiceClient,
-                fakeGameProviderFundTransferTransactionRepository,
+                fakeGameFundTransferGrpcService,
                 fakeGameProvidersClient,
                 fakeGameGameProviderService,
-                fakeLogger,
                 fakePlayerService);
 
             await service.ExecuteAsync(new FundInCommand(
                  PlayerCode: playerCode,
                  GameProviderCode: gameProviderCode)).ConfigureAwait(false);
 
-            await fakeGameProviderFundTransferTransactionRepository.Received(1)
-                .UpdateBySuccessAsync(
-                 Arg.Is(gameProviderFundTransferTransactionId),
-                 Arg.Is(transactionResponse.TransactionId),
-                 Arg.Is(gameProviderTransactionId),
-                 Arg.Is(transactionResponse.Balance),
-                 Arg.Any<string>()).ConfigureAwait(false);
+            var request = new GameFundTransferFundRequest()
+            {
+                GameProviderId = gameProviderInfo.GameProviderId,
+                GameProviderCode = gameProviderInfo.GameProviderCode,
+                BrandCode = playerInfo.BrandCode,
+                PlayerCode = playerInfo.PlayerCode,
+                CurrencyCode = playerInfo.DefaultWalletCurrencyCode,
+                WalletId = playerInfo.DefaultWalletId,
+                Amount = amount
+            };
+
+            _ = fakeGameFundTransferGrpcService.Received(1).FundInAsync(request);
         }
 
         [Test]
         public async Task Game_Provider_Balance_123_456_Transferred_To_Main_Wallet_Amount_123_45()
         {
-            var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-            var fakeGameProviderFundTransferTransactionRepository = Substitute.For<IGameProviderFundTransferTransactionRepository>();
+            var fakeGameFundTransferGrpcService = Substitute.For<IGameFundTransferGrpcService>();
             var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameGameProviderService = Substitute.For<IGameProviderService>();
-            var fakeLogger = NullLogger<FundInCommandService>.Instance;
             var fakePlayerService = Substitute.For<IPlayerService>();
 
             var playerCode = "4ucmqplxb029";
@@ -300,56 +260,28 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
 
             var amount = 123.45m;
 
-            var gameProviderFundTransferTransactionId = Guid.NewGuid();
-            _ = fakeGameProviderFundTransferTransactionRepository.AddFundInAsync(
-                Arg.Is(gameProviderInfo.GameProviderId),
-                Arg.Is(defaultWalletId),
-                Arg.Is(playerInfo.PlayerCode),
-                Arg.Is(gameProviderCode),
-                Arg.Is(amount),
-                Arg.Any<string>()
-                ).Returns(gameProviderFundTransferTransactionId);
-
-            var gameProviderTransactionId = Guid.NewGuid().ToString("N");
-            _ = fakeGameProvidersClient.PlayerFundInAsync(
-                Arg.Is(gameProviderInfo.GameProviderCode),
-                Arg.Is(playerInfo.BrandCode),
-                Arg.Is(playerInfo.PlayerCode),
-                Arg.Is(playerInfo.DefaultWalletCurrencyCode),
-                Arg.Is(gameProviderFundTransferTransactionId.ToString("N")),
-                Arg.Is(amount)).Returns(gameProviderTransactionId);
-
-            var transactionResponse = new TransactionResponse()
-            {
-                TransactionId = Guid.NewGuid(),
-                Balance = 100,
-                LockedBalance = 0
-            };
-            _ = fakeCashServiceClient.GameProviderFundInAsync(
-                Arg.Is(defaultWalletId),
-                Arg.Is(amount),
-                Arg.Any<string>(),
-                Arg.Is(gameProviderFundTransferTransactionId.ToString())).Returns(transactionResponse);
-
             var service = new FundInCommandService(
-                fakeCashServiceClient,
-                fakeGameProviderFundTransferTransactionRepository,
+                fakeGameFundTransferGrpcService,
                 fakeGameProvidersClient,
                 fakeGameGameProviderService,
-                fakeLogger,
                 fakePlayerService);
 
             await service.ExecuteAsync(new FundInCommand(
                  PlayerCode: playerCode,
                  GameProviderCode: gameProviderCode)).ConfigureAwait(false);
 
-            await fakeGameProviderFundTransferTransactionRepository.Received(1)
-                .UpdateBySuccessAsync(
-                 Arg.Is(gameProviderFundTransferTransactionId),
-                 Arg.Is(transactionResponse.TransactionId),
-                 Arg.Is(gameProviderTransactionId),
-                 Arg.Is(transactionResponse.Balance),
-                 Arg.Any<string>()).ConfigureAwait(false);
+            var request = new GameFundTransferFundRequest()
+            {
+                GameProviderId = gameProviderInfo.GameProviderId,
+                GameProviderCode = gameProviderInfo.GameProviderCode,
+                BrandCode = playerInfo.BrandCode,
+                PlayerCode = playerInfo.PlayerCode,
+                CurrencyCode = playerInfo.DefaultWalletCurrencyCode,
+                WalletId = playerInfo.DefaultWalletId,
+                Amount = amount
+            };
+
+            _ = fakeGameFundTransferGrpcService.Received(1).FundInAsync(request);
         }
     }
 }
