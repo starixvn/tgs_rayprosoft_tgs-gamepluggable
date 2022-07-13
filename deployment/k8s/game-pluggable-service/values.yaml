@@ -10,8 +10,7 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
-imagePullSecrets: 
-  - dockerhub
+imagePullSecrets: dockerhub
 nameOverride: "game-pluggable-service"
 fullnameOverride: "game-pluggable-service"
 
