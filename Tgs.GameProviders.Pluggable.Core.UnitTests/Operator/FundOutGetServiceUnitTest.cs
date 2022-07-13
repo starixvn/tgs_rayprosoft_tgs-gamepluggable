@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Client;
+using Tgs.GameFundTransfer.Client;
+using Tgs.GameFundTransfer.Protos;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
@@ -18,9 +19,8 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
         [Test]
         public async Task Fund_Out()
         {
-            var faceLogger = NullLogger<FundOutGetService>.Instance;
             var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-            var fakeGameProviderFundTransferTransactionRepository = Substitute.For<IGameProviderFundTransferTransactionRepository>();
+            var fakeGameFundTransferGrpcService = Substitute.For<IGameFundTransferGrpcService>();
             var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameProviderService = Substitute.For<IGameProviderService>();
             var fakePlayerService = Substitute.For<IPlayerService>();
@@ -63,14 +63,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
 
             decimal? gameProviderBalance = 0m;
             var balance = 10.0m;
-            var gameProviderFundTransferTransactionId = Guid.NewGuid();
-            var gameProviderTransactionId = $"72412{DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)):yyyyMMddHHmmssfff}4udwnknl3eg7";
-
-            var transactionResponse = new TransactionResponse()
-            {
-                TransactionId = Guid.NewGuid(),
-                Balance = 10
-            };
 
             _ = fakePlayerService.GetAsync(
                 Arg.Is(query.PlayerCode)).Returns(ValueTask.FromResult(player));
@@ -88,46 +80,28 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             _ = fakeCashServiceClient.GetBalanceAsync(
                 Arg.Is(player.DefaultWalletId)).Returns(ValueTask.FromResult(balance));
 
-            _ = fakeGameProviderFundTransferTransactionRepository.AddFundOutAsync(
-                Arg.Is(gameProvider.GameProviderId),
-                Arg.Is(player.DefaultWalletId),
-                Arg.Is(player.PlayerCode),
-                Arg.Is(gameProvider.GameProviderCode),
-                Arg.Is(query.Amount * -1),
-                Arg.Is(string.Empty)).Returns(ValueTask.FromResult(gameProviderFundTransferTransactionId));
-
-            _ = fakeCashServiceClient.GameProviderFundOutAsync(
-                 Arg.Is(player.DefaultWalletId),
-                 Arg.Is(query.Amount),
-                 Arg.Is($"【Default】->【{gameProvider.GameProviderCode}】"),
-                 Arg.Is(gameProviderFundTransferTransactionId.ToString())).Returns(ValueTask.FromResult(transactionResponse));
-
-            _ = fakeGameProvidersClient.PlayerFundOutAsync(
-                Arg.Is(gameProvider.GameProviderCode),
-                Arg.Is(player.BrandCode),
-                Arg.Is(player.PlayerCode),
-                Arg.Is(player.DefaultWalletCurrencyCode),
-                Arg.Is(gameProviderFundTransferTransactionId.ToString("N")),
-                Arg.Is(query.Amount)).Returns(ValueTask.FromResult(gameProviderTransactionId));
-
-            await fakeGameProviderFundTransferTransactionRepository.UpdateBySuccessAsync(
-                Arg.Is(gameProviderFundTransferTransactionId),
-                Arg.Is(transactionResponse.TransactionId),
-                Arg.Is(gameProviderTransactionId),
-                Arg.Is(transactionResponse.Balance),
-                Arg.Is(string.Empty)
-                );
-
             var fakeService = new FundOutGetService(
                 fakeCashServiceClient,
-                fakeGameProviderFundTransferTransactionRepository,
+                fakeGameFundTransferGrpcService,
                 fakeGameProvidersClient,
                 fakeGameProviderService,
                 fakeGameVerificationGrpc,
-                faceLogger,
                 fakePlayerService);
 
-            _ = await fakeService.GetAsync(query).ConfigureAwait(false);
+            await fakeService.ExecuteAsync(query).ConfigureAwait(false);
+
+            var request = new GameFundTransferFundRequest()
+            {
+                GameProviderId = gameProvider.GameProviderId,
+                GameProviderCode = gameProvider.GameProviderCode,
+                BrandCode = player.BrandCode,
+                PlayerCode = player.PlayerCode,
+                CurrencyCode = player.DefaultWalletCurrencyCode,
+                WalletId = player.DefaultWalletId,
+                Amount = query.Amount
+            };
+
+            _ = fakeGameFundTransferGrpcService.Received(1).FundOutAsync(request);
         }
     }
 }

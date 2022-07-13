@@ -16,6 +16,6 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
         }
 
         public ValueTask ExecuteAsync(KickPlayerGameProviderCommand command, CancellationToken cancellationToken = default)
-            => _gameProvidersClient.KickPlayerAsync(command.GameProviderCode, command.PlayerCode);
+            => _gameProvidersClient.KickPlayerAsync(command.GameProviderCode, command.PlayerCode, cancellationToken: cancellationToken);
     }
 }

@@ -5,13 +5,12 @@
 replicaCount: 1
 
 image:
-  repository: harbor.rpgp.cc/tgs/game-pluggable-service
+  repository: pgtgs/game-pluggable-service
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
-imagePullSecrets: 
-  - name: secret-tgs-harbor
+imagePullSecrets: dockerhub
 nameOverride: "game-pluggable-service"
 fullnameOverride: "game-pluggable-service"
 

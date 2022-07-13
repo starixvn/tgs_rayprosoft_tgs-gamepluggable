@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Tgs.CashService.Client;
+using Tgs.GameFundTransfer.Client;
+using Tgs.GameFundTransfer.Protos;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Client;
@@ -64,10 +66,14 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                string.Empty
               );
 
+            var fakeGameFundTransferGrpcService = Substitute.For<IGameFundTransferGrpcService>();
+
             await using var web = new TestPluggableApplication(builder =>
             {
                 _ = builder.ConfigureServices(services =>
                   {
+                      _ = services.AddSingleton(fakeGameFundTransferGrpcService);
+
                       var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
 
                       _ = fakeGameProvidersClient
@@ -123,39 +129,28 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                           player.PlayerCode, gameProvider.GameProviderId).Returns(true);
 
                       _ = services.AddSingleton(fakeGameVerificationGrpc);
-
-                      var fakeGameProviderFundTransferTransactionRepository = Substitute.For<IGameProviderFundTransferTransactionRepository>();
-
-                      _ = fakeGameProviderFundTransferTransactionRepository.AddFundOutAsync(
-                          Arg.Is(gameProvider.GameProviderId),
-                          Arg.Is(player.DefaultWalletId),
-                          Arg.Is(player.PlayerCode),
-                          Arg.Is(gameProvider.GameProviderCode),
-                          Arg.Is(amount * -1),
-                          Arg.Is(string.Empty)).Returns(ValueTask.FromResult(gameProviderFundTransferTransactionId));
-
-                      _ = fakeGameProviderFundTransferTransactionRepository.UpdateBySuccessAsync(
-                          Arg.Is(gameProviderFundTransferTransactionId),
-                          Arg.Is(transactionResponse.TransactionId),
-                          Arg.Is(orderId),
-                          Arg.Is(transactionResponse.Balance),
-                          Arg.Is(string.Empty));
-
-                      _ = services.AddSingleton(fakeGameProviderFundTransferTransactionRepository);
                   });
             });
 
             var httpClient = web.CreateClient();
 
             var sut = new GameProvidersOperatorPluggableClient(httpClient);
-
-            var actual = await sut.GameProviderFundOutAsync(
+            await sut.GameProviderFundOutAsync(
                 playerCode,
                 gameProviderCode,
                 amount).ConfigureAwait(false);
 
-            Assert.IsNotNull(actual);
-            Assert.AreEqual(gameProviderFundTransferTransactionId, new Guid(actual.GameProviderTransactionId));
+            var request = new GameFundTransferFundRequest()
+            {
+                GameProviderId = gameProvider.GameProviderId,
+                GameProviderCode = gameProvider.GameProviderCode,
+                BrandCode = player.BrandCode,
+                PlayerCode = player.PlayerCode,
+                CurrencyCode = player.DefaultWalletCurrencyCode,
+                WalletId = player.DefaultWalletId,
+                Amount = amount
+            };
+            _ = fakeGameFundTransferGrpcService.Received(1).FundOutAsync(request);
         }
     }
 }

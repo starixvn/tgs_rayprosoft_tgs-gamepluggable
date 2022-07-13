@@ -36,7 +36,8 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
             return (await _gameVerificationGrpc.VerifyPlayerBalanceAsync(player.PlayerCode, gameProvider.GameProviderId).ConfigureAwait(false))
                 ? await _gameProvidersClient.PlayerBalanceAsync(
                     gameProvider.GameProviderCode,
-                    player.PlayerCode).ConfigureAwait(false)
+                    player.PlayerCode,
+                    cancellationToken: cancellationToken).ConfigureAwait(false)
                 : throw new Exception("Transfer verification failed. (1. The player does not exist or is not enabled. 2. The game manufacturer does not exist or is not enabled. 3. The game market does not support this currency.)");
         }
     }
