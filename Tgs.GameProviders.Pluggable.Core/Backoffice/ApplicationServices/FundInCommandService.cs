@@ -10,32 +10,32 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 {
     internal class FundInCommandService : ICommandService<FundInCommand>
     {
-        private readonly IGameProvidersClient _gameProvidersClient;
         private readonly IGameProviderService _gameProviderService;
         private readonly IGameFundTransferGrpcService _grpcService;
         private readonly IPlayerService _playerService;
 
         public FundInCommandService(
             IGameFundTransferGrpcService grpcService,
-            IGameProvidersClient gameProvidersClient,
             IGameProviderService gameProviderService,
             IPlayerService playerService)
         {
             _grpcService = grpcService ?? throw new ArgumentNullException(nameof(grpcService));
-            _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
             _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
             _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
         }
 
         public async ValueTask ExecuteAsync(FundInCommand query, CancellationToken cancellationToken = default)
         {
-            var player = await _playerService.GetAsync(query.PlayerCode).ConfigureAwait(false);
+            var player = await _playerService.GetAsync(
+                playerCode: query.PlayerCode,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var gameProvider = await _gameProviderService.GetAsync(query.GameProviderCode).ConfigureAwait(false);
 
-            var gameProviderBalance = await _gameProvidersClient.PlayerBalanceAsync(
+            var gameProviderBalance = await _playerService.GetBalanceAsync(
                 gameProviderCode: query.GameProviderCode,
                 playerCode: player.PlayerCode,
+                currencyCode: player.DefaultWalletCurrencyCode,
                 cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var amount = gameProviderBalance.GetValueOrDefault(0);

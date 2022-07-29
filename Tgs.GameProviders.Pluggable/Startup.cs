@@ -74,32 +74,37 @@ namespace Tgs.GameProviders.Pluggable
                   (options, sp) =>
                   {
                       var configuration = sp.GetRequiredService<IConfiguration>();
-                      options.BaseUrl = configuration.GetValue<Uri>("Pluggable:CashServiceBaseUrl");
+                      options.BaseUrl = configuration.GetValue<Uri>("Pluggable:CashServiceClientBaseUrl");
                   },
                   (options, sp) =>
                   {
                       var configuration = sp.GetRequiredService<IConfiguration>();
-                      options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameProvidersBaseUrl");
+                      options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameProvidersClientBaseUrl");
                   },
                   (options, sp) =>
                   {
                       var configuration = sp.GetRequiredService<IConfiguration>();
-                      options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameProvidersQueryServerBaseUrl");
+                      options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameProvidersQueryServerClientBaseUrl");
                   },
                   (options, sp) =>
                   {
                       var configuration = sp.GetRequiredService<IConfiguration>();
-                      options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameProviderKickPlayerServerBaseUrl");
+                      options.BaseUrl = configuration.GetValue<Uri>("Pluggable:KickPlayerServiceClientBaseUrl");
                   },
                   (options, sp) =>
                   {
                       var configuration = sp.GetRequiredService<IConfiguration>();
-                      options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameVerificationBaseUrl");
+                      options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameVerificationClientBaseUrl");
                   },
                   (options, sp) =>
                   {
                       var configuration = sp.GetRequiredService<IConfiguration>();
-                      options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameFundTransferBaseUrl");
+                      options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameFundTransferClientBaseUrl");
+                  },
+                  (options, sp) =>
+                  {
+                      var configuration = sp.GetRequiredService<IConfiguration>();
+                      options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameCurrencyClientBaseUrl");
                   });
 
             _ = services
