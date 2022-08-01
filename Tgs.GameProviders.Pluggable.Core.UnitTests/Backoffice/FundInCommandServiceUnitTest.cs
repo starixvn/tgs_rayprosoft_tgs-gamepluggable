@@ -18,7 +18,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
         public async Task Game_Provider_Balance_0_006_Transferred_To_Main_Wallet()
         {
             var fakeGameFundTransferGrpcService = Substitute.For<IGameFundTransferGrpcService>();
-            var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameGameProviderService = Substitute.For<IGameProviderService>();
             var fakePlayerService = Substitute.For<IPlayerService>();
 
@@ -59,13 +58,13 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                 Arg.Is(gameProviderCode)).Returns(gameProviderInfo);
 
             var gameProviderBalance = 0.006m;
-            _ = fakeGameProvidersClient.PlayerBalanceAsync(
+            _ = fakePlayerService.GetBalanceAsync(
                 Arg.Is(gameProviderCode),
-                Arg.Is(playerCode)).Returns(gameProviderBalance);
+                Arg.Is(playerCode),
+                Arg.Is(playerInfo.DefaultWalletCurrencyCode)).Returns(gameProviderBalance);
 
             var service = new FundInCommandService(
                 fakeGameFundTransferGrpcService,
-                fakeGameProvidersClient,
                 fakeGameGameProviderService,
                 fakePlayerService);
 
@@ -125,7 +124,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
 
             var service = new FundInCommandService(
                 fakeGameFundTransferGrpcService,
-                fakeGameProvidersClient,
                 fakeGameGameProviderService,
                 fakePlayerService);
 
@@ -138,7 +136,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
         public async Task Game_Provider_Balance_100_Transferred_To_Main_Wallet()
         {
             var fakeGameFundTransferGrpcService = Substitute.For<IGameFundTransferGrpcService>();
-            var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameGameProviderService = Substitute.For<IGameProviderService>();
             var fakePlayerService = Substitute.For<IPlayerService>();
 
@@ -179,15 +176,15 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                 Arg.Is(gameProviderCode)).Returns(gameProviderInfo);
 
             var gameProviderBalance = 100m;
-            _ = fakeGameProvidersClient.PlayerBalanceAsync(
+            _ = fakePlayerService.GetBalanceAsync(
                 Arg.Is(gameProviderCode),
-                Arg.Is(playerCode)).Returns(gameProviderBalance);
+                Arg.Is(playerCode),
+                Arg.Is(playerInfo.DefaultWalletCurrencyCode)).Returns(gameProviderBalance);
 
             var amount = gameProviderBalance;
 
             var service = new FundInCommandService(
                 fakeGameFundTransferGrpcService,
-                fakeGameProvidersClient,
                 fakeGameGameProviderService,
                 fakePlayerService);
 
@@ -213,7 +210,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
         public async Task Game_Provider_Balance_123_456_Transferred_To_Main_Wallet_Amount_123_45()
         {
             var fakeGameFundTransferGrpcService = Substitute.For<IGameFundTransferGrpcService>();
-            var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameGameProviderService = Substitute.For<IGameProviderService>();
             var fakePlayerService = Substitute.For<IPlayerService>();
 
@@ -254,15 +250,15 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                 Arg.Is(gameProviderCode)).Returns(gameProviderInfo);
 
             var gameProviderBalance = 123.456m;
-            _ = fakeGameProvidersClient.PlayerBalanceAsync(
+            _ = fakePlayerService.GetBalanceAsync(
                 Arg.Is(gameProviderCode),
-                Arg.Is(playerCode)).Returns(gameProviderBalance);
+                Arg.Is(playerCode),
+                Arg.Is(playerInfo.DefaultWalletCurrencyCode)).Returns(gameProviderBalance);
 
             var amount = 123.45m;
 
             var service = new FundInCommandService(
                 fakeGameFundTransferGrpcService,
-                fakeGameProvidersClient,
                 fakeGameGameProviderService,
                 fakePlayerService);
 

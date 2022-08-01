@@ -7,11 +7,12 @@ data:
   appsettings.json: |
     {
       "Pluggable": {
-        "GameProvidersBaseUrl": "http://game-gameproviders",
-        "CashServiceBaseUrl": "http://cashservice-api",
-        "GameProviderKickPlayerServerBaseUrl": "http://game-kickplayer-server",
-        "GameProvidersQueryServerBaseUrl": "http://game-gameprovider-queryserver",
-        "GameVerificationBaseUrl": "http://game-gameverification:9090",
-        "GameFundTransferBaseUrl": "http://game-gamefundtransfer:9090"
+        "GameProvidersClientBaseUrl": "http://game-gameproviders/",
+        "CashServiceClientBaseUrl": "http://cashservice-api/",
+        "KickPlayerServiceClientBaseUrl": "http://game-kickplayer-server/",
+        "GameProvidersQueryServerClientBaseUrl": "http://game-gameprovider-queryserver/",
+        "GameVerificationClientBaseUrl": "http://game-gameverification:9090/",
+        "GameFundTransferClientBaseUrl": "http://game-gamefundtransfer:9090/",
+        "GameCurrencyClientBaseUrl": "http://game-gamecurrency/"
       }
     }

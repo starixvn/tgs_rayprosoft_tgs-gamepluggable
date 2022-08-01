@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Intrinsics.Arm;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
@@ -16,13 +17,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
         [Test]
         public async Task Player_Balance()
         {
-            var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameProvider = Substitute.For<IGameProviderService>();
             var fakePlayer = Substitute.For<IPlayerService>();
             var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
 
             var fakeService = new PlayerBalanceGetService(
-                  fakeGameProvidersClient,
                   fakeGameProvider,
                   fakeGameVerificationGrpc,
                   fakePlayer);
@@ -45,7 +44,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
 
             var gameProvider = new GameProviderInfo(
                  Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
-                 Tgs.GameProviders.QueryServer.Models.GameProviderStatus.Active,
+                 GameProviderStatus.Active,
                  string.Empty,
                  true,
                  true,
@@ -70,9 +69,10 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             _ = fakeGameVerificationGrpc.VerifyPlayerBalanceAsync(
                 player.PlayerCode, gameProvider.GameProviderId).Returns(true);
 
-            _ = fakeGameProvidersClient.PlayerBalanceAsync(
+            _ = fakePlayer.GetBalanceAsync(
                 Arg.Is(query.GameProviderCode),
-                Arg.Is(player.PlayerCode)).Returns(ValueTask.FromResult(gameProviderBalance));
+                Arg.Is(query.PlayerCode),
+                Arg.Is(player.DefaultWalletCurrencyCode)).Returns(gameProviderBalance);
 
             var actual = await fakeService.GetAsync(query);
 

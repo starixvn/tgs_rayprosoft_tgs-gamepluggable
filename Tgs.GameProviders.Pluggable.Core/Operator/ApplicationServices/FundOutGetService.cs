@@ -48,10 +48,11 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
                 throw new Exception("Transfer verification failed. (1. The player does not exist or is not enabled. 2. The game manufacturer does not exist or is not enabled. 3. The game market does not support this currency.)");
             }
 
-            _ = await _gameProvidersClient.PlayerBalanceAsync(
-               query.GameProviderCode,
-               player.PlayerCode,
-               cancellationToken: cancellationToken).ConfigureAwait(false);
+            _ = await _playerService.GetBalanceAsync(
+                    gameProvider.GameProviderCode,
+                    player.PlayerCode,
+                    player.DefaultWalletCurrencyCode,
+                    cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var playerBalance = await _cashServiceClient.GetBalanceAsync(player.DefaultWalletId, cancellationToken).ConfigureAwait(false);
 
