@@ -3,23 +3,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GameFundTransfer.Protos;
-using Tgs.GameProviders.Client;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 {
     internal class FundInCommandService : ICommandService<FundInCommand>
     {
+        private readonly IGameFundTransferClient _client;
         private readonly IGameProviderService _gameProviderService;
-        private readonly IGameFundTransferGrpcService _grpcService;
         private readonly IPlayerService _playerService;
 
         public FundInCommandService(
-            IGameFundTransferGrpcService grpcService,
+            IGameFundTransferClient client,
             IGameProviderService gameProviderService,
             IPlayerService playerService)
         {
-            _grpcService = grpcService ?? throw new ArgumentNullException(nameof(grpcService));
+            _client = client ?? throw new ArgumentNullException(nameof(client));
             _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
             _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
         }
@@ -64,7 +63,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
                 Amount = amount
             };
 
-            _ = await _grpcService.FundInAsync(
+            _ = await _client.FundInAsync(
                  request: request,
                  cancellationToken: cancellationToken).ConfigureAwait(false);
         }

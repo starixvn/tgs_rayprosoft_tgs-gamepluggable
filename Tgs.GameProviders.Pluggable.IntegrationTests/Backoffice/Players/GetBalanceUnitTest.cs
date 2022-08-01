@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
@@ -57,8 +56,6 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Players
             {
                 _ = builder.ConfigureServices(services =>
                 {
-
-
                     var fakePlayer = Substitute.For<IPlayerService>();
 
                     _ = fakePlayer

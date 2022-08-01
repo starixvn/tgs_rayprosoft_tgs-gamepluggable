@@ -39,7 +39,9 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 
         public async ValueTask<Uri?> GetAsync(GameUrlQuery query, CancellationToken cancellationToken = default)
         {
-            var player = await _playerService.GetAsync(query.PlayerCode).ConfigureAwait(false);
+            var player = await _playerService.GetAsync(
+                query.PlayerCode,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
 
             if (!await _gameVerificationGrpc.VerifyPlayerGameUrlAsync(query.PlayerCode, query.GameId).ConfigureAwait(false))
             {

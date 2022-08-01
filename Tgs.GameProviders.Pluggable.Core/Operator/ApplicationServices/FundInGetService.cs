@@ -11,20 +11,20 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 {
     internal class FundInGetService : ICommandService<FundInQuery>
     {
+        private readonly IGameFundTransferClient _gameFundTransferClient;
         private readonly IGameProvidersClient _gameProvidersClient;
         private readonly IGameProviderService _gameProviderService;
         private readonly IGameVerificationGrpc _gameVerificationGrpc;
-        private readonly IGameFundTransferGrpcService _grpcService;
         private readonly IPlayerService _playerService;
 
         public FundInGetService(
-            IGameFundTransferGrpcService grpcService,
+            IGameFundTransferClient gameFundTransferClient,
             IGameProvidersClient gameProvidersClient,
             IGameProviderService gameProviderService,
             IGameVerificationGrpc gameVerificationGrpc,
             IPlayerService playerService)
         {
-            _grpcService = grpcService ?? throw new ArgumentNullException(nameof(grpcService));
+            _gameFundTransferClient = gameFundTransferClient ?? throw new ArgumentNullException(nameof(gameFundTransferClient));
             _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
             _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
             _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
@@ -35,7 +35,9 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
         {
             var amount = Math.Abs(query.Amount);
 
-            var player = await _playerService.GetAsync(query.PlayerCode).ConfigureAwait(false);
+            var player = await _playerService.GetAsync(
+                query.PlayerCode,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var gameProvider = await _gameProviderService.GetAsync(query.GameProviderCode).ConfigureAwait(false);
 
@@ -66,7 +68,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
                 Amount = amount
             };
 
-            _ = await _grpcService.FundInAsync(
+            _ = await _gameFundTransferClient.FundInAsync(
                  request: request,
                  cancellationToken: cancellationToken).ConfigureAwait(false);
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Tgs.GameProviders.Client;
 using Tgs.GameVerification.Client;
 
 using Tgs.ServiceUtility;

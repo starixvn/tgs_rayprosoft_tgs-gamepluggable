@@ -9,9 +9,9 @@ namespace Tgs.GameProviders.Pluggable.Core
 {
     internal class PlayerService : IPlayerService
     {
-        private readonly IGameProvidersQueryServerClient _gameProvidersQueryServerClient;
-        private readonly IGameProvidersClient _gameProvidersClient;
         private readonly IGameCurrencyClient _gameCurrencyClient;
+        private readonly IGameProvidersClient _gameProvidersClient;
+        private readonly IGameProvidersQueryServerClient _gameProvidersQueryServerClient;
 
         public PlayerService(
             IGameProvidersQueryServerClient gameProvidersQueryServerClient,
@@ -58,7 +58,7 @@ namespace Tgs.GameProviders.Pluggable.Core
 
             if (gameProviderBalance.HasValue)
             {
-                var exchangeRateBalanceResult = await _gameCurrencyClient.GetExchangeRateBalanceAsync(
+                var exchangeRateBalanceResult = await _gameCurrencyClient.ConvertPlatformBalanceAsync(
                     gameProviderCode,
                     currencyCode,
                     gameProviderBalance.Value,
