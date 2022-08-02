@@ -20,8 +20,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
         public async Task Fund_Out()
         {
             var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-            var fakeGameFundTransferGrpcService = Substitute.For<IGameFundTransferGrpcService>();
-            var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
+            var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
             var fakeGameProviderService = Substitute.For<IGameProviderService>();
             var fakePlayerService = Substitute.For<IPlayerService>();
             var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
@@ -61,7 +60,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                  string.Empty
                  );
 
-            decimal? gameProviderBalance = 0m;
             var balance = 10.0m;
 
             _ = fakePlayerService.GetAsync(
@@ -73,17 +71,12 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             _ = fakeGameVerificationGrpc.VerifyPlayerFundAsync(
                 Arg.Is(player.PlayerCode), Arg.Is(gameProvider.GameProviderId)).Returns(true);
 
-            _ = fakeGameProvidersClient.PlayerBalanceAsync(
-                Arg.Is(query.GameProviderCode),
-                Arg.Is(player.PlayerCode)).Returns(ValueTask.FromResult(gameProviderBalance));
-
             _ = fakeCashServiceClient.GetBalanceAsync(
                 Arg.Is(player.DefaultWalletId)).Returns(ValueTask.FromResult(balance));
 
             var fakeService = new FundOutGetService(
                 fakeCashServiceClient,
-                fakeGameFundTransferGrpcService,
-                fakeGameProvidersClient,
+                fakeGameFundTransferClient,
                 fakeGameProviderService,
                 fakeGameVerificationGrpc,
                 fakePlayerService);
@@ -101,7 +94,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 Amount = query.Amount
             };
 
-            _ = fakeGameFundTransferGrpcService.Received(1).FundOutAsync(request);
+            _ = fakeGameFundTransferClient.Received(1).FundOutAsync(request);
         }
     }
 }
