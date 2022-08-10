@@ -65,13 +65,13 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                string.Empty
               );
 
-            var fakeGameFundTransferGrpcService = Substitute.For<IGameFundTransferGrpcService>();
+            var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
 
             await using var web = new TestPluggableApplication(builder =>
             {
                 _ = builder.ConfigureServices(services =>
                   {
-                      _ = services.AddSingleton(fakeGameFundTransferGrpcService);
+                      _ = services.AddSingleton(fakeGameFundTransferClient);
 
                       var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
 
@@ -152,7 +152,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
                 WalletId = player.DefaultWalletId,
                 Amount = amount
             };
-            _ = fakeGameFundTransferGrpcService.Received(1).FundInAsync(request);
+            _ = fakeGameFundTransferClient.Received(1).FundInAsync(request);
         }
     }
 }

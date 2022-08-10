@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
@@ -57,36 +56,33 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Players
             {
                 _ = builder.ConfigureServices(services =>
                 {
-                    var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
-
-                    _ = fakeGameProvidersClient
-                    .PlayerBalanceAsync(gameProviderCode, playerCode)
-                    .Returns(ValueTask.FromResult(gameProviderBalance));
-
-                    _ = services.AddSingleton(fakeGameProvidersClient);
-
                     var fakePlayer = Substitute.For<IPlayerService>();
 
                     _ = fakePlayer
-                        .GetAsync(playerCode)
+                        .GetAsync(Arg.Is(playerCode))
                         .Returns(ValueTask.FromResult(player));
+
+                    _ = fakePlayer.GetBalanceAsync(
+                        Arg.Is(gameProviderCode),
+                        Arg.Is(playerCode),
+                        Arg.Is(player.DefaultWalletCurrencyCode)
+                        ).Returns(ValueTask.FromResult(gameProviderBalance));
 
                     _ = services.AddSingleton(fakePlayer);
 
                     var fakeGameProvider = Substitute.For<IGameProviderService>();
 
-                    _ = fakeGameProvider
-                    .GetCacheGameProviderIdAsync(
-                        gameProviderCode).Returns(ValueTask.FromResult(gameProvider.GameProviderId));
+                    _ = fakeGameProvider.GetCacheGameProviderIdAsync(
+                        Arg.Is(gameProviderCode)).Returns(ValueTask.FromResult(gameProvider.GameProviderId));
 
                     _ = services.AddSingleton(fakeGameProvider);
 
                     var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
 
                     _ = fakeGameVerificationGrpc.VerifyPlayerGameProviderCurrencyAsync(
-                                    player.BrandId,
-                                    gameProvider.GameProviderId,
-                                    player.DefaultWalletCurrencyCode
+                                    Arg.Is(player.BrandId),
+                                    Arg.Is(gameProvider.GameProviderId),
+                                    Arg.Is(player.DefaultWalletCurrencyCode)
                                     ).Returns(true);
 
                     _ = services.AddSingleton(fakeGameVerificationGrpc);

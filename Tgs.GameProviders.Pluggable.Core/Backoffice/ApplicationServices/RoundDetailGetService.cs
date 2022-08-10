@@ -63,7 +63,6 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
                     Value = "Game result not yet, please wait!(遊戲結果尚未，請稍後!)"
                 }));
             }
-
         }
     }
 }

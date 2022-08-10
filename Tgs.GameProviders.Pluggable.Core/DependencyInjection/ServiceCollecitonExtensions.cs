@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Tgs.CashService.Client;
+using Tgs.GameCurrency.Client;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.KickPlayerServer.Client;
@@ -19,8 +20,8 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<GameProvidersQueryServerClientOptions, IServiceProvider> gameProvidersQueryServerClientOptions,
             Action<KickPlayerServiceClientOptions, IServiceProvider> kickPlayerServiceClientOptions,
             Action<GameVerificationClientOptions, IServiceProvider> gameVerificationClientOptions,
-            Action<GameFundTransferClientOptions, IServiceProvider> gameTransferClientOptions
-            )
+            Action<GameFundTransferClientOptions, IServiceProvider> gameTransferClientOptions,
+            Action<GameCurrencyClientOptions, IServiceProvider> gameCurrencyClientOptions)
             => services
             .RegisterAllServiceUtilityTypes(
                 Assembly.GetExecutingAssembly(),
@@ -32,6 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
             .AddKickPlayerServerClient(kickPlayerServiceClientOptions)
             .AddGameVerificationClient(gameVerificationClientOptions)
             .AddGameFundTransferClient(gameTransferClientOptions)
+            .AddGameCurrencyClient(gameCurrencyClientOptions)
             .AddTransient<IBrandService, BrandService>()
             .AddTransient<IGameProviderService, GameProviderService>()
             .AddTransient<IGameService, GameService>()

@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
@@ -55,19 +54,18 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
             {
                 _ = builder.ConfigureServices(services =>
                 {
-                    var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
-
-                    _ = fakeGameProvidersClient
-                     .PlayerBalanceAsync(gameProviderCode, playerCode)
-                     .Returns(ValueTask.FromResult(gameProviderBalance));
-
-                    _ = services.AddSingleton(fakeGameProvidersClient);
-
                     var fakePlayer = Substitute.For<IPlayerService>();
 
                     _ = fakePlayer
-                        .GetAsync(playerCode)
+                        .GetAsync(Arg.Is(playerCode))
                         .Returns(ValueTask.FromResult(player));
+
+                    _ = fakePlayer
+                        .GetBalanceAsync(
+                        Arg.Is(gameProviderCode),
+                        Arg.Is(playerCode),
+                        Arg.Is(player.DefaultWalletCurrencyCode))
+                        .Returns(ValueTask.FromResult(gameProviderBalance));
 
                     _ = services.AddSingleton(fakePlayer);
 

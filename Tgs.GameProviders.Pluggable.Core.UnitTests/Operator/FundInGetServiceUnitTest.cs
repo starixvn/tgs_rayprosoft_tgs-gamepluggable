@@ -20,7 +20,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
         public async Task Fund_In()
         {
             var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-            var fakeGameFundTransferGrpcService = Substitute.For<IGameFundTransferGrpcService>();
+            var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
             var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameProviderService = Substitute.For<IGameProviderService>();
             var fakePlayerService = Substitute.For<IPlayerService>();
@@ -99,7 +99,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                  Arg.Is(gameProviderFundTransferTransactionId.ToString())).Returns(ValueTask.FromResult(transactionResponse));
 
             var fakeService = new FundInGetService(
-                fakeGameFundTransferGrpcService,
+                fakeGameFundTransferClient,
                 fakeGameProvidersClient,
                 fakeGameProviderService,
                 fakeGameVerificationGrpc,
@@ -118,7 +118,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 Amount = query.Amount
             };
 
-            _ = fakeGameFundTransferGrpcService.Received(1).FundInAsync(request);
+            _ = fakeGameFundTransferClient.Received(1).FundInAsync(request);
         }
     }
 }
