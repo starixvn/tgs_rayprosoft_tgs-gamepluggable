@@ -9,6 +9,8 @@ namespace Tgs.GameProviders.Pluggable.Client
 {
     public interface IGameProvidersBackofficePluggableClient
     {
+        ValueTask AddRoundAsync(AddRoundViewModel viewModel, CancellationToken cancellationToken = default);
+
         ValueTask AdjustClosedRoundAsync(Guid RoundId, AdjustClosedRoundViewModel viewModel, CancellationToken cancellationToken = default);
 
         ValueTask FundInAsync(string playerCode, string gameProviderCode, CancellationToken cancellationToken = default);

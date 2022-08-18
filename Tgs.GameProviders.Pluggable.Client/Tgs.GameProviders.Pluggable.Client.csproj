@@ -7,7 +7,7 @@
 
 	<PropertyGroup>
 		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-		<Version>0.0.22</Version>
+		<Version>0.0.23</Version>
 		<Authors>Raypro</Authors>
 		<Description>Tgs Game Providers Pluggable Client</Description>
 		<RepositoryUrl>https://gitlab.com/rayprosoft/tgs-gameproviders-pluggableservice.git</RepositoryUrl>

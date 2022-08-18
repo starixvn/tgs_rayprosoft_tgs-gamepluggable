@@ -8,6 +8,7 @@ using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.Pluggable.ViewModels;
 using Tgs.GameProviders.QueryServer.Models;
+using Tgs.GameRounds.Client;
 using Tgs.GameRounds.Common;
 using Tgs.ServiceUtility;
 
@@ -17,6 +18,37 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
     [ApiController]
     public class RoundController : ControllerBase
     {
+        [HttpPut("addRound")]
+        public ValueTask AddRoundAsync(
+            [FromServices] IGameRoundsClient gameRoundsClient,
+            [FromBody] AddRoundViewModel viewModel)
+        {
+            _ = gameRoundsClient.AddRoundAsync(
+                new GameRounds.Common.ViewModels.AddRoundViewModel(
+                    viewModel.ExternalRoundId,
+                    viewModel.GameProviderId,
+                    viewModel.PlayerCode,
+                    viewModel.GameId,
+                    viewModel.CurrencyCode,
+                    GameRoundStatus.Closed,
+                    viewModel.GameProviderConfigurationId,
+                    viewModel.WalletId,
+                    viewModel.BrandId,
+                    viewModel.ExternalCreatedOn,
+                    viewModel.ExternalClosedOn,
+                    viewModel.BetAmount,
+                    viewModel.ValidBetAmount,
+                    viewModel.SettleAmount,
+                    viewModel.Commission,
+                    viewModel.Turnover,
+                    PlayerWinLoss: -viewModel.WinLoss,
+                    (GameRoundClientStatus)viewModel.ClientRoundStatus,
+                    AdditionalData: null),
+                HttpContext.RequestAborted);
+
+            return ValueTask.CompletedTask;
+        }
+
         [HttpPut("{roundId}/adjustclosedRound")]
         public ValueTask AdjustClosedGameRoundAsync(
                     [FromServices] ICommandService<AdjustClosedRoundCommand> commandService,
