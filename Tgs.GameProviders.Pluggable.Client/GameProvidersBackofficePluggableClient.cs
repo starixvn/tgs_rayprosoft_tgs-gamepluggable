@@ -29,6 +29,20 @@ namespace Tgs.GameProviders.Pluggable.Client
         public GameProvidersBackofficePluggableClient(HttpClient httpClient)
             => _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
+        public async ValueTask AddCompanyRoundAsync(AddCompanyRoundViewModel viewModel, CancellationToken cancellationToken = default)
+        {
+            var requestContent = new StringContent(JsonSerializer.Serialize(viewModel, _SerializerOptions));
+            requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+            var response = await _httpClient
+               .PutAsync(
+                   requestUri: $"/bo/round/addCompanyRound",
+                   content: requestContent,
+                   cancellationToken).ConfigureAwait(false);
+
+            _ = response.EnsureSuccessStatusCode();
+        }
+
         public async ValueTask AdjustClosedRoundAsync(Guid roundId, AdjustClosedRoundViewModel viewModel, CancellationToken cancellationToken = default)
         {
             var requestContent = new StringContent(JsonSerializer.Serialize(viewModel, _SerializerOptions));

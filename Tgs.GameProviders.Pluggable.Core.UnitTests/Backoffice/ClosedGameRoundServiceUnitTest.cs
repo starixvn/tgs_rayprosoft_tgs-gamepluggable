@@ -4,6 +4,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
+using Tgs.GameRounds.Client;
 using Tgs.GameRounds.Common;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
@@ -15,9 +16,9 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
         public async Task Closed_Game_Round()
         {
             var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-            var fakeRoundRepository = Substitute.For<IRoundRepository>();
+            var fakeGameRoundsClient = Substitute.For<IGameRoundsClient>();
 
-            var fakeService = new GameRoundClosedService(fakeCashServiceClient, fakeRoundRepository);
+            var fakeService = new GameRoundClosedService(fakeCashServiceClient, fakeGameRoundsClient);
 
             var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
             var gameRoundModel = new GameRoundInfo(RoundId: Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02"),
@@ -47,9 +48,45 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                 ReopenedOn: null,
                 EffectiveBettingPercentage: null);
 
-            _ = fakeRoundRepository
-                .GetAsync(roundId)
-                .Returns(ValueTask.FromResult(gameRoundModel));
+            var gameRoundDataResponse = new GameRoundDataResponse
+            {
+                Data = new GameRounds.Common.ViewModels.GameRoundViewModel
+                (
+                    RoundId: roundId,
+                    ExternalRoundId: "50-1636345294-40676339-2",
+                GameProviderId: Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
+                GameProviderCode: "EVO",
+                PlayerCode: "4uf6j0t01809",
+                GameId: 1000015,
+                ExternalGameId: "",
+                CurrencyCode: "CNY",
+                Status: GameRoundStatus.Open,
+                GameProviderConfigurationId: Guid.Parse("fa0d7706-f910-4e98-bf71-bd7084140304"),
+                WalletId: Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9"),
+                CreatedOn: DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
+                ClosedOn: null,
+                UpdatedOn: DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
+                BrandId: Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
+                ExternalCreatedOn: DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
+                ExternalClosedOn: null,
+                BetAmount: 0.060000m,
+                ValidBetAmount: 0.060000m,
+                SettleAmount: null,
+                Commission: null,
+                Turnover: null,
+                CompanyWinLoss: null,
+                TieBetAdjustment: null,
+                ClientStatus: GameRoundClientStatus.Open,
+                ReopenTurnoverAdjustment: null,
+                ReopenedOn: null,
+                EffectiveBettingPercentage: null,
+                AdditionalData: null)
+            };
+
+            _ = fakeGameRoundsClient
+                .GetGameRoundAsync(roundId)
+                .Returns(ValueTask.FromResult(gameRoundDataResponse));
+
             var walletId = Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9");
             var betAmount = 0.060000m;
             var validBetAmount = 0.060000m;
@@ -63,20 +100,24 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
             var remark = "´ú¸Õ½Õ¾ã";
             var adjustAmount = 100m;
 
-            _ = fakeRoundRepository
-                .ClosedGameRoundAsync(
-                 roundId,
-                 betAmount,
-                 validBetAmount,
-                 settleAmount,
-                 commission,
-                 turnover,
-                 winLoss,
-                 clientRoundStatus,
-                 externalClosedOn,
-                 operatorId,
-                 remark
-                 ).Returns(ValueTask.FromResult(true));
+            var gameRoundResponse = new GameRoundResponse { HttpStatusCode = System.Net.HttpStatusCode.OK, Success = true };
+
+            var manualClose = new GameRounds.Common.ViewModels.ManualCloseRoundViewModel
+            {
+                BetAmount = betAmount,
+                ValidBetAmount = validBetAmount,
+                SettleAmount = settleAmount,
+                Commission = commission,
+                Turnover = turnover,
+                CompanyWinLoss = winLoss,
+                ClientStatus = clientRoundStatus,
+                ExternalClosedOn = externalClosedOn,
+                OperatorId = operatorId,
+                Remark = remark
+            };
+
+            _ = fakeGameRoundsClient
+                .ManualCloseRoundAsync(roundId, manualClose).Returns(ValueTask.FromResult(gameRoundResponse));
 
             await fakeService.ExecuteAsync(new GameRoundClosedCommand()
             {
@@ -94,20 +135,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                 AdjustAmount = adjustAmount,
             }).ConfigureAwait(false);
 
-            _ = fakeRoundRepository
+            _ = fakeGameRoundsClient
                 .Received(1)
-                .ClosedGameRoundAsync(
+                .ManualCloseRoundAsync(
                  Arg.Is(roundId),
-                 Arg.Is(betAmount),
-                 Arg.Is(validBetAmount),
-                 Arg.Is(settleAmount),
-                 Arg.Is(commission),
-                 Arg.Is(turnover),
-                 Arg.Is(winLoss),
-                 Arg.Is(clientRoundStatus),
-                 Arg.Is(externalClosedOn),
-                 Arg.Is(operatorId),
-                 Arg.Is(remark)
+                 Arg.Is(manualClose)
                  );
             _ = fakeCashServiceClient
                 .Received(1)
