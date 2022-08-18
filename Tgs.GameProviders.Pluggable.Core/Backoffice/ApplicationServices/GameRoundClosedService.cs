@@ -15,9 +15,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 
         public GameRoundClosedService(
             ICashServiceClient cashServiceClient,
-            IRoundRepository roundRepository,
-            IGameRoundsClient gameRoundsClient
-            )
+            IGameRoundsClient gameRoundsClient)
         {
             _cashServiceClient = cashServiceClient ?? throw new ArgumentNullException(nameof(cashServiceClient));
             _gameRoundsClient = gameRoundsClient ?? throw new ArgumentNullException(nameof(gameRoundsClient));

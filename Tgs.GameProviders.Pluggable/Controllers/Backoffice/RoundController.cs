@@ -142,24 +142,24 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
         /// </remarks>
         [HttpPut("{roundId}/gameroundclosed")]
         public ValueTask GameRoundClosedAsync(
-                        [FromServices] ICommandService<GameRoundClosedCommand> commandService,
-                        Guid roundId,
-                        [FromBody] GameRoundClosedViewModel viewModel)
-                        => commandService.ExecuteAsync(new()
-                        {
-                            RoundId = roundId,
-                            BetAmount = viewModel.BetAmount,
-                            ValidBetAmount = viewModel.ValidBetAmount,
-                            SettleAmount = viewModel.SettleAmount,
-                            Commission = viewModel.Commission,
-                            Turnover = viewModel.Turnover,
-                            WinLoss = viewModel.WinLoss,
-                            RoundClientStatus = (GameRoundClientStatus)viewModel.ClientRoundStatus,
-                            ExternalClosedOn = viewModel.ExternalClosedOn,
-                            OperatorId = viewModel.OperatorId,
-                            Remark = viewModel.Remark,
-                            AdjustAmount = viewModel.AdjustAmount
-                        });
+            [FromServices] ICommandService<GameRoundClosedCommand> commandService,
+            Guid roundId,
+            [FromBody] GameRoundClosedViewModel viewModel)
+            => commandService.ExecuteAsync(new()
+            {
+                RoundId = roundId,
+                BetAmount = viewModel.BetAmount,
+                ValidBetAmount = viewModel.ValidBetAmount,
+                SettleAmount = viewModel.SettleAmount,
+                Commission = viewModel.Commission,
+                Turnover = viewModel.Turnover,
+                WinLoss = viewModel.WinLoss,
+                RoundClientStatus = (GameRoundClientStatus)viewModel.ClientRoundStatus,
+                ExternalClosedOn = viewModel.ExternalClosedOn,
+                OperatorId = viewModel.OperatorId,
+                Remark = viewModel.Remark,
+                AdjustAmount = viewModel.AdjustAmount
+            });
 
         /// <summary>
         ///
