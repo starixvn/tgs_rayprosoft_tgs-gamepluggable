@@ -17,11 +17,9 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
         {
             var fakeGameProvider = Substitute.For<IGameProviderService>();
             var fakePlayer = Substitute.For<IPlayerService>();
-            var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
 
             var fakeService = new PlayerBalanceGetService(
                   fakeGameProvider,
-                  fakeGameVerificationGrpc,
                   fakePlayer);
 
             var query = new PlayerBalanceQuery("4ucmqplxb029", "KY");
@@ -63,9 +61,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
 
             _ = fakeGameProvider.GetAsync(
                 query.GameProviderCode).Returns(ValueTask.FromResult(gameProvider));
-
-            _ = fakeGameVerificationGrpc.VerifyPlayerBalanceAsync(
-                player.PlayerCode, gameProvider.GameProviderId).Returns(true);
 
             _ = fakePlayer.GetBalanceAsync(
                 Arg.Is(query.GameProviderCode),
