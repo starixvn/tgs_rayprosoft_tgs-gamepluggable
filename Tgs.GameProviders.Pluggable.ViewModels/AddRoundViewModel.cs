@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Tgs.GameProviders.Pluggable.ViewModels
 {
-    public record AddRoundViewModel
+    public record AddCompanyRoundViewModel
     {
         [Required]
         public string ExternalRoundId { get; init; } = default!;
@@ -51,9 +51,15 @@ namespace Tgs.GameProviders.Pluggable.ViewModels
         public decimal Turnover { get; init; }
 
         [Required]
-        public decimal WinLoss { get; init; }
+        public decimal CompanyWinLoss { get; init; }
 
         [Required]
         public GameRoundClosedClientRoundStatus ClientRoundStatus { get; init; }
+
+        [Required]
+        public Guid OperatorId { get; init; }
+
+        [Required]
+        public string Remark { get; init; } = default!;
     }
 }

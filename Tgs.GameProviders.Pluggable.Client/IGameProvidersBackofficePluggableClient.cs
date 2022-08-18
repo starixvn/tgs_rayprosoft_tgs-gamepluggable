@@ -9,7 +9,7 @@ namespace Tgs.GameProviders.Pluggable.Client
 {
     public interface IGameProvidersBackofficePluggableClient
     {
-        ValueTask AddRoundAsync(AddRoundViewModel viewModel, CancellationToken cancellationToken = default);
+        ValueTask AddCompanyRoundAsync(AddCompanyRoundViewModel viewModel, CancellationToken cancellationToken = default);
 
         ValueTask AdjustClosedRoundAsync(Guid RoundId, AdjustClosedRoundViewModel viewModel, CancellationToken cancellationToken = default);
 
