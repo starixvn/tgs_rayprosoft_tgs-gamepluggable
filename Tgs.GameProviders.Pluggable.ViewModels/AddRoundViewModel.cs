@@ -18,10 +18,7 @@ namespace Tgs.GameProviders.Pluggable.ViewModels
         public int GameId { get; init; }
 
         [Required]
-        public string CurrencyCode { get; init; } = default!;
-
-        [Required]
-        public Guid GameProviderConfigurationId { get; init; }
+        public string CurrencyCode { get; init; } = default!;        
 
         [Required]
         public Guid WalletId { get; init; }

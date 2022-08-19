@@ -8,7 +8,6 @@ using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.Pluggable.ViewModels;
 using Tgs.GameProviders.QueryServer.Models;
-using Tgs.GameRounds.Client;
 using Tgs.GameRounds.Common;
 using Tgs.ServiceUtility;
 
@@ -20,36 +19,29 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
     {
         [HttpPut("addCompanyRound")]
         public ValueTask AddCompanyRoundAsync(
-            [FromServices] IGameRoundsClient gameRoundsClient,
+            [FromServices] ICommandService<AddCompanyRoundCommand> commandService,
             [FromBody] AddCompanyRoundViewModel viewModel)
+        => commandService.ExecuteAsync(new AddCompanyRoundCommand
         {
-            _ = gameRoundsClient.AddCompanyRoundAsync(
-                new GameRounds.Common.ViewModels.AddCompanyRoundViewModel
-                {
-                    BrandId = viewModel.BrandId,
-                    PlayerCode = viewModel.PlayerCode,
-                    WalletId = viewModel.WalletId,
-                    GameId = viewModel.GameId,
-                    GameProviderId = viewModel.GameProviderId,
-                    GameProviderConfigurationId = viewModel.GameProviderConfigurationId,
-                    ExternalRoundId = viewModel.ExternalRoundId,
-                    ClientStatus = (GameRoundClientStatus)viewModel.ClientRoundStatus,
-                    ExternalCreatedOn = viewModel.ExternalCreatedOn,
-                    ExternalClosedOn = viewModel.ExternalClosedOn,
-                    CurrencyCode = viewModel.CurrencyCode,
-                    BetAmount = viewModel.BetAmount,
-                    SettleAmount = viewModel.SettleAmount,
-                    ValidBetAmount = viewModel.ValidBetAmount,
-                    Turnover = viewModel.Turnover,
-                    Commission = viewModel.Commission,
-                    CompanyWinLoss = viewModel.CompanyWinLoss,
-                    OperatorId = viewModel.OperatorId,
-                    Remark = viewModel.Remark
-                },
-                HttpContext.RequestAborted);
-
-            return ValueTask.CompletedTask;
-        }
+            BrandId = viewModel.BrandId,
+            PlayerCode = viewModel.PlayerCode,
+            WalletId = viewModel.WalletId,
+            GameId = viewModel.GameId,
+            GameProviderId = viewModel.GameProviderId,
+            ExternalRoundId = viewModel.ExternalRoundId,
+            ExternalCreatedOn = viewModel.ExternalCreatedOn,
+            ExternalClosedOn = viewModel.ExternalClosedOn,
+            ClientRoundStatus = (short)viewModel.ClientRoundStatus,
+            CurrencyCode = viewModel.CurrencyCode,
+            BetAmount = viewModel.BetAmount,
+            ValidBetAmount = viewModel.ValidBetAmount,
+            SettleAmount = viewModel.SettleAmount,
+            Turnover = viewModel.Turnover,
+            Commission = viewModel.Commission,
+            CompanyWinLoss = viewModel.CompanyWinLoss,
+            OperatorId = viewModel.OperatorId,
+            Remark = viewModel.Remark,
+        }, HttpContext.RequestAborted);
 
         [HttpPut("{roundId}/adjustclosedRound")]
         public ValueTask AdjustClosedGameRoundAsync(
