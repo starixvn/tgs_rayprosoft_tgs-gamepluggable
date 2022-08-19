@@ -1,0 +1,65 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
+{
+    public record AddCompanyRoundCommand
+    {
+        public string ExternalRoundId { get; init; } = default!;
+
+        
+        public Guid GameProviderId { get; init; }
+
+        
+        public string PlayerCode { get; init; } = default!;
+
+        
+        public int GameId { get; init; }
+
+        
+        public string CurrencyCode { get; init; } = default!;
+
+        
+        public Guid WalletId { get; init; }
+
+        
+        public Guid BrandId { get; init; }
+
+        
+        public DateTimeOffset ExternalCreatedOn { get; init; }
+
+        
+        public DateTimeOffset ExternalClosedOn { get; init; }
+
+        
+        public decimal BetAmount { get; init; }
+
+        
+        public decimal ValidBetAmount { get; init; }
+
+        
+        public decimal SettleAmount { get; init; }
+
+        
+        public decimal Commission { get; init; }
+
+        
+        public decimal Turnover { get; init; }
+
+        
+        public decimal CompanyWinLoss { get; init; }
+
+        
+        public short ClientRoundStatus { get; init; }
+
+        
+        public Guid OperatorId { get; init; }
+
+        
+        public string Remark { get; init; } = default!;
+    }
+}
