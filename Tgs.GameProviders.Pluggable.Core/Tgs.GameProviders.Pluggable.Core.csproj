@@ -14,7 +14,7 @@
     <PackageReference Include="Tgs.GameProviders.Client" Version="0.0.41" />
     <PackageReference Include="Tgs.GameProviders.KickPlayerServer.Client" Version="0.0.4" />
     <PackageReference Include="Tgs.GameProviders.QueryServer.Client" Version="0.0.14" />
-    <PackageReference Include="Tgs.GameRounds.Client" Version="0.0.23" />
+    <PackageReference Include="Tgs.GameRounds.Client" Version="0.0.26" />
     <PackageReference Include="Tgs.GameVerification.Client" Version="0.0.9" />
     <PackageReference Include="TGS.ServiceUtility" Version="0.1.0" />
   </ItemGroup>
