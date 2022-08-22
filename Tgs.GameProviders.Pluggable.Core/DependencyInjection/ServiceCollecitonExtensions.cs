@@ -7,6 +7,7 @@ using Tgs.GameProviders.Client;
 using Tgs.GameProviders.KickPlayerServer.Client;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.QueryServer.Client;
+using Tgs.GameRounds.Client;
 using Tgs.GameVerification.Client;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -21,7 +22,8 @@ namespace Microsoft.Extensions.DependencyInjection
             Action<KickPlayerServiceClientOptions, IServiceProvider> kickPlayerServiceClientOptions,
             Action<GameVerificationClientOptions, IServiceProvider> gameVerificationClientOptions,
             Action<GameFundTransferClientOptions, IServiceProvider> gameTransferClientOptions,
-            Action<GameCurrencyClientOptions, IServiceProvider> gameCurrencyClientOptions)
+            Action<GameCurrencyClientOptions, IServiceProvider> gameCurrencyClientOptions,
+            Action<GameRoundsClientOptions, IServiceProvider> gameRoundsConfigure)
             => services
             .RegisterAllServiceUtilityTypes(
                 Assembly.GetExecutingAssembly(),
@@ -37,6 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
             .AddTransient<IBrandService, BrandService>()
             .AddTransient<IGameProviderService, GameProviderService>()
             .AddTransient<IGameService, GameService>()
-            .AddTransient<IPlayerService, PlayerService>();
+            .AddTransient<IPlayerService, PlayerService>()
+            .AddGameRoundsClient(gameRoundsConfigure);
     }
 }
