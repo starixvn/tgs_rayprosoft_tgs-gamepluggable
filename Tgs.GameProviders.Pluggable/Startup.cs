@@ -105,6 +105,11 @@ namespace Tgs.GameProviders.Pluggable
                   {
                       var configuration = sp.GetRequiredService<IConfiguration>();
                       options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameCurrencyClientBaseUrl");
+                  },
+                  (options, sp) =>
+                  {
+                      var configuration = sp.GetRequiredService<IConfiguration>();
+                      options.BaseUrl = new(configuration.GetSection("Pluggable:GameRoundsClientBaseUrl").Value);
                   });
 
             _ = services

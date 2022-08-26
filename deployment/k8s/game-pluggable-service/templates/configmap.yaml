@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: configmap-{{ include "game-pluggable-service.fullname" . }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
 data:
   appsettings.json: |
     {
@@ -13,7 +13,8 @@ data:
         "GameProvidersQueryServerClientBaseUrl": "http://game-gameprovider-queryserver/",
         "GameVerificationClientBaseUrl": "http://game-gameverification:9090/",
         "GameFundTransferClientBaseUrl": "http://game-gamefundtransfer:9090/",
-        "GameCurrencyClientBaseUrl": "http://game-gamecurrency/"
+        "GameCurrencyClientBaseUrl": "http://game-gamecurrency/",
+        "GameRoundsClientBaseUrl": "http://game-gamerounds"
       }
     }
   monitor.settings.json: |
