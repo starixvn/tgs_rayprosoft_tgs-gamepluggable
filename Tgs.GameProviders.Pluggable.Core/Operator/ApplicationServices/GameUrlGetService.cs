@@ -16,7 +16,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
         private readonly IGameProvidersClient _gameProvidersClient;
         private readonly IGameProviderService _gameProviderService;
         private readonly IGameService _gameService;
-        private readonly IGameVerificationGrpc _gameVerificationGrpc;
+        private readonly IGameVerificationClient _gameVerificationClient;
         private readonly IPlayerService _playerService;
 
         public GameUrlGetService(
@@ -25,7 +25,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
             IGameProvidersClient gameProvidersClient,
             IGameProviderService gameProviderService,
             IGameService gameService,
-            IGameVerificationGrpc gameVerificationGrpc,
+            IGameVerificationClient gameVerificationClient,
             IPlayerService playerService)
         {
             _brandService = brandService ?? throw new ArgumentNullException(nameof(brandService));
@@ -34,7 +34,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
             _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
             _gameService = gameService ?? throw new ArgumentNullException(nameof(gameService));
             _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
-            _gameVerificationGrpc = gameVerificationGrpc ?? throw new ArgumentNullException(nameof(gameVerificationGrpc));
+            _gameVerificationClient = gameVerificationClient ?? throw new ArgumentNullException(nameof(gameVerificationClient));
         }
 
         public async ValueTask<Uri?> GetAsync(GameUrlQuery query, CancellationToken cancellationToken = default)
@@ -43,7 +43,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
                 query.PlayerCode,
                 cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            if (!await _gameVerificationGrpc.VerifyPlayerGameUrlAsync(query.PlayerCode, query.GameId).ConfigureAwait(false))
+            if (!await _gameVerificationClient.VerifyPlayerGameUrlAsync(query.PlayerCode, query.GameId).ConfigureAwait(false))
             {
                 throw new Exception($"Failed to get game URL. (1. The player does not exist or is not enabled. 2. The game does not exist or is not enabled. 3. The game does not support this currency.)");
             }

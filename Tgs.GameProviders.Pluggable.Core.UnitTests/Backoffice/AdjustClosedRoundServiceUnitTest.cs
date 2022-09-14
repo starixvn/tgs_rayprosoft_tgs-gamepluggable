@@ -121,7 +121,6 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
                 Remark = remark
             };
 
-
             _ = fakeGameRoundsClient
                 .AdjustClosedRoundAsync(roundId, adjustClosed)
                 .Returns(gameRepsonse);
@@ -148,7 +147,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
 
             _ = fakeGameRoundsClient
                 .Received(1)
-                .AdjustClosedRoundAsync(roundId,adjustClosed);
+                .AdjustClosedRoundAsync(roundId, adjustClosed);
 
             var walletId = Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9");
 

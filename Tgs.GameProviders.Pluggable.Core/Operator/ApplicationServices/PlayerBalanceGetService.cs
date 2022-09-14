@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Tgs.GameVerification.Client;
 
 using Tgs.ServiceUtility;
 
@@ -33,8 +32,6 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
                     player.PlayerCode,
                     player.DefaultWalletCurrencyCode,
                     cancellationToken: cancellationToken).ConfigureAwait(false);
-
-
         }
     }
 }

@@ -14,6 +14,5 @@ namespace Tgs.GameProviders.Pluggable.Core
         IAsyncEnumerable<GameActionInfo> GameActionQueryAsync(Guid roundId);
 
         ValueTask<GameRoundInfo?> GetAsync(Guid roundId);
-
     }
 }

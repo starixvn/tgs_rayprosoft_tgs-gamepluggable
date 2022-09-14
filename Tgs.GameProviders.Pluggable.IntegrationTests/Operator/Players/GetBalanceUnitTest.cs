@@ -76,12 +76,12 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Operator.Players
 
                     _ = services.AddSingleton(fakeGameProvider);
 
-                    var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
+                    var fakeGameVerification = Substitute.For<IGameVerificationClient>();
 
-                    _ = fakeGameVerificationGrpc.VerifyPlayerBalanceAsync(
+                    _ = fakeGameVerification.VerifyPlayerBalanceAsync(
                         player.PlayerCode, gameProvider.GameProviderId).Returns(true);
 
-                    _ = services.AddSingleton(fakeGameVerificationGrpc);
+                    _ = services.AddSingleton(fakeGameVerification);
                 });
             });
 

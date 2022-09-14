@@ -77,15 +77,15 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Players
 
                     _ = services.AddSingleton(fakeGameProvider);
 
-                    var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
+                    var fakeGameVerification = Substitute.For<IGameVerificationClient>();
 
-                    _ = fakeGameVerificationGrpc.VerifyPlayerGameProviderCurrencyAsync(
+                    _ = fakeGameVerification.VerifyPlayerGameProviderCurrencyAsync(
                                     Arg.Is(player.BrandId),
                                     Arg.Is(gameProvider.GameProviderId),
                                     Arg.Is(player.DefaultWalletCurrencyCode)
                                     ).Returns(true);
 
-                    _ = services.AddSingleton(fakeGameVerificationGrpc);
+                    _ = services.AddSingleton(fakeGameVerification);
                 });
             });
 

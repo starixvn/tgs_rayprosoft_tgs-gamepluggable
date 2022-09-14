@@ -44,7 +44,8 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
                         CompanyWinLoss = command.WinLoss,
                         OperatorId = command.OperatorId,
                         Remark = command.Remark
-                    })
+                    },
+                    cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
 
             if (response.Success)

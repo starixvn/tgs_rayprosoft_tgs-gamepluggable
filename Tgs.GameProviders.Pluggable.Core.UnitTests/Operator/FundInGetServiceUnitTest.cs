@@ -24,7 +24,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
             var fakeGameProviderService = Substitute.For<IGameProviderService>();
             var fakePlayerService = Substitute.For<IPlayerService>();
-            var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
+            var fakeGameVerification = Substitute.For<IGameVerificationClient>();
 
             var query = new FundInQuery(
                 GameProviderType.KY,
@@ -77,7 +77,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             _ = fakeGameProviderService.GetAsync(
                 Arg.Is(query.GameProviderCode)).Returns(ValueTask.FromResult(gameProvider));
 
-            _ = fakeGameVerificationGrpc.VerifyPlayerFundAsync(
+            _ = fakeGameVerification.VerifyPlayerFundAsync(
                 Arg.Is(player.PlayerCode), Arg.Is(gameProvider.GameProviderId)).Returns(true);
 
             _ = fakeGameProvidersClient.PlayerBalanceAsync(
@@ -100,9 +100,8 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
 
             var fakeService = new FundInGetService(
                 fakeGameFundTransferClient,
-                fakeGameProvidersClient,
                 fakeGameProviderService,
-                fakeGameVerificationGrpc,
+                fakeGameVerification,
                 fakePlayerService);
 
             await fakeService.ExecuteAsync(query).ConfigureAwait(false);

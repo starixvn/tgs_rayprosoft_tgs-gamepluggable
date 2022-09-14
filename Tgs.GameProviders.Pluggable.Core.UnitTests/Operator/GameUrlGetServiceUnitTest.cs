@@ -28,7 +28,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             var fakeGameProvider = Substitute.For<IGameProviderService>();
             var fakeGame = Substitute.For<IGameService>();
             var fakePlayerService = Substitute.For<IPlayerService>();
-            var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
+            var fakeGameVerification = Substitute.For<IGameVerificationClient>();
 
             var gameUrl = new Uri("https://www.google.com/");
 
@@ -95,7 +95,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             _ = fakePlayerService
                 .GetAsync(Arg.Is(query.PlayerCode)).Returns(ValueTask.FromResult(player));
 
-            _ = fakeGameVerificationGrpc
+            _ = fakeGameVerification
                 .VerifyPlayerGameUrlAsync(query.PlayerCode, query.GameId).Returns(true);
 
             _ = fakeGame.GetAsync(
@@ -124,7 +124,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 fakeGameProvidersClient,
                 fakeGameProvider,
                 fakeGame,
-                fakeGameVerificationGrpc,
+                fakeGameVerification,
                 fakePlayerService);
 
             var actual = await sut.GetAsync(query).ConfigureAwait(false);
@@ -141,7 +141,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             var fakeGameProvider = Substitute.For<IGameProviderService>();
             var fakeGame = Substitute.For<IGameService>();
             var fakePlayerService = Substitute.For<IPlayerService>();
-            var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
+            var fakeGameVerification = Substitute.For<IGameVerificationClient>();
 
             var playerBalance = 1000m;
             var gameUrl = new Uri("http://www.google.com");
@@ -207,7 +207,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             _ = fakePlayerService
                 .GetAsync(Arg.Is(query.PlayerCode)).Returns(ValueTask.FromResult(player));
 
-            _ = fakeGameVerificationGrpc
+            _ = fakeGameVerification
                 .VerifyPlayerGameUrlAsync(query.PlayerCode, query.GameId).Returns(true);
 
             _ = fakeGame.GetAsync(
@@ -241,7 +241,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 fakeGameProvidersClient,
                 fakeGameProvider,
                 fakeGame,
-                fakeGameVerificationGrpc,
+                fakeGameVerification,
                 fakePlayerService);
 
             var actual = await sut.GetAsync(query).ConfigureAwait(false);
@@ -258,7 +258,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             var fakeGameProvider = Substitute.For<IGameProviderService>();
             var fakeGame = Substitute.For<IGameService>();
             var fakePlayerService = Substitute.For<IPlayerService>();
-            var fakeGameVerificationGrpc = Substitute.For<IGameVerificationGrpc>();
+            var fakeGameVerification = Substitute.For<IGameVerificationClient>();
 
             var lobbyDomain = "https://desktop.com";
             var gameUrl = new Uri("https://www.google.com");
@@ -325,7 +325,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             _ = fakePlayerService
                 .GetAsync(Arg.Is(query.PlayerCode)).Returns(ValueTask.FromResult(player));
 
-            _ = fakeGameVerificationGrpc
+            _ = fakeGameVerification
                 .VerifyPlayerGameUrlAsync(query.PlayerCode, query.GameId).Returns(true);
 
             _ = fakeGame.GetAsync(
@@ -382,7 +382,7 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                 fakeGameProvidersClient,
                 fakeGameProvider,
                 fakeGame,
-                fakeGameVerificationGrpc,
+                fakeGameVerification,
                 fakePlayerService);
 
             var actual = await sut.GetAsync(query).ConfigureAwait(false);

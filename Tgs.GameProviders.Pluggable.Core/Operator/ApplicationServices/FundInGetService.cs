@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GameFundTransfer.Protos;
-using Tgs.GameProviders.Client;
 using Tgs.GameVerification.Client;
 using Tgs.ServiceUtility;
 
@@ -12,23 +11,20 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
     internal class FundInGetService : ICommandService<FundInQuery>
     {
         private readonly IGameFundTransferClient _gameFundTransferClient;
-        private readonly IGameProvidersClient _gameProvidersClient;
         private readonly IGameProviderService _gameProviderService;
-        private readonly IGameVerificationGrpc _gameVerificationGrpc;
+        private readonly IGameVerificationClient _gameVerificationClient;
         private readonly IPlayerService _playerService;
 
         public FundInGetService(
             IGameFundTransferClient gameFundTransferClient,
-            IGameProvidersClient gameProvidersClient,
             IGameProviderService gameProviderService,
-            IGameVerificationGrpc gameVerificationGrpc,
+            IGameVerificationClient gameVerificationClient,
             IPlayerService playerService)
         {
             _gameFundTransferClient = gameFundTransferClient ?? throw new ArgumentNullException(nameof(gameFundTransferClient));
-            _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
             _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
             _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
-            _gameVerificationGrpc = gameVerificationGrpc ?? throw new ArgumentNullException(nameof(gameVerificationGrpc));
+            _gameVerificationClient = gameVerificationClient ?? throw new ArgumentNullException(nameof(gameVerificationClient));
         }
 
         public async ValueTask ExecuteAsync(FundInQuery query, CancellationToken cancellationToken = default)
@@ -41,7 +37,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
 
             var gameProvider = await _gameProviderService.GetAsync(query.GameProviderCode).ConfigureAwait(false);
 
-            if (!await _gameVerificationGrpc.VerifyPlayerFundAsync(player.PlayerCode, gameProvider.GameProviderId).ConfigureAwait(false))
+            if (!await _gameVerificationClient.VerifyPlayerFundAsync(player.PlayerCode, gameProvider.GameProviderId).ConfigureAwait(false))
             {
                 throw new Exception("Transfer verification failed. (1. The player does not exist or is not enabled. 2. The game manufacturer does not exist or is not enabled. 3. The game market does not support this currency.)");
             }

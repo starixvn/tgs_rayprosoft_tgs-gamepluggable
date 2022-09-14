@@ -5,7 +5,6 @@ using NUnit.Framework;
 using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.QueryServer.Models;
-using Tgs.GameVerification.Client;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
 {

@@ -10,17 +10,17 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
     internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, decimal?>
     {
         private readonly IGameProviderService _gameProviderService;
-        private readonly IGameVerificationGrpc _gameVerificationGrpc;
+        private readonly IGameVerificationClient _gameVerificationClient;
         private readonly IPlayerService _playerService;
 
         public PlayerBalanceGetService(
             IGameProviderService gameProviderService,
             IPlayerService playerService,
-            IGameVerificationGrpc gameVerificationGrpc)
+            IGameVerificationClient gameVerificationClient)
         {
             _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
             _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
-            _gameVerificationGrpc = gameVerificationGrpc ?? throw new ArgumentNullException(nameof(gameVerificationGrpc));
+            _gameVerificationClient = gameVerificationClient ?? throw new ArgumentNullException(nameof(gameVerificationClient));
         }
 
         public async ValueTask<decimal?> GetAsync(PlayerBalanceQuery query, CancellationToken cancellationToken = default)
@@ -31,7 +31,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 
             var gameProviderId = await _gameProviderService.GetCacheGameProviderIdAsync(query.GameProviderCode).ConfigureAwait(false);
 
-            return await _gameVerificationGrpc.VerifyPlayerGameProviderCurrencyAsync(player.BrandId, gameProviderId, player.DefaultWalletCurrencyCode).ConfigureAwait(false)
+            return await _gameVerificationClient.VerifyPlayerGameProviderCurrencyAsync(player.BrandId, gameProviderId, player.DefaultWalletCurrencyCode).ConfigureAwait(false)
                 ? await _playerService.GetBalanceAsync(
                     query.GameProviderCode,
                     query.PlayerCode,
