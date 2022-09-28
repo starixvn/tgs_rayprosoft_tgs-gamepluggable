@@ -6,6 +6,7 @@ using NSubstitute;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameRounds.Common;
+using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 {
@@ -48,17 +49,16 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
             {
                 _ = builder.ConfigureServices(services =>
                 {
-                    var fakeRoundRepository = Substitute.For<IRoundRepository>();
+                    var fakeGameRoundGetService = Substitute.For<IGetService<Guid, GameRoundInfo>>();
 
-                    _ = fakeRoundRepository
-                        .GetAsync(roundId)
-                        .Returns(ValueTask.FromResult<GameRoundInfo?>(gameRoundModel));
 
-                    _ = fakeRoundRepository
-                        .GetAsync(roundId)
-                        .Returns(ValueTask.FromResult<GameRoundInfo?>(gameRoundModel));
 
-                    _ = services.AddSingleton(fakeRoundRepository);
+                    _ = fakeGameRoundGetService
+                        .GetAsync(
+                            Arg.Is(roundId))
+                        .Returns(ValueTask.FromResult(gameRoundModel));
+
+                    _ = services.AddSingleton(fakeGameRoundGetService);
                 });
             });
 

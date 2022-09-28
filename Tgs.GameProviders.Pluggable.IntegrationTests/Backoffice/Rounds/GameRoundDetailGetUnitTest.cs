@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -8,8 +9,10 @@ using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Domains.RoundDetail;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
+using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.QueryServer.Models;
 using Tgs.GameRounds.Common;
+using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 {
@@ -73,40 +76,20 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
             {
                 _ = builder.ConfigureServices(services =>
                   {
-                      var fakeRoundRepository = Substitute.For<IRoundRepository>();
+                      var fakeRoundDetailGetService = Substitute.For<IGetService<RoundDetailQuery, JsonDocument>>();
 
-                      _ = fakeRoundRepository
-                          .GetAsync(roundId)
-                          .Returns(ValueTask.FromResult<GameRoundInfo?>(gameRoundModel));
+                      var query = new RoundDetailQuery
+                      {
+                          RoundId = roundId,
+                          Language = language
+                      };
 
-                      _ = fakeRoundRepository
-                          .GetAsync(roundId)
-                          .Returns(ValueTask.FromResult<GameRoundInfo?>(gameRoundModel));
+                      _ = fakeRoundDetailGetService
+                        .GetAsync(
+                            Arg.Is(query))
+                        .Returns(ValueTask.FromResult(JsonDocument.Parse(JsonSerializer.Serialize(query))));
 
-                      _ = services.AddSingleton(fakeRoundRepository);
-
-                      var fakeGameProvider = Substitute.For<IGameProviderService>();
-
-                      _ = fakeGameProvider
-                          .GetAsync(gameProviderId)
-                          .Returns(ValueTask.FromResult(gameProvider));
-
-                      _ = fakeGameProvider
-                          .GetAsync(gameProviderId)
-                          .Returns(ValueTask.FromResult(gameProvider));
-
-                      _ = services.AddSingleton(fakeGameProvider);
-
-                      var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
-
-                      _ = fakeGameProvidersClient
-                         .RoundDetailAsync(gameProvider.GameProviderCode, roundId, language)
-                         .Returns(ValueTask.FromResult<RoundDetailResult?>(roundDetailResult));
-                      _ = fakeGameProvidersClient
-                         .RoundDetailAsync(gameProvider.GameProviderCode, roundId, language)
-                         .Returns(ValueTask.FromResult<RoundDetailResult?>(roundDetailResult));
-
-                      _ = services.AddSingleton(fakeGameProvidersClient);
+                      _ = services.AddSingleton(fakeRoundDetailGetService);
                   });
             });
 

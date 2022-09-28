@@ -26,17 +26,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
             var defaultWalletId = Guid.NewGuid();
 
             var playerInfo = new PlayerInfo(
-                ResellerId: Guid.NewGuid(),
-                ResellerCode: "TGS",
-                LicenseeId: Guid.NewGuid(),
-                LicenseeCode: "TGS",
                 BrandId: Guid.NewGuid(),
                 BrandCode: "GPI",
                 PlayerCode: playerCode,
-                Username: playerCode,
                 DefaultWalletId: defaultWalletId,
-                DefaultWalletCurrencyCode: "CNY",
-                Status: PlayerStatus.Enabled);
+                DefaultWalletCurrencyCode: "CNY");
             _ = fakePlayerService.GetAsync(
                 Arg.Is(playerCode)).Returns(playerInfo);
 
@@ -86,17 +80,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
             var defaultWalletId = Guid.NewGuid();
 
             var playerInfo = new PlayerInfo(
-                ResellerId: Guid.NewGuid(),
-                ResellerCode: "TGS",
-                LicenseeId: Guid.NewGuid(),
-                LicenseeCode: "TGS",
                 BrandId: Guid.NewGuid(),
                 BrandCode: "GPI",
                 PlayerCode: playerCode,
-                Username: playerCode,
                 DefaultWalletId: defaultWalletId,
-                DefaultWalletCurrencyCode: "CNY",
-                Status: PlayerStatus.Enabled);
+                DefaultWalletCurrencyCode: "CNY");
             _ = fakePlayerService.GetAsync(
                 Arg.Is(playerCode)).Returns(playerInfo);
 
@@ -144,17 +132,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
             var defaultWalletId = Guid.NewGuid();
 
             var playerInfo = new PlayerInfo(
-                ResellerId: Guid.NewGuid(),
-                ResellerCode: "TGS",
-                LicenseeId: Guid.NewGuid(),
-                LicenseeCode: "TGS",
                 BrandId: Guid.NewGuid(),
                 BrandCode: "GPI",
                 PlayerCode: playerCode,
-                Username: playerCode,
                 DefaultWalletId: defaultWalletId,
-                DefaultWalletCurrencyCode: "CNY",
-                Status: PlayerStatus.Enabled);
+                DefaultWalletCurrencyCode: "CNY");
             _ = fakePlayerService.GetAsync(
                 Arg.Is(playerCode)).Returns(playerInfo);
 
@@ -218,17 +200,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Backoffice
             var defaultWalletId = Guid.NewGuid();
 
             var playerInfo = new PlayerInfo(
-                ResellerId: Guid.NewGuid(),
-                ResellerCode: "TGS",
-                LicenseeId: Guid.NewGuid(),
-                LicenseeCode: "TGS",
                 BrandId: Guid.NewGuid(),
                 BrandCode: "GPI",
                 PlayerCode: playerCode,
-                Username: playerCode,
                 DefaultWalletId: defaultWalletId,
-                DefaultWalletCurrencyCode: "CNY",
-                Status: PlayerStatus.Enabled);
+                DefaultWalletCurrencyCode: "CNY");
             _ = fakePlayerService.GetAsync(
                 Arg.Is(playerCode)).Returns(playerInfo);
 

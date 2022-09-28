@@ -30,18 +30,12 @@ namespace Tgs.GameProviders.Pluggable.Core
                     cancellationToken).ConfigureAwait(false);
 
             return data != null
-                ? (new(
-                    data.ResellerId,
-                    data.ResellerCode,
-                    data.LicenseeId,
-                    data.LicenseeCode,
+                ? (new PlayerInfo(
                     data.BrandId,
                     data.BrandCode,
                     data.PlayerCode,
-                    data.Username,
                     data.DefaultWalletId,
-                    data.DefaultWalletCurrencyCode,
-                    data.Status))
+                    data.DefaultWalletCurrencyCode))
                 : throw new Exception($"This player does not exist.({playerCode})"); ;
         }
 

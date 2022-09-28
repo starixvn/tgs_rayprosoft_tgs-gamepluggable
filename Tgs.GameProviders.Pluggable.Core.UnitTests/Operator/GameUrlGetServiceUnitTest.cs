@@ -42,18 +42,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                  new("https://dev-t1.rpgp.cc/"));
 
             var player = new PlayerInfo(
-                Guid.Parse("b5a2c708-ab70-4316-9f4d-5d2ad0e77460"),
-                "TGS",
-                Guid.Parse("66c5fef5-217b-4929-9a08-72c2479a8f4e"),
-                "TGS",
                 Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
                 "GPI",
                 "4ucmqplxb029",
-                "4ucmqplxb029",
                 Guid.Parse("36a6cdef-094f-eb11-8d88-70b5e82b6b8d"),
-                "CNY",
-                PlayerStatus.Enabled
-                );
+                "CNY");
 
             var game = new GameInfo(
                 1000001,
@@ -147,17 +140,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             var gameUrl = new Uri("http://www.google.com");
 
             var player = new PlayerInfo(
-                Guid.Parse("b5a2c708-ab70-4316-9f4d-5d2ad0e77460"),
-                "TGS",
-                Guid.Parse("66c5fef5-217b-4929-9a08-72c2479a8f4e"),
-                "TGS",
                 Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
                 "GPI",
                 "4ucmqplxb029",
-                "4ucmqplxb029",
                 Guid.Parse("36a6cdef-094f-eb11-8d88-70b5e82b6b8d"),
-                "CNY",
-                (QueryServer.Models.PlayerStatus)PlayerStatus.Enabled);
+                "CNY");
 
             var gameProvider = new GameProviderInfo(
                  Guid.Parse("629101fc-3b1c-4719-881b-dcf3c7263c15"),
@@ -273,18 +260,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
                  new("https://dev-t1.rpgp.cc/"));
 
             var player = new PlayerInfo(
-                Guid.Parse("b5a2c708-ab70-4316-9f4d-5d2ad0e77460"),
-                "TGS",
-                Guid.Parse("66c5fef5-217b-4929-9a08-72c2479a8f4e"),
-                "TGS",
                 Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
                 "GPI",
                 "4ucmqplxb029",
-                "4ucmqplxb029",
                 Guid.Parse("36a6cdef-094f-eb11-8d88-70b5e82b6b8d"),
-                "CNY",
-                PlayerStatus.Enabled
-                );
+                "CNY");
 
             var gameProvider = new GameProviderInfo(
                  Guid.Parse("39247048-e631-0aaa-4553-865bb86d27ec"),

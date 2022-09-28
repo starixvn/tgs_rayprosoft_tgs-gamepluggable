@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Client;
-using Tgs.GameProviders.Pluggable.Core;
+using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.Pluggable.ViewModels;
 using Tgs.GameRounds.Common;
+using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 {
@@ -18,49 +18,50 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
         public async Task Adjust_Closed_Game_Round()
         {
             var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
-            var walletId = Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9");
-            var betAmount = 0.060000m;
-            var validBetAmount = 0.060000m;
-            var settleAmount = 0.00m;
-            var commission = 0.0m;
-            var turnover = 0.06m;
-            var winLoss = -0.06m;
-            var clientRoundStatus = GameRoundClientStatus.Loss;
-            var externalClosedOn = DateTimeOffset.Parse("2021-06-03 13:57:05.000 +0800");
-            var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
-            var remark = "測試調整Closed Round";
-            var adjustAmount = 100m;
+
+            var model = new AdjustClosedRoundViewModel()
+            {
+                BetAmount = 0.060000m,
+                ClientRoundStatus = GameRoundClosedClientRoundStatus.Loss,
+                Commission = 0.0m,
+                ExternalClosedOn = DateTimeOffset.Parse("2021-06-03 13:57:05.000 +0800"),
+                OperatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5"),
+                Remark = "測試調整Closed Round",
+                SettleAmount = 0.00m,
+                Turnover = 0.06m,
+                ValidBetAmount = 0.060000m,
+                WinLoss = -0.06m,
+                AdjustAmount = 100m
+            };
+
             await using var web = new TestPluggableApplication(builder =>
             {
                 _ = builder.ConfigureServices(services =>
                 {
-                    var fakeRoundRepository = Substitute.For<IRoundRepository>();
-                    var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
+                    var fakeAdjustClosedRound = Substitute.For<ICommandService<AdjustClosedRoundCommand>>();
 
-                    _ = fakeRoundRepository.AdjustClosedRoundAsync(
-                        roundId,
-                        betAmount,
-                        validBetAmount,
-                        settleAmount,
-                        commission,
-                        turnover,
-                        winLoss,
-                        clientRoundStatus,
-                        externalClosedOn,
-                        operatorId,
-                        remark);
+                    var command = new AdjustClosedRoundCommand
+                    {
+                        RoundId = roundId,
+                        BetAmount = model.BetAmount,
+                        ValidBetAmount = model.ValidBetAmount,
+                        SettleAmount = model.SettleAmount,
+                        Commission = model.Commission,
+                        Turnover = model.Turnover,
+                        WinLoss = model.WinLoss,
+                        RoundClientStatus = (GameRoundClientStatus)model.ClientRoundStatus,
+                        ExternalClosedOn = model.ExternalClosedOn,
+                        OperatorId = model.OperatorId,
+                        Remark = model.Remark,
+                        AdjustAmount = model.AdjustAmount
+                    };
 
-                    _ = fakeCashServiceClient
-                    .AdjustResettledBetManualAsync(
-                        walletId,
-                        adjustAmount,
-                        remark,
-                        roundId.ToString(),
-                        operatorId
-                        );
+                    _ = fakeAdjustClosedRound
+                    .ExecuteAsync(
+                        command)
+                    .Returns(ValueTask.CompletedTask);
 
-                    _ = services.AddSingleton(fakeRoundRepository);
-                    _ = services.AddSingleton(fakeCashServiceClient);
+                    _ = services.AddSingleton(fakeAdjustClosedRound);
                 });
             });
 
@@ -68,22 +69,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 
             var sut = new GameProvidersBackofficePluggableClient(httpClient);
 
-            var viewModel = new AdjustClosedRoundViewModel()
-            {
-                BetAmount = betAmount,
-                ClientRoundStatus = (GameRoundClosedClientRoundStatus)(int)clientRoundStatus,
-                Commission = commission,
-                ExternalClosedOn = externalClosedOn,
-                OperatorId = operatorId,
-                Remark = remark,
-                SettleAmount = settleAmount,
-                Turnover = turnover,
-                ValidBetAmount = validBetAmount,
-                WinLoss = winLoss,
-                AdjustAmount = adjustAmount
-            };
-
-            var actual = sut.AdjustClosedRoundAsync(roundId, viewModel);
+            var actual = sut.AdjustClosedRoundAsync(roundId, model);
             Assert.IsNotNull(actual);
         }
     }

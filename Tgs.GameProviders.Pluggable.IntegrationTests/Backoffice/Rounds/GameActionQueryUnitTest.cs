@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
+using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 {
@@ -21,17 +22,13 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
             {
                 _ = builder.ConfigureServices(services =>
                   {
-                      var fakeRoundRepository = Substitute.For<IRoundRepository>();
+                      var fakeGameActionQueryService = Substitute.For<IQueryService<Guid, GameActionInfo>>();
 
-                      _ = fakeRoundRepository
-                          .GameActionQueryAsync(roundId)
+                      _ = fakeGameActionQueryService
+                          .QueryAsync(roundId)
                           .Returns(Array.Empty<GameActionInfo>().ToAsyncEnumerable());
 
-                      _ = fakeRoundRepository
-                          .GameActionQueryAsync(Arg.Is(roundId))
-                          .Returns(Array.Empty<GameActionInfo>().ToAsyncEnumerable());
-
-                      _ = services.AddSingleton(fakeRoundRepository);
+                      _ = services.AddSingleton(fakeGameActionQueryService);
                   });
             });
 

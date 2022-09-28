@@ -6,8 +6,10 @@ using NSubstitute;
 using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core;
+using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.Pluggable.ViewModels;
 using Tgs.GameRounds.Common;
+using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 {
@@ -18,70 +20,47 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
         public async Task Round_GameAction_QueryAsync()
         {
             var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
-            var walletId = Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9");
-            var betAmount = 0.060000m;
-            var validBetAmount = 0.060000m;
-            var settleAmount = 0.00m;
-            var commission = 0.0m;
-            var turnover = 0.06m;
-            var winLoss = -0.06m;
-            var clientRoundStatus = GameRoundClientStatus.Loss;
-            var externalClosedOn = DateTimeOffset.Parse("2021-06-03 13:57:05.000 +0800");
-            var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
-            var remark = "測試調整";
-            var adjustAmount = 100m;
+
+            var model = new GameRoundClosedViewModel()
+            {
+                BetAmount = 0.060000m,
+                ClientRoundStatus = GameRoundClosedClientRoundStatus.Loss,
+                Commission = 0.0m,
+                ExternalClosedOn = DateTimeOffset.Parse("2021-06-03 13:57:05.000 +0800"),
+                OperatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5"),
+                Remark = "測試調整",
+                SettleAmount = 0.00m,
+                Turnover = 0.06m,
+                ValidBetAmount = 0.060000m,
+                WinLoss = -0.06m,
+                AdjustAmount = 100m
+            };
+
             await using var web = new TestPluggableApplication(builder =>
             {
                 _ = builder.ConfigureServices(services =>
                   {
-                      var fakeRoundRepository = Substitute.For<IRoundRepository>();
-                      var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
+                      var fakeGameRoundClosed = Substitute.For<ICommandService<GameRoundClosedCommand>>();
 
-                      _ = fakeRoundRepository.ClosedGameRoundAsync(
-                          roundId,
-                          betAmount,
-                          validBetAmount,
-                          settleAmount,
-                          commission,
-                          turnover,
-                          winLoss,
-                          clientRoundStatus,
-                          externalClosedOn,
-                          operatorId,
-                          remark);
+                      var command = new GameRoundClosedCommand
+                      {
+                          RoundId = roundId,
+                          BetAmount = model.BetAmount,
+                          ValidBetAmount = model.ValidBetAmount,
+                          SettleAmount = model.SettleAmount,
+                          Commission = model.Commission,
+                          Turnover = model.Turnover,
+                          WinLoss = model.WinLoss,
+                          RoundClientStatus = (GameRoundClientStatus)(int)model.ClientRoundStatus,
+                          ExternalClosedOn = model.ExternalClosedOn,
+                          OperatorId = model.OperatorId,
+                          Remark = model.Remark,
+                          AdjustAmount = model.AdjustAmount
+                      };
 
-                      _ = fakeRoundRepository.ClosedGameRoundAsync(
-                          Arg.Is(roundId),
-                          Arg.Is(betAmount),
-                          Arg.Is(validBetAmount),
-                          Arg.Is(settleAmount),
-                          Arg.Is(commission),
-                          Arg.Is(turnover),
-                          Arg.Is(winLoss),
-                          Arg.Is(clientRoundStatus),
-                          Arg.Is(externalClosedOn),
-                          Arg.Is(operatorId),
-                          Arg.Is(remark));
+                      _ = fakeGameRoundClosed.ExecuteAsync(command).Returns(ValueTask.CompletedTask);
 
-                      _ = fakeCashServiceClient
-                      .UnsettledBetManualAsync(
-                          walletId,
-                          adjustAmount,
-                          remark,
-                          roundId.ToString(),
-                          operatorId
-                          );
-                      _ = fakeCashServiceClient
-                      .UnsettledBetManualAsync(
-                          Arg.Is(walletId),
-                          Arg.Is(adjustAmount),
-                          Arg.Is(remark),
-                          Arg.Is(roundId.ToString()),
-                          Arg.Is(operatorId)
-                          );
-
-                      _ = services.AddSingleton(fakeRoundRepository);
-                      _ = services.AddSingleton(fakeCashServiceClient);
+                      _ = services.AddSingleton(fakeGameRoundClosed);
                   });
             });
 
@@ -89,22 +68,7 @@ namespace Tgs.GameProviders.Pluggable.IntegrationTests.Backoffice.Rounds
 
             var sut = new GameProvidersBackofficePluggableClient(httpClient);
 
-            var viewModel = new GameRoundClosedViewModel()
-            {
-                BetAmount = betAmount,
-                ClientRoundStatus = (GameRoundClosedClientRoundStatus)(int)clientRoundStatus,
-                Commission = commission,
-                ExternalClosedOn = externalClosedOn,
-                OperatorId = operatorId,
-                Remark = remark,
-                SettleAmount = settleAmount,
-                Turnover = turnover,
-                ValidBetAmount = validBetAmount,
-                WinLoss = winLoss,
-                AdjustAmount = adjustAmount
-            };
-
-            var actual = sut.GameRoundClosedAsync(roundId, viewModel);
+            var actual = sut.GameRoundClosedAsync(roundId, model);
             Assert.IsNotNull(actual);
         }
     }

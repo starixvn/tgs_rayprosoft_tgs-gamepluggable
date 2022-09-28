@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains.RoundDetail;
+using Tgs.GameRounds.Client;
 using Tgs.GameRounds.Common;
 using Tgs.ServiceUtility;
 
@@ -13,30 +14,35 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
     {
         private readonly IGameProvidersClient _gameProvidersClient;
         private readonly IGameProviderService _gameProviderService;
-        private readonly IRoundRepository _roundRepository;
+        private readonly IGameRoundsClient _gameRoundsClient;
 
         public RoundDetailGetService(
-            IRoundRepository roundRepository,
+            IGameRoundsClient gameRoundsClient,
             IGameProvidersClient gameProvidersClient,
             IGameProviderService gameProviderService)
         {
-            _roundRepository = roundRepository ?? throw new ArgumentNullException(nameof(roundRepository));
+            _gameRoundsClient = gameRoundsClient ?? throw new ArgumentNullException(nameof(gameRoundsClient));
             _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
             _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
         }
 
         public async ValueTask<JsonDocument> GetAsync(RoundDetailQuery query, CancellationToken cancellationToken = default)
         {
-            var roundModel = await _roundRepository.GetAsync(query.RoundId).ConfigureAwait(false);
+            var data = await _gameRoundsClient
+                .GetGameRoundAsync(
+                    roundId: query.RoundId,
+                    cancellationToken: cancellationToken)
+                .ConfigureAwait(false)
+                ?? throw new Exception($"Game Round does not exist.({query})");
 
-            if (roundModel == null)
+            if (!data.Success || data.Data is null)
             {
                 throw new Exception($"Game Round does not exist.({query})");
             }
 
-            if (roundModel.Status is GameRoundStatus.Open or GameRoundStatus.New
+            if (data.Data.Status is GameRoundStatus.Open or GameRoundStatus.New
                 ||
-                roundModel.ClientStatus is GameRoundClientStatus.Open)
+                data.Data.ClientStatus is GameRoundClientStatus.Open)
             {
                 return JsonDocument.Parse(JsonSerializer.Serialize(new RoundDetailDataText()
                 {
@@ -44,14 +50,14 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
                 }));
             }
 
-            var gameProviderModel = await _gameProviderService.GetAsync(roundModel.GameProviderId).ConfigureAwait(false);
+            var gameProviderModel = await _gameProviderService.GetAsync(data.Data.GameProviderId).ConfigureAwait(false);
 
             try
             {
                 var roundDetailResult = await _gameProvidersClient
                     .RoundDetailAsync(
                         gameProviderModel!.GameProviderCode,
-                        roundModel.RoundId,
+                        data.Data.RoundId,
                         query.Language,
                         cancellationToken: cancellationToken).ConfigureAwait(false);
                 return JsonDocument.Parse(JsonSerializer.Serialize(roundDetailResult));

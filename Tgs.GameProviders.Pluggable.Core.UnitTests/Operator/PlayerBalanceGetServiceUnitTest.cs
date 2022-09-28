@@ -24,18 +24,11 @@ namespace Tgs.GameProviders.Pluggable.Core.UnitTests.Operator
             var query = new PlayerBalanceQuery("4ucmqplxb029", "KY");
 
             var player = new PlayerInfo(
-                Guid.Parse("b5a2c708-ab70-4316-9f4d-5d2ad0e77460"),
-                "TGS",
-                Guid.Parse("66c5fef5-217b-4929-9a08-72c2479a8f4e"),
-                "TGS",
                 Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
                 "GPI",
                 "4ucmqplxb029",
-                "4ucmqplxb029",
                 Guid.Parse("36a6cdef-094f-eb11-8d88-70b5e82b6b8d"),
-                "CNY",
-                PlayerStatus.Enabled
-                );
+                "CNY");
 
             var gameProvider = new GameProviderInfo(
                  Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
