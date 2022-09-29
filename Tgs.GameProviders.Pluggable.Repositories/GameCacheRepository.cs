@@ -8,14 +8,17 @@ namespace Tgs.GameProviders.Pluggable.Repositories
     {
         private readonly IGame _game;
         private readonly IMemoryCache _memoryCache;
+        private readonly TimeSpan _absoluteExpiration;
 
         public GameCacheRepository(
             IGame game,
-            IMemoryCache memoryCache
+            IMemoryCache memoryCache,
+            TimeSpan absoluteExpiration
             )
         {
             _game = game ?? throw new ArgumentNullException(nameof(game));
             _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+            _absoluteExpiration = absoluteExpiration;
         }
 
         public async ValueTask<GameInfo> GetAsync(int gameId, CancellationToken cancellationToken = default)
@@ -28,7 +31,7 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                             gameId,
                             cancellationToken)
                         .ConfigureAwait(false);
-                _ = _memoryCache.Set(key, game);
+                _ = _memoryCache.Set(key, game, _absoluteExpiration);
             }
             return game;
         }
