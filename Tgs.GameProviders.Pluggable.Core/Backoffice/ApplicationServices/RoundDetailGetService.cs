@@ -12,18 +12,18 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 {
     internal class RoundDetailGetService : IGetService<RoundDetailQuery, JsonDocument>
     {
+        private readonly IGameProvider _gameProvider;
         private readonly IGameProvidersClient _gameProvidersClient;
-        private readonly IGameProviderService _gameProviderService;
         private readonly IGameRoundsClient _gameRoundsClient;
 
         public RoundDetailGetService(
             IGameRoundsClient gameRoundsClient,
             IGameProvidersClient gameProvidersClient,
-            IGameProviderService gameProviderService)
+            IGameProvider gameProvider)
         {
             _gameRoundsClient = gameRoundsClient ?? throw new ArgumentNullException(nameof(gameRoundsClient));
             _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
-            _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
+            _gameProvider = gameProvider ?? throw new ArgumentNullException(nameof(gameProvider));
         }
 
         public async ValueTask<JsonDocument> GetAsync(RoundDetailQuery query, CancellationToken cancellationToken = default)
@@ -50,7 +50,11 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
                 }));
             }
 
-            var gameProviderModel = await _gameProviderService.GetAsync(data.Data.GameProviderId).ConfigureAwait(false);
+            var gameProviderModel = await _gameProvider
+                        .GetAsync(
+                            data.Data.GameProviderId,
+                            cancellationToken)
+                        .ConfigureAwait(false);
 
             try
             {

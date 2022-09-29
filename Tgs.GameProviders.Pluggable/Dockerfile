@@ -13,6 +13,7 @@ WORKDIR /src
 COPY ["NuGet.config", "."]
 COPY ["Tgs.GameProviders.Pluggable/Tgs.GameProviders.Pluggable.csproj", "Tgs.GameProviders.Pluggable/"]
 COPY ["Tgs.GameProviders.Pluggable.Core/Tgs.GameProviders.Pluggable.Core.csproj", "Tgs.GameProviders.Pluggable.Core/"]
+COPY ["Tgs.GameProviders.Pluggable.Repositories/Tgs.GameProviders.Pluggable.Repositories.csproj", "Tgs.GameProviders.Pluggable.Repositories/"]
 COPY ["Tgs.GameProviders.Pluggable.ViewModels/Tgs.GameProviders.Pluggable.ViewModels.csproj", "Tgs.GameProviders.Pluggable.ViewModels/"]
 RUN dotnet restore "Tgs.GameProviders.Pluggable/Tgs.GameProviders.Pluggable.csproj"
 COPY . .

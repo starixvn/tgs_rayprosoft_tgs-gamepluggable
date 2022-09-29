@@ -47,11 +47,14 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice
         ///         /bo/balance/player/4ucmqplxb029/KY
         /// </remarks>
         [HttpGet("balance/{playerCode}/{gameProviderCode}", Name = "Backoffice_Player_GetBalance")]
-        public ValueTask<decimal?> GetBalanceAsync(
-            [FromServices] IGetService<PlayerBalanceQuery, decimal?> service,
+        public ValueTask<decimal> GetBalanceAsync(
+            [FromServices] IGetService<PlayerBalanceQuery, decimal> service,
             string playerCode,
             string gameProviderCode)
-            => service.GetAsync(new PlayerBalanceQuery(gameProviderCode, playerCode));
+            => service.GetAsync(
+                new PlayerBalanceQuery(
+                playerCode,
+                gameProviderCode));
 
         /// <summary>
         /// Kicks the asynchronous.

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Tgs.GameProviders.Pluggable.Core.Models;
 using Tgs.GameProviders.QueryServer.Client;
 using Tgs.ServiceUtility;
 

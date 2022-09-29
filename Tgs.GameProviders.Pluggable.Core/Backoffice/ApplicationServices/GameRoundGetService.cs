@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Tgs.GameProviders.Pluggable.Core.Models;
 using Tgs.GameRounds.Client;
 using Tgs.ServiceUtility;
 

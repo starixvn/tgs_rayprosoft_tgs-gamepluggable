@@ -39,7 +39,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
         /// </remarks>
         [HttpPost("fundin/{playerCode}/{gameProviderCode}")]
         public async ValueTask GameProviderFundInAsync(
-            [FromServices] ICommandService<FundInQuery> service,
+            [FromServices] ICommandService<FundInCommand> service,
             string playerCode,
             string gameProviderCode,
             [FromBody] GameProviderFundViewModel model)
@@ -79,7 +79,7 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
         /// </remarks>
         [HttpPost("fundout/{playerCode}/{gameProviderCode}")]
         public async ValueTask GameProviderFundOutAsync(
-                [FromServices] ICommandService<FundOutQuery> service,
+                [FromServices] ICommandService<FundOutCommand> service,
                 string playerCode,
                 string gameProviderCode,
                 [FromBody] GameProviderFundViewModel model)
@@ -115,8 +115,8 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
         ///         /op/player/balance/4ucmqplxb029/KY
         /// </remarks>
         [HttpGet("balance/{playerCode}/{gameProviderCode}")]
-        public ValueTask<decimal?> GetBalanceAsync(
-            [FromServices] IGetService<PlayerBalanceQuery, decimal?> service,
+        public ValueTask<decimal> GetBalanceAsync(
+            [FromServices] IGetService<PlayerBalanceQuery, decimal> service,
             string playerCode,
             string gameProviderCode
             ) => service.GetAsync(new(
@@ -144,8 +144,8 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator
         ///         }
         /// </remarks>
         [HttpPost("gameurl")]
-        public ValueTask<Uri?> GetGameUrlAsync(
-            [FromServices] IGetService<GameUrlQuery, Uri?> service,
+        public ValueTask<Uri> GetGameUrlAsync(
+            [FromServices] IGetService<GameUrlQuery, Uri> service,
             [FromBody] GameProviderGameUrlViewModel model)
         {
             _logger.Log(LogLevel.Information, new EventId(1000, nameof(PlayerController)),

@@ -1,8 +1,10 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -12,6 +14,7 @@ using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Tgs.GameProviders.Pluggable;
+using Tgs.GameProviders.Pluggable.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,14 +37,18 @@ builder.Logging
     });
 
 // Add services to the container.
-
 builder.Services
     .AddRouting(options => options.LowercaseUrls = true)
-    .AddControllers(configure =>
+    .AddControllers(options =>
     {
-        _ = configure.Filters.Add<ExceptionFilter>();
+        options.Filters.Add(new ProducesAttribute(MediaTypeNames.Application.Json));
+        options.Filters.Add(new ConsumesAttribute(MediaTypeNames.Application.Json));
+        _ = options.Filters.Add<ExceptionFilter>();
     })
-    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -53,7 +60,7 @@ builder.Services
             c.IncludeXmlComments(xmlFileName);
     });
 
-builder.Services.AddGameProvidersCore(
+builder.Services.AddGameProvidersPluggable(
     (options, sp) =>
     {
         var configuration = sp.GetRequiredService<IConfiguration>();

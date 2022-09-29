@@ -10,34 +10,49 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
     internal class FundInCommandService : ICommandService<FundInCommand>
     {
         private readonly IGameFundTransferClient _client;
-        private readonly IGameProviderService _gameProviderService;
-        private readonly IPlayerService _playerService;
+        private readonly IGameProvider _gameProvider;
+        private readonly IPlayer _player;
+        private readonly IPlayerGameBalance _playerGameBalance;
 
         public FundInCommandService(
             IGameFundTransferClient client,
-            IGameProviderService gameProviderService,
-            IPlayerService playerService)
+            IGameProvider gameProvider,
+            IPlayer player,
+            IPlayerGameBalance playerGameBalance)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
-            _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
-            _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
+            _gameProvider = gameProvider ?? throw new ArgumentNullException(nameof(gameProvider));
+            _player = player ?? throw new ArgumentNullException(nameof(player));
+            _playerGameBalance = playerGameBalance ?? throw new ArgumentNullException(nameof(playerGameBalance));
         }
 
-        public async ValueTask ExecuteAsync(FundInCommand query, CancellationToken cancellationToken = default)
+        public async ValueTask ExecuteAsync(FundInCommand command, CancellationToken cancellationToken = default)
         {
-            var player = await _playerService.GetAsync(
-                playerCode: query.PlayerCode,
-                cancellationToken: cancellationToken).ConfigureAwait(false);
+            var player = await _player
+                            .GetAsync(
+                                command.PlayerCode,
+                                cancellationToken: cancellationToken)
+                            .ConfigureAwait(false);
 
-            var gameProvider = await _gameProviderService.GetAsync(query.GameProviderCode).ConfigureAwait(false);
+            var gameProviderId = await _gameProvider
+                            .GetGameProviderIdAsync(
+                                command.GameProviderCode,
+                                cancellationToken)
+                            .ConfigureAwait(false);
 
-            var gameProviderBalance = await _playerService.GetBalanceAsync(
-                gameProviderCode: query.GameProviderCode,
+            var gameProvider = await _gameProvider
+                            .GetAsync(
+                                gameProviderId,
+                                cancellationToken)
+                            .ConfigureAwait(false);
+
+            var gameProviderBalance = await _playerGameBalance.GetBalanceAsync(
+                gameProviderCode: gameProvider.GameProviderCode,
                 playerCode: player.PlayerCode,
                 currencyCode: player.DefaultWalletCurrencyCode,
                 cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            var amount = gameProviderBalance.GetValueOrDefault(0);
+            var amount = gameProviderBalance;
 
             amount *= 100;
             amount = Math.Floor(amount);
