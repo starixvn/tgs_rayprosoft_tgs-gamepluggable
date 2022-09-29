@@ -9,21 +9,24 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 {
     internal class AddCompanyRoundCommandService : ICommandService<AddCompanyRoundCommand>
     {
-        private readonly IBrandService _brandService;
+        private readonly IBrand _brand;
         private readonly IGameRoundsClient _gameRoundsClient;
 
         public AddCompanyRoundCommandService(
             IGameRoundsClient gameRoundsClient,
-            IBrandService brandService)
+            IBrand brand)
         {
             _gameRoundsClient = gameRoundsClient ?? throw new ArgumentNullException(nameof(gameRoundsClient));
-            _brandService = brandService ?? throw new ArgumentNullException(nameof(brandService));
+            _brand = brand ?? throw new ArgumentNullException(nameof(brand));
         }
 
         public async ValueTask ExecuteAsync(AddCompanyRoundCommand command, CancellationToken cancellationToken = default)
         {
-            var brandGameProviderInfo = await _brandService
-                .GetBrandGameProviderConfigurationAsync(command.BrandId, command.GameProviderId)
+            var gameProviderConfigurationId = await _brand
+                .GetGameProviderConfigurationIdAsync(
+                    command.BrandId,
+                    command.GameProviderId,
+                    cancellationToken)
                 .ConfigureAwait(false);
 
             _ = await _gameRoundsClient.AddCompanyRoundAsync(
@@ -34,7 +37,7 @@ namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
                     WalletId = command.WalletId,
                     GameId = command.GameId,
                     GameProviderId = command.GameProviderId,
-                    GameProviderConfigurationId = brandGameProviderInfo.GameProviderConfigurationId,
+                    GameProviderConfigurationId = gameProviderConfigurationId,
                     ExternalRoundId = command.ExternalRoundId,
                     ClientStatus = (GameRoundClientStatus)command.ClientRoundStatus,
                     ExternalCreatedOn = command.ExternalCreatedOn,

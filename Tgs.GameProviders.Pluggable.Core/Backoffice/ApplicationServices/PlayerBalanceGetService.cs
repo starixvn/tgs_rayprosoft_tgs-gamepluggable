@@ -7,37 +7,44 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
 {
-    internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, decimal?>
+    internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, decimal>
     {
-        private readonly IGameProviderService _gameProviderService;
+        private readonly IGameProvider _gameProvider;
         private readonly IGameVerificationClient _gameVerificationClient;
-        private readonly IPlayerService _playerService;
+        private readonly IPlayer _player;
+        private readonly IPlayerGameBalance _playerGameBalance;
 
         public PlayerBalanceGetService(
-            IGameProviderService gameProviderService,
-            IPlayerService playerService,
-            IGameVerificationClient gameVerificationClient)
+            IGameProvider gameProvider,
+            IPlayer player,
+            IGameVerificationClient gameVerificationClient,
+             IPlayerGameBalance playerGameBalance)
         {
-            _gameProviderService = gameProviderService ?? throw new ArgumentNullException(nameof(gameProviderService));
-            _playerService = playerService ?? throw new ArgumentNullException(nameof(playerService));
+            _gameProvider = gameProvider ?? throw new ArgumentNullException(nameof(gameProvider));
+            _player = player ?? throw new ArgumentNullException(nameof(player));
             _gameVerificationClient = gameVerificationClient ?? throw new ArgumentNullException(nameof(gameVerificationClient));
+            _playerGameBalance = playerGameBalance ?? throw new ArgumentNullException(nameof(playerGameBalance));
         }
 
-        public async ValueTask<decimal?> GetAsync(PlayerBalanceQuery query, CancellationToken cancellationToken = default)
+        public async ValueTask<decimal> GetAsync(PlayerBalanceQuery query, CancellationToken cancellationToken = default)
         {
-            var player = await _playerService.GetAsync(
+            var player = await _player.GetAsync(
                 query.PlayerCode,
                 cancellationToken).ConfigureAwait(false);
 
-            var gameProviderId = await _gameProviderService.GetCacheGameProviderIdAsync(query.GameProviderCode).ConfigureAwait(false);
+            var gameProviderId = await _gameProvider
+                                    .GetGameProviderIdAsync(
+                                        query.GameProviderCode,
+                                        cancellationToken)
+                                    .ConfigureAwait(false);
 
             return await _gameVerificationClient.VerifyPlayerGameProviderCurrencyAsync(player.BrandId, gameProviderId, player.DefaultWalletCurrencyCode).ConfigureAwait(false)
-                ? await _playerService.GetBalanceAsync(
+                ? await _playerGameBalance.GetBalanceAsync(
                     query.GameProviderCode,
-                    query.PlayerCode,
+                    player.PlayerCode,
                     player.DefaultWalletCurrencyCode,
                     cancellationToken: cancellationToken).ConfigureAwait(false)
-                : null;
+                : throw new Exception($"Player game balance verification failed.({player.PlayerCode})");
         }
     }
 }
