@@ -8,36 +8,35 @@ using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core.Models;
 using Tgs.ServiceUtility;
 
-namespace Tgs.GameProviders.Pluggable.IntegrationTest.Backoffice.Rounds
+namespace Tgs.GameProviders.Pluggable.IntegrationTest.Backoffice.Rounds;
+
+[TestClass]
+public class GameActionQueryUnitTest
 {
-    [TestClass]
-    public class GameActionQueryUnitTest
+    [TestMethod]
+    public async Task Round_GameAction_QueryAsync()
     {
-        [TestMethod]
-        public async Task Round_GameAction_QueryAsync()
+        var roundId = Guid.NewGuid();
+
+        await using var web = new TestPluggableApplication(builder =>
         {
-            var roundId = Guid.NewGuid();
+            _ = builder.ConfigureServices(services =>
+              {
+                  var fakeGameActionQueryService = Substitute.For<IQueryService<Guid, GameActionInfo>>();
 
-            await using var web = new TestPluggableApplication(builder =>
-            {
-                _ = builder.ConfigureServices(services =>
-                  {
-                      var fakeGameActionQueryService = Substitute.For<IQueryService<Guid, GameActionInfo>>();
+                  _ = fakeGameActionQueryService
+                      .QueryAsync(roundId)
+                      .Returns(Array.Empty<GameActionInfo>().ToAsyncEnumerable());
 
-                      _ = fakeGameActionQueryService
-                          .QueryAsync(roundId)
-                          .Returns(Array.Empty<GameActionInfo>().ToAsyncEnumerable());
+                  _ = services.AddSingleton(fakeGameActionQueryService);
+              });
+        });
 
-                      _ = services.AddSingleton(fakeGameActionQueryService);
-                  });
-            });
+        var httpClient = web.CreateClient();
 
-            var httpClient = web.CreateClient();
+        var sut = new GameProvidersBackofficePluggableClient(httpClient);
 
-            var sut = new GameProvidersBackofficePluggableClient(httpClient);
-
-            var actual = sut.GameActionQueryAsync(roundId);
-            Assert.IsNotNull(actual);
-        }
+        var actual = sut.GameActionQueryAsync(roundId);
+        Assert.IsNotNull(actual);
     }
 }

@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices
-{
-    public record RoundDetailQuery
-    {
-        public Guid RoundId { get; init; }
+namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
-        public string Language { get; init; } = default!;
-    }
+public record RoundDetailQuery
+{
+    public Guid RoundId { get; init; }
+
+    public string Language { get; init; } = default!;
 }

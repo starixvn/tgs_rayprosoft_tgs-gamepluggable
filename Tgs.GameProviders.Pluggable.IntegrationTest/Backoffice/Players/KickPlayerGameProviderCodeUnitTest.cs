@@ -5,36 +5,35 @@ using NSubstitute;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Pluggable.Client;
 
-namespace Tgs.GameProviders.Pluggable.IntegrationTest.Backoffice.Players
+namespace Tgs.GameProviders.Pluggable.IntegrationTest.Backoffice.Players;
+
+[TestClass]
+public class KickPlayerGameProviderCodeUnitTest
 {
-    [TestClass]
-    public class KickPlayerGameProviderCodeUnitTest
+    [TestMethod]
+    public async Task KickPlayerAsync()
     {
-        [TestMethod]
-        public async Task KickPlayerAsync()
+        var playerCode = "4ucmqplxb029";
+        var gameProviderCode = "ky";
+
+        await using var web = new TestPluggableApplication(builder =>
         {
-            var playerCode = "4ucmqplxb029";
-            var gameProviderCode = "ky";
+            _ = builder.ConfigureServices(services =>
+              {
+                  var fakseGameProvidersClient = Substitute.For<IGameProvidersClient>();
 
-            await using var web = new TestPluggableApplication(builder =>
-            {
-                _ = builder.ConfigureServices(services =>
-                  {
-                      var fakseGameProvidersClient = Substitute.For<IGameProvidersClient>();
+                  _ = fakseGameProvidersClient.KickPlayerAsync(gameProviderCode, playerCode);
 
-                      _ = fakseGameProvidersClient.KickPlayerAsync(gameProviderCode, playerCode);
+                  _ = fakseGameProvidersClient.KickPlayerAsync(Arg.Is(gameProviderCode), Arg.Is(playerCode));
 
-                      _ = fakseGameProvidersClient.KickPlayerAsync(Arg.Is(gameProviderCode), Arg.Is(playerCode));
+                  _ = services.AddSingleton(fakseGameProvidersClient);
+              });
+        });
 
-                      _ = services.AddSingleton(fakseGameProvidersClient);
-                  });
-            });
+        var httpClient = web.CreateClient();
 
-            var httpClient = web.CreateClient();
+        var sut = new GameProvidersBackofficePluggableClient(httpClient);
 
-            var sut = new GameProvidersBackofficePluggableClient(httpClient);
-
-            await sut.KickPlayerAsync(playerCode, gameProviderCode);
-        }
+        await sut.KickPlayerAsync(playerCode, gameProviderCode);
     }
 }

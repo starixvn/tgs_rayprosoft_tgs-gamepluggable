@@ -8,47 +8,46 @@ using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.ServiceUtility;
 
-namespace Tgs.GameProviders.Pluggable.IntegrationTest.Operator.Players
+namespace Tgs.GameProviders.Pluggable.IntegrationTest.Operator.Players;
+
+[TestClass]
+public class GameProviderFundOutUnitTest
 {
-    [TestClass]
-    public class GameProviderFundOutUnitTest
+    [TestMethod]
+    public async Task GameProviderFundOutAsync()
     {
-        [TestMethod]
-        public async Task GameProviderFundOutAsync()
+        string gameProviderCode = GameProviderType.KY;
+        string playerCode = "4ucmqplxb029";
+        var gameProviderFundTransferTransactionId = Guid.NewGuid();
+        var orderId = gameProviderFundTransferTransactionId.ToString("N");
+        var amount = 1m;
+
+        await using var web = new TestPluggableApplication(builder =>
         {
-            string gameProviderCode = GameProviderType.KY;
-            string playerCode = "4ucmqplxb029";
-            var gameProviderFundTransferTransactionId = Guid.NewGuid();
-            var orderId = gameProviderFundTransferTransactionId.ToString("N");
-            var amount = 1m;
+            _ = builder.ConfigureServices(services =>
+              {
+                  var fakeFundInCommandService = Substitute.For<ICommandService<FundOutCommand>>();
 
-            await using var web = new TestPluggableApplication(builder =>
-            {
-                _ = builder.ConfigureServices(services =>
-                  {
-                      var fakeFundInCommandService = Substitute.For<ICommandService<FundOutCommand>>();
+                  var command = new FundOutCommand(
+                      playerCode,
+                      gameProviderCode,
+                      amount);
+                  _ = fakeFundInCommandService
+                  .ExecuteAsync(Arg.Is(command));
 
-                      var command = new FundOutCommand(
-                          playerCode,
-                          gameProviderCode,
-                          amount);
-                      _ = fakeFundInCommandService
-                      .ExecuteAsync(Arg.Is(command));
+                  _ = services.AddSingleton(fakeFundInCommandService);
+              });
+        });
 
-                      _ = services.AddSingleton(fakeFundInCommandService);
-                  });
-            });
+        var httpClient = web.CreateClient();
 
-            var httpClient = web.CreateClient();
+        var sut = new GameProvidersOperatorPluggableClient(httpClient);
 
-            var sut = new GameProvidersOperatorPluggableClient(httpClient);
-
-            await sut
-                .GameProviderFundOutAsync(
-                    playerCode,
-                    gameProviderCode,
-                    amount)
-                .ConfigureAwait(false);
-        }
+        await sut
+            .GameProviderFundOutAsync(
+                playerCode,
+                gameProviderCode,
+                amount)
+            .ConfigureAwait(false);
     }
 }
