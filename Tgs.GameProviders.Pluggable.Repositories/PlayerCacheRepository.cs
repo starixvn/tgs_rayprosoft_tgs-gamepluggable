@@ -37,7 +37,5 @@ namespace Tgs.GameProviders.Pluggable.Repositories
             }
             return player;
         }
-
-        public ValueTask<decimal?> GetBalanceAsync(string gameProviderCode, string playerCode, string currencyCode, CancellationToken cancellationToken = default) => throw new NotImplementedException();
     }
 }
