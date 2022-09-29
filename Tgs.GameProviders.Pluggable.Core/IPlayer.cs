@@ -2,12 +2,11 @@
 using System.Threading.Tasks;
 using Tgs.GameProviders.Pluggable.Core.Models;
 
-namespace Tgs.GameProviders.Pluggable.Core
+namespace Tgs.GameProviders.Pluggable.Core;
+
+public interface IPlayer
 {
-    public interface IPlayer
-    {
-        ValueTask<PlayerInfo> GetAsync(
-            string playerCode,
-            CancellationToken cancellationToken = default);
-    }
+    ValueTask<PlayerInfo> GetAsync(
+        string playerCode,
+        CancellationToken cancellationToken = default);
 }

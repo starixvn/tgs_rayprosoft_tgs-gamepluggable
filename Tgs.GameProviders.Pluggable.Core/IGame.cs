@@ -2,12 +2,11 @@
 using System.Threading.Tasks;
 using Tgs.GameProviders.Pluggable.Core.Models;
 
-namespace Tgs.GameProviders.Pluggable.Core
+namespace Tgs.GameProviders.Pluggable.Core;
+
+public interface IGame
 {
-    public interface IGame
-    {
-        ValueTask<GameInfo> GetAsync(
-            int gameId,
-            CancellationToken cancellationToken = default);
-    }
+    ValueTask<GameInfo> GetAsync(
+        int gameId,
+        CancellationToken cancellationToken = default);
 }

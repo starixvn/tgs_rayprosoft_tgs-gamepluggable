@@ -2,13 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Tgs.GameProviders.Pluggable.Core
+namespace Tgs.GameProviders.Pluggable.Core;
+
+public interface IBrand
 {
-    public interface IBrand
-    {
-        ValueTask<Guid> GetGameProviderConfigurationIdAsync(
-            Guid brandId,
-            Guid gameProviderId,
-            CancellationToken cancellationToken = default);
-    }
+    ValueTask<Guid> GetGameProviderConfigurationIdAsync(
+        Guid brandId,
+        Guid gameProviderId,
+        CancellationToken cancellationToken = default);
 }

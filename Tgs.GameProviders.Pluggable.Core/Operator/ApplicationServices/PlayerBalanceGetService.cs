@@ -4,32 +4,31 @@ using System.Threading.Tasks;
 
 using Tgs.ServiceUtility;
 
-namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices
+namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
+
+internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, decimal>
 {
-    internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, decimal>
+    private readonly IPlayer _player;
+    private readonly IPlayerGameBalance _playerGameBalance;
+
+    public PlayerBalanceGetService(
+        IPlayer playerService,
+        IPlayerGameBalance playerGameBalance)
     {
-        private readonly IPlayer _player;
-        private readonly IPlayerGameBalance _playerGameBalance;
+        _player = playerService ?? throw new ArgumentNullException(nameof(playerService));
+        _playerGameBalance = playerGameBalance ?? throw new ArgumentNullException(nameof(playerGameBalance));
+    }
 
-        public PlayerBalanceGetService(
-            IPlayer playerService,
-            IPlayerGameBalance playerGameBalance)
-        {
-            _player = playerService ?? throw new ArgumentNullException(nameof(playerService));
-            _playerGameBalance = playerGameBalance ?? throw new ArgumentNullException(nameof(playerGameBalance));
-        }
+    public async ValueTask<decimal> GetAsync(PlayerBalanceQuery query, CancellationToken cancellationToken = default)
+    {
+        var player = await _player.GetAsync(
+            query.PlayerCode,
+            cancellationToken).ConfigureAwait(false);
 
-        public async ValueTask<decimal> GetAsync(PlayerBalanceQuery query, CancellationToken cancellationToken = default)
-        {
-            var player = await _player.GetAsync(
-                query.PlayerCode,
-                cancellationToken).ConfigureAwait(false);
-
-            return await _playerGameBalance.GetBalanceAsync(
-                    query.GameProviderCode,
-                    player.PlayerCode,
-                    player.DefaultWalletCurrencyCode,
-                    cancellationToken: cancellationToken).ConfigureAwait(false);
-        }
+        return await _playerGameBalance.GetBalanceAsync(
+                query.GameProviderCode,
+                player.PlayerCode,
+                player.DefaultWalletCurrencyCode,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 }
