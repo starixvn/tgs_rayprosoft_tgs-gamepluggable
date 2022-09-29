@@ -32,7 +32,5 @@ namespace Tgs.GameProviders.Pluggable.Repositories
                    DefaultWalletId: data.DefaultWalletId,
                    DefaultWalletCurrencyCode: data.DefaultWalletCurrencyCode);
         }
-
-        public ValueTask<decimal?> GetBalanceAsync(string gameProviderCode, string playerCode, string currencyCode, CancellationToken cancellationToken = default) => throw new NotImplementedException();
     }
 }
