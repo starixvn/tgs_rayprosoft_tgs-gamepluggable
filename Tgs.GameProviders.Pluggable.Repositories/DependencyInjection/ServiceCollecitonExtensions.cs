@@ -1,18 +1,25 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Reflection;
 using Tgs.GameProviders.Pluggable.Core;
 using Tgs.GameProviders.Pluggable.Repositories;
-using Tgs.GameProviders.Pluggable.Repositories.Entities;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class ServiceCollecitonExtensions
 {
-    public static class ServiceCollecitonExtensions
-    {
-        public static IServiceCollection AddDbBetRepository(this IServiceCollection services,
-            Action<IServiceProvider, DbContextOptionsBuilder> efConfigure)
-            => services
-                .AddSerialNumberGenerator()
-                .AddDbContext<BetContext>(efConfigure)
-                .AddTransient<IRoundRepository, RoundRepository>();
-    }
+    public static IServiceCollection AddGameProvidersPluggableRepositories(
+        this IServiceCollection services)
+        => services
+        .RegisterAllServiceUtilityTypes(
+            Assembly.GetExecutingAssembly(),
+            ServiceLifetime.Transient)
+        .AddMemoryCache()
+        .AddTransient<IPlayer, PlayerRepository>()
+        .Decorate<IPlayer>((innerRepository, sp) => ActivatorUtilities.CreateInstance<PlayerCacheRepository>(sp, innerRepository, TimeSpan.FromMinutes(5)))
+        .AddTransient<IGame, GameRepository>()
+        .Decorate<IGame>((innerRepository, sp) => ActivatorUtilities.CreateInstance<GameCacheRepository>(sp, innerRepository, TimeSpan.FromMinutes(5)))
+        .AddTransient<IGameProvider, GameProviderRepository>()
+        .Decorate<IGameProvider>((innerRepository, sp) => ActivatorUtilities.CreateInstance<GameProviderCacheRepository>(sp, innerRepository))
+        .AddTransient<IPlayerGameBalance, PlayerGameBalance>()
+        .AddTransient<IBrand, BrandRepository>()
+        .AddTransient<IGameUrl, GameUrlRepository>();
 }

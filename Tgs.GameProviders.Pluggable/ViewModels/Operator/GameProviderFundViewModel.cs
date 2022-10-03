@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Tgs.GameProviders.Pluggable.ViewModels.Operator
+namespace Tgs.GameProviders.Pluggable.ViewModels.Operator;
+
+public record GameProviderFundViewModel
 {
-    public record GameProviderFundViewModel
-    {
-        [Required]
-        [Range(minimum: (int)decimal.Zero, maximum: (double)decimal.MaxValue)]
-        public decimal Amount { get; init; }
-    }
+    [Required]
+    [Range(minimum: (int)decimal.Zero, maximum: (double)decimal.MaxValue)]
+    public decimal Amount { get; init; }
 }

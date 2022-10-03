@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net5.0</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-		<Version>0.0.25</Version>
+		<Version>0.0.26</Version>
 		<Authors>Raypro</Authors>
 		<Description>Tgs Game Providers Pluggable Client</Description>
 		<RepositoryUrl>https://gitlab.com/rayprosoft/tgs-gameproviders-pluggableservice.git</RepositoryUrl>
