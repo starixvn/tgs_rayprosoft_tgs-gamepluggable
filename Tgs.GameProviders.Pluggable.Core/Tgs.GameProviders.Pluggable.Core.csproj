@@ -7,14 +7,16 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />    
-    <PackageReference Include="Tgs.CashService.Client" Version="0.1.3" />    
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
+    <PackageReference Include="Scrutor" Version="4.2.0" />
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />    
+    <PackageReference Include="Tgs.CashService.Client" Version="0.1.5" />    
     <PackageReference Include="Tgs.GameCurrency.Client" Version="0.0.8" />    
     <PackageReference Include="Tgs.GameFundTransfer.Client" Version="0.0.4" />
-    <PackageReference Include="Tgs.GameProviders.Client" Version="0.0.44" />
+    <PackageReference Include="Tgs.GameProviders.Client" Version="0.0.45" />
     <PackageReference Include="Tgs.GameProviders.KickPlayerServer.Client" Version="0.0.4" />
     <PackageReference Include="Tgs.GameProviders.QueryServer.Client" Version="0.0.16" />
-    <PackageReference Include="Tgs.GameRounds.Client" Version="0.0.27" />
+    <PackageReference Include="Tgs.GameRounds.Client" Version="0.0.28" />
     <PackageReference Include="Tgs.GameVerification.Client" Version="0.0.10" />
     <PackageReference Include="TGS.ServiceUtility" Version="0.1.0" />
   </ItemGroup>

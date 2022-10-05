@@ -13,8 +13,8 @@ WORKDIR /src
 COPY ["NuGet.config", "."]
 COPY ["Tgs.GameProviders.Pluggable/Tgs.GameProviders.Pluggable.csproj", "Tgs.GameProviders.Pluggable/"]
 COPY ["Tgs.GameProviders.Pluggable.Core/Tgs.GameProviders.Pluggable.Core.csproj", "Tgs.GameProviders.Pluggable.Core/"]
-COPY ["Tgs.GameProviders.Pluggable.ViewModels/Tgs.GameProviders.Pluggable.ViewModels.csproj", "Tgs.GameProviders.Pluggable.ViewModels/"]
 COPY ["Tgs.GameProviders.Pluggable.Repositories/Tgs.GameProviders.Pluggable.Repositories.csproj", "Tgs.GameProviders.Pluggable.Repositories/"]
+COPY ["Tgs.GameProviders.Pluggable.ViewModels/Tgs.GameProviders.Pluggable.ViewModels.csproj", "Tgs.GameProviders.Pluggable.ViewModels/"]
 RUN dotnet restore "Tgs.GameProviders.Pluggable/Tgs.GameProviders.Pluggable.csproj"
 COPY . .
 WORKDIR "/src/Tgs.GameProviders.Pluggable"
@@ -22,7 +22,7 @@ RUN dotnet build "Tgs.GameProviders.Pluggable.csproj" -c $BuildConfiguration -o 
 
 FROM build AS publish
 ARG BuildConfiguration
-RUN dotnet publish "Tgs.GameProviders.Pluggable.csproj" -c $BuildConfiguration -o /app/publish
+RUN dotnet publish "Tgs.GameProviders.Pluggable.csproj" -c $BuildConfiguration -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

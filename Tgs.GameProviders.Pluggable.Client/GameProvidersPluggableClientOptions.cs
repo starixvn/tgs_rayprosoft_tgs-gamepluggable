@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace Tgs.GameProviders.Pluggable.Client
+namespace Tgs.GameProviders.Pluggable.Client;
+
+public class GameProvidersPluggableClientOptions
 {
-    public class GameProvidersPluggableClientOptions
-    {
-        public Uri BaseUrl { get; set; } = default!;
-    }
+    public Uri BaseUrl { get; set; } = default!;
 }

@@ -33,15 +33,6 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
-          volumeMounts:
-            - mountPath: /config/appsettings.json
-              name: appsettings
-              readOnly: true
-              subPath: appsettings.json
           env:
             - name: OTEL_SERVICE_NAME
               value: Game-GameProvider-Pluggable({{ .Release.Namespace }})
@@ -49,19 +40,27 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.hostIP
-            - name: ConnectionStrings__Tgs
-              valueFrom:
-                secretKeyRef:
-                  name: tgs-connections
-                  key: tgs
+          volumeMounts:
+            - mountPath: /config/appsettings.json
+              name: appsettings
+              readOnly: true
+              subPath: appsettings.json
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: /healthz
               port: http
-          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          startupProbe:
             httpGet:
               path: /healthz
               port: http
+            failureThreshold: 30
+            periodSeconds: 2
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
         - name: monitor
