@@ -166,4 +166,27 @@ public class PlayerController : ControllerBase
                   model.IpAddress,
                   model.BackUrl));
     }
+
+    [HttpPost("gameurl/sm01")]
+    public async ValueTask<SM01PlatformLoginResult> SM01LoginAsync(
+        [FromServices] IGetService<GameSM01PlatformLoginQuery, GameSM01PlatformLoginInfo> service,
+        [FromBody] GameSM01LoginViewModel model)
+    {
+        _logger.Log(LogLevel.Information, new EventId(1000, nameof(PlayerController)),
+            new
+            {
+                Request = model,
+                ReceiveTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).ToString("O")
+            },
+            null,
+            (state, ex) => JsonSerializer.Serialize(state));
+
+        var info = await service
+              .GetAsync(new(
+                  model.PlayerCode,
+                  model.GameId))
+              .ConfigureAwait(false);
+
+        return new SM01PlatformLoginResult(info.MerchantId, info.CustomerName, info.Timestamp, info.Sign);
+    }
 }
