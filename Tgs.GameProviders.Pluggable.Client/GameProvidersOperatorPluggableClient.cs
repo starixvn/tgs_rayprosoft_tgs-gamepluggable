@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Mime;
@@ -73,6 +74,28 @@ internal class GameProvidersOperatorPluggableClient : IGameProvidersOperatorPlug
         var contentJson = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
         return JsonSerializer.Deserialize<decimal>(contentJson, _SerializerOptions)!;
+    }
+
+    public async ValueTask<SM01PlatformLoginResponse> GetGameSM01PlatformLoginInfoAsync(string playerCode, CancellationToken cancellationToken = default)
+    {
+        var request = new
+        {
+            PlayerCode = playerCode,            
+        };
+        var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
+        requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+        var response = await _httpClient
+            .PostAsync(
+                requestUri: "/op/player/SM01Login",
+                content: requestContent,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+
+        var contentJson = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+
+        return JsonSerializer.Deserialize<SM01PlatformLoginResponse>(contentJson, _SerializerOptions)!;
     }
 
     public async ValueTask<Uri> GetGameUrlAsync(string playerCode, Guid loginRecordId, bool isMobile, int gameId, string language, string ipAddress, Uri? backUrl = null, CancellationToken cancellationToken = default)
