@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Tgs.GameProviders.Client;
+using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 
 namespace Tgs.GameProviders.Pluggable.Core;
 
@@ -34,6 +35,10 @@ public interface IGameUrl
         string ipAddress,
         Uri? backUrl,
         Guid defaultWalletId,
+        CancellationToken cancellationToken = default);
+
+    ValueTask<GameSM01PlatformLoginInfo> GetGamePlatformLoginBySM01Async(
+        string playerCode,
         CancellationToken cancellationToken = default);
 
     ValueTask<Uri> GetGameUrlByBetConstructAsync(
