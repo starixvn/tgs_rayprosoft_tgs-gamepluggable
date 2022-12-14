@@ -87,7 +87,7 @@ internal class GameProvidersOperatorPluggableClient : IGameProvidersOperatorPlug
 
         var response = await _httpClient
             .PostAsync(
-                requestUri: "/op/player/SM01Login",
+                requestUri: "/op/player/gameurl/sm01",
                 content: requestContent,
                 cancellationToken: cancellationToken).ConfigureAwait(false);
 

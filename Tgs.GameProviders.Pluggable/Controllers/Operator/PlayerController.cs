@@ -167,7 +167,7 @@ public class PlayerController : ControllerBase
                   model.BackUrl));
     }
 
-    [HttpPost("SM01Login")]
+    [HttpPost("gameurl/sm01")]
     public async ValueTask<SM01PlatformLoginResult> SM01LoginAsync(
         [FromServices] IGetService<GameSM01PlatformLoginQuery, GameSM01PlatformLoginInfo> service,
         [FromBody] GameSM01LoginViewModel model)
