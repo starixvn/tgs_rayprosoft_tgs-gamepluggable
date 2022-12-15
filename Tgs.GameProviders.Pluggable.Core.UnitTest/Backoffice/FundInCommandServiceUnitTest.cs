@@ -453,6 +453,5 @@ public class FundInCommandServiceUnitTest
             .Received(1)
             .FundInAsync(
                 Arg.Is(request));
-        
     }
 }

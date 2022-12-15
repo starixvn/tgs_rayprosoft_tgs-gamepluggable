@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameVerification.Client;
@@ -28,18 +27,17 @@ public class GetGameSM01PlatformLoginInfoUnitTest
         var fakeGameVerificationClient = Substitute.For<IGameVerificationClient>();
         var fakeGameSM01PlatformLoginGetService = Substitute.For<IGetService<GameSM01PlatformLoginQuery, GameSM01PlatformLoginInfo>>();
 
-
         await using var web = new TestPluggableApplication(builder =>
         {
             _ = builder.ConfigureServices(services =>
               {
-                  _ = services.AddTransient(_ => fakeGameVerificationClient);                                    
+                  _ = services.AddTransient(_ => fakeGameVerificationClient);
 
-                  _ = services.AddTransient(_=> fakeGameSM01PlatformLoginGetService);
+                  _ = services.AddTransient(_ => fakeGameSM01PlatformLoginGetService);
               });
         });
 
-        _ = fakeGameVerificationClient.VerifyPlayerGameUrlAsync(playerCode,gameId).Returns(ValueTask.FromResult(true));      
+        _ = fakeGameVerificationClient.VerifyPlayerGameUrlAsync(playerCode, gameId).Returns(ValueTask.FromResult(true));
 
         _ = fakeGameSM01PlatformLoginGetService.GetAsync(Arg.Any<GameSM01PlatformLoginQuery>()).Returns(ValueTask.FromResult(loginInfo));
 

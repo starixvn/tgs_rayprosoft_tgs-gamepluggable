@@ -26,7 +26,7 @@ internal class PlayerCacheRepository : IPlayer
         CancellationToken cancellationToken = default)
     {
         var key = $"player:{playerCode}";
-        if (!_memoryCache.TryGetValue(key, out PlayerInfo player))
+        if (!_memoryCache.TryGetValue(key, out PlayerInfo? player))
         {
             player = await _player
                     .GetAsync(
@@ -35,6 +35,6 @@ internal class PlayerCacheRepository : IPlayer
                     .ConfigureAwait(false);
             _ = _memoryCache.Set(key, player, _absoluteExpiration);
         }
-        return player;
+        return player!;
     }
 }

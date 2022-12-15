@@ -12,10 +12,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             using (var scope = app.Services.CreateScope())
             {
-
                 var client = scope.ServiceProvider.GetRequiredService<IGameProvidersQueryServerClient>();
                 var gameProvider = scope.ServiceProvider.GetRequiredService<IGameProvider>();
-
 
                 var gameProviderIds = await client
                                 .GameProviderGetGameProviderIdsAsync()

@@ -23,7 +23,7 @@ internal class GameProviderCacheRepository : IGameProvider
         CancellationToken cancellationToken = default)
     {
         var key = $"gameprovider:{gameProviderId}";
-        if (!_memoryCache.TryGetValue(key, out GameProviderInfo gameProvider))
+        if (!_memoryCache.TryGetValue(key, out GameProviderInfo? gameProvider))
         {
             gameProvider = await _gameProvider
                     .GetAsync(
@@ -32,7 +32,7 @@ internal class GameProviderCacheRepository : IGameProvider
                     .ConfigureAwait(false);
             _ = _memoryCache.Set(key, gameProvider);
         }
-        return gameProvider;
+        return gameProvider!;
     }
 
     public ValueTask<GameProviderConfigInfo> GetConfigurationAsync(

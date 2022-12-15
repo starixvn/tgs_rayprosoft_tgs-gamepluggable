@@ -24,7 +24,7 @@ internal class GameCacheRepository : IGame
     public async ValueTask<GameInfo> GetAsync(int gameId, CancellationToken cancellationToken = default)
     {
         var key = $"game:{gameId}";
-        if (!_memoryCache.TryGetValue(key, out GameInfo game))
+        if (!_memoryCache.TryGetValue(key, out GameInfo? game))
         {
             game = await _game
                     .GetAsync(
@@ -33,6 +33,6 @@ internal class GameCacheRepository : IGame
                     .ConfigureAwait(false);
             _ = _memoryCache.Set(key, game, _absoluteExpiration);
         }
-        return game;
+        return game!;
     }
 }
