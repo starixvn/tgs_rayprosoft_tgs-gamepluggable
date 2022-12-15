@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GameFundTransfer.Protos;
+using Tgs.GameProviders.Domains;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
@@ -54,18 +55,23 @@ internal class FundInCommandService : ICommandService<FundInCommand>
 
         var amount = gameProviderBalance;
 
-        amount *= 100;
-        amount = Math.Floor(amount);
-
-        if (amount > 0)
+        if (gameProvider.GameProviderCode != GameProviderType.SM01)
         {
-            amount /= 100;
+            amount *= 100;
+            amount = Math.Floor(amount);
+
+            if (amount > 0)
+            {
+                amount /= 100;
+            }
+        }
+        else
+        {
+            amount = Math.Floor(amount);
         }
 
         if (amount == 0)
-        {
             return;
-        }
 
         var request = new GameFundTransferFundRequest()
         {

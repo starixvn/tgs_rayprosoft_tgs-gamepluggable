@@ -84,4 +84,87 @@ public class FundInGetServiceUnitTest
             .Received(1)
             .FundInAsync(Arg.Any<GameFundTransferFundRequest>());
     }
+
+    [Test]
+    public async Task GameProvider_SM01_Fund_In_Amount_Only_Integer()
+    {
+        var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
+        var fakeGameProvider = Substitute.For<IGameProvider>();
+        var fakeGameVerificationClient = Substitute.For<IGameVerificationClient>();
+        var fakePlayer = Substitute.For<IPlayer>();
+        var fakePlayerGameBalance = Substitute.For<IPlayerGameBalance>();
+
+        var query = new FundInCommand(
+            "4ucmqplxb029",
+            GameProviderType.SM01,
+            123M);
+
+        var player = new PlayerInfo(
+            Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
+            "GPI",
+            "4ucmqplxb029",
+            Guid.Parse("36a6cdef-094f-eb11-8d88-70b5e82b6b8d"),
+            "CNY");
+        _ = fakePlayer
+            .GetAsync(
+                Arg.Is(query.PlayerCode))
+            .Returns(ValueTask.FromResult(player));
+
+        var gameProviderId = Guid.NewGuid();
+        _ = fakeGameProvider
+            .GetGameProviderIdAsync(
+                Arg.Is(query.GameProviderCode))
+            .Returns(ValueTask.FromResult(gameProviderId));
+
+        var gameProvider = new GameProviderInfo(
+            gameProviderId,
+            GameProviderType.SM01);
+        _ = fakeGameProvider
+            .GetAsync(
+                Arg.Is(gameProviderId))
+            .Returns(ValueTask.FromResult(gameProvider));
+
+        _ = fakeGameVerificationClient
+            .VerifyPlayerFundAsync(
+                Arg.Is(player.PlayerCode),
+                Arg.Is(gameProvider.GameProviderId))
+            .Returns(true);
+
+        decimal gameProviderBalance = 123.456m;
+        _ = fakePlayerGameBalance
+            .GetBalanceAsync(
+                Arg.Is(query.GameProviderCode),
+                Arg.Is(player.PlayerCode),
+                Arg.Is(player.DefaultWalletCurrencyCode),
+                Arg.Any<CancellationToken>())
+            .Returns(ValueTask.FromResult(gameProviderBalance));
+
+        var fakeService = new FundInCommandService(
+            fakeGameFundTransferClient,
+            fakeGameProvider,
+            fakeGameVerificationClient,
+            fakePlayer,
+            fakePlayerGameBalance);
+
+        await fakeService
+            .ExecuteAsync(query)
+            .ConfigureAwait(false);
+
+        var request = new GameFundTransferFundRequest
+        {
+            Amount = 123M,
+            BrandCode = player.BrandCode,
+            CurrencyCode = "CNY",
+            GameProviderCode = GameProviderType.SM01,
+            GameProviderId = gameProvider.GameProviderId,
+            PlayerCode = player.PlayerCode,
+            WalletId = player.DefaultWalletId
+        };
+
+        _ = fakeGameFundTransferClient
+            .Received(1)
+            .FundInAsync(Arg.Is(request));
+
+        Assert.AreEqual(123M, request.Amount.ToDecimal());
+    }
 }
