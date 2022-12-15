@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GameFundTransfer.Protos;
+using Tgs.GameProviders.Domains;
 using Tgs.GameVerification.Client;
 using Tgs.ServiceUtility;
 
@@ -66,6 +67,11 @@ internal class FundInCommandService : ICommandService<FundInCommand>
             throw new Exception($"Insufficient game wallet balance.({gameProviderBalance})");
         }
 
+        var amount = command.Amount;
+
+        if (gameProvider.GameProviderCode == GameProviderType.SM01)
+            amount = Math.Floor(amount);
+
         var request = new GameFundTransferFundRequest()
         {
             GameProviderId = gameProvider.GameProviderId,
@@ -74,7 +80,7 @@ internal class FundInCommandService : ICommandService<FundInCommand>
             PlayerCode = player.PlayerCode,
             CurrencyCode = player.DefaultWalletCurrencyCode,
             WalletId = player.DefaultWalletId,
-            Amount = command.Amount
+            Amount = amount
         };
 
         _ = await _gameFundTransferClient.FundInAsync(

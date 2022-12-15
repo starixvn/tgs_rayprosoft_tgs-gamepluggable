@@ -1,6 +1,7 @@
 ﻿using Tgs.CashService.Client;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Pluggable.Core;
+using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 
 namespace Tgs.GameProviders.Pluggable.Repositories;
 
@@ -90,6 +91,19 @@ internal class GameUrlRepository : IGameUrl
                     cancellationToken)
                 .ConfigureAwait(false)
                 ?? throw new NullReferenceException();
+    }
+
+    public async ValueTask<GameSM01PlatformLoginInfo> GetGamePlatformLoginBySM01Async(
+        string playerCode,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _gameProvidersClient
+            .GamePlatformLoginBySM01Async(
+                playerCode,
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        return new GameSM01PlatformLoginInfo(result!.MerchantId, result.CustomerName, result.Timestamp, result.Sign);
     }
 
     public async ValueTask<Uri> GetGameUrlByBetConstructAsync(
