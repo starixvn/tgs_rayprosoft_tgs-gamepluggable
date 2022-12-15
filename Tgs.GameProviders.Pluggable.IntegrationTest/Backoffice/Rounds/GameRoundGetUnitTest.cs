@@ -68,6 +68,6 @@ public class GameRoundGetUnitTest
             .GameRoundGetAsync(roundId)
             .ConfigureAwait(false);
         Assert.IsNotNull(actual);
-        Assert.AreEqual(roundId, actual.RoundId);
+        Assert.AreEqual(roundId, actual!.RoundId);
     }
 }
