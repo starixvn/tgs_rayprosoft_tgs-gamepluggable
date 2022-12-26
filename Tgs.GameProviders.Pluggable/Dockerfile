@@ -8,7 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 ARG BuildConfiguration=Release
 WORKDIR /src
-COPY ["NuGet.config", "."]
+COPY ["nuget.config", "."]
 COPY ["Tgs.GameProviders.Pluggable/Tgs.GameProviders.Pluggable.csproj", "Tgs.GameProviders.Pluggable/"]
 COPY ["Tgs.GameProviders.Pluggable.Core/Tgs.GameProviders.Pluggable.Core.csproj", "Tgs.GameProviders.Pluggable.Core/"]
 COPY ["Tgs.GameProviders.Pluggable.Repositories/Tgs.GameProviders.Pluggable.Repositories.csproj", "Tgs.GameProviders.Pluggable.Repositories/"]
