@@ -6,7 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{914506ED-CEB7-4744-B5CB-E67D5631522E}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		NuGet.config = NuGet.config
+		nuget.config = nuget.config
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameProviders.Pluggable.Core", "Tgs.GameProviders.Pluggable.Core\Tgs.GameProviders.Pluggable.Core.csproj", "{E384D36D-BE17-4AC0-8EC8-687A1A03C0A1}"
