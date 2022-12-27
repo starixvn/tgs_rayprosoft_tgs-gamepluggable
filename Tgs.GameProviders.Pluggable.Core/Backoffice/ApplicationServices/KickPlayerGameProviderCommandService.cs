@@ -1,20 +1,25 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Tgs.GameProviders.Client;
+using Tgs.GamePlayerLogOut.Client;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
 internal class KickPlayerGameProviderCommandService : ICommandService<KickPlayerGameProviderCommand>
 {
-    private readonly IGameProvidersClient _gameProvidersClient;
+    private readonly IGamePlayerLogOutClient _client;
 
-    public KickPlayerGameProviderCommandService(IGameProvidersClient gameProvidersClient)
+    public KickPlayerGameProviderCommandService(IGamePlayerLogOutClient client)
     {
-        _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
+        _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public ValueTask ExecuteAsync(KickPlayerGameProviderCommand command, CancellationToken cancellationToken = default)
-        => _gameProvidersClient.KickPlayerAsync(command.GameProviderCode, command.PlayerCode, cancellationToken: cancellationToken);
+    public async ValueTask ExecuteAsync(KickPlayerGameProviderCommand command, CancellationToken cancellationToken = default)
+        => _ = await _client
+        .LogOutByGameProviderAsync(
+            command.PlayerCode,
+            command.GameProviderCode,
+            cancellationToken)
+        .ConfigureAwait(false);
 }

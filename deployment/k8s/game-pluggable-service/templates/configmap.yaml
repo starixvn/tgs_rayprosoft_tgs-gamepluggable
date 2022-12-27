@@ -9,7 +9,7 @@ data:
       "Pluggable": {
         "GameProvidersClientBaseUrl": "http://game-gameproviders/",
         "CashServiceClientBaseUrl": "http://cashservice-api/",
-        "KickPlayerServiceClientBaseUrl": "http://game-kickplayer-server/",
+        "GamePlayerLogOutClientBaseUrl": "http://game-gameplayerlogout:9090/",
         "GameProvidersQueryServerClientBaseUrl": "http://game-gameprovider-queryserver/",
         "GameVerificationClientBaseUrl": "http://game-gameverification:9090/",
         "GameFundTransferClientBaseUrl": "http://game-gamefundtransfer:9090/",

@@ -79,7 +79,7 @@ builder.Services.AddGameProvidersPluggable(
     (options, sp) =>
     {
         var configuration = sp.GetRequiredService<IConfiguration>();
-        options.BaseUrl = configuration.GetValue<Uri>("Pluggable:KickPlayerServiceClientBaseUrl");
+        options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GamePlayerLogOutClientBaseUrl");
     },
     (options, sp) =>
     {
