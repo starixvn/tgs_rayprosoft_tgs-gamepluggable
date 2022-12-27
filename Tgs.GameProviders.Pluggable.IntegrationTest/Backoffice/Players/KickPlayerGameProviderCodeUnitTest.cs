@@ -1,9 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
+using Tgs.GamePlayerLogOut.Client;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Pluggable.Client;
+using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
+using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTest.Backoffice.Players;
 
@@ -20,13 +24,18 @@ public class KickPlayerGameProviderCodeUnitTest
         {
             _ = builder.ConfigureServices(services =>
               {
-                  var fakseGameProvidersClient = Substitute.For<IGameProvidersClient>();
+                  var fakeService = Substitute.For<ICommandService<KickPlayerGameProviderCommand>>();
 
-                  _ = fakseGameProvidersClient.KickPlayerAsync(gameProviderCode, playerCode);
+                  var command = new KickPlayerGameProviderCommand(
+                      playerCode,
+                      gameProviderCode);
 
-                  _ = fakseGameProvidersClient.KickPlayerAsync(Arg.Is(gameProviderCode), Arg.Is(playerCode));
+                  _ = fakeService
+                  .ExecuteAsync(
+                      Arg.Is(command),
+                      Arg.Any<CancellationToken>());
 
-                  _ = services.AddSingleton(fakseGameProvidersClient);
+                  _ = services.AddSingleton(fakeService);
               });
         });
 

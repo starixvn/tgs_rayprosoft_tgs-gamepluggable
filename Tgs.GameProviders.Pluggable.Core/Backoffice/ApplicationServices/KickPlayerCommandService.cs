@@ -1,20 +1,24 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Tgs.GameProviders.KickPlayerServer.Client;
+using Tgs.GamePlayerLogOut.Client;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
 internal class KickPlayerCommandService : ICommandService<KickPlayerCommand>
 {
-    private readonly IKickPlayerServiceClient _kickPlayerServiceClient;
+    private readonly IGamePlayerLogOutClient _client;
 
-    public KickPlayerCommandService(IKickPlayerServiceClient kickPlayerServiceClient)
+    public KickPlayerCommandService(IGamePlayerLogOutClient client)
     {
-        _kickPlayerServiceClient = kickPlayerServiceClient ?? throw new ArgumentNullException(nameof(kickPlayerServiceClient));
+        _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public ValueTask ExecuteAsync(KickPlayerCommand command, CancellationToken cancellationToken = default)
-        => _kickPlayerServiceClient.KickPlayerAsync(command.PlayerCode);
+    public async ValueTask ExecuteAsync(KickPlayerCommand command, CancellationToken cancellationToken = default)
+        => _ = await _client
+        .LogOutAsync(
+            command.PlayerCode,
+            cancellationToken)
+        .ConfigureAwait(false);
 }
