@@ -183,8 +183,7 @@ public class PlayerController : ControllerBase
 
         var info = await service
               .GetAsync(new(
-                  model.PlayerCode,
-                  model.GameId))
+                  model.PlayerCode))
               .ConfigureAwait(false);
 
         return new SM01PlatformLoginResult(info.MerchantId, info.CustomerName, info.Timestamp, info.Sign);
