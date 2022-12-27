@@ -75,12 +75,11 @@ internal class GameProvidersOperatorPluggableClient : IGameProvidersOperatorPlug
         return JsonSerializer.Deserialize<decimal>(contentJson, _SerializerOptions)!;
     }
 
-    public async ValueTask<SM01PlatformLoginResponse> GetGameSM01PlatformLoginInfoAsync(string playerCode,int gameId, CancellationToken cancellationToken = default)
+    public async ValueTask<SM01PlatformLoginResponse> GetGameSM01PlatformLoginInfoAsync(string playerCode, CancellationToken cancellationToken = default)
     {
         var request = new
         {
-            PlayerCode = playerCode,
-            GameId = gameId,
+            PlayerCode = playerCode,            
         };
         var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
         requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
