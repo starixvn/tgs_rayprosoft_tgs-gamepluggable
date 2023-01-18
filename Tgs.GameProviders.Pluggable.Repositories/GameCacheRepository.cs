@@ -1,14 +1,14 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using Tgs.GameCommand.Common;
 using Tgs.GameProviders.Pluggable.Core;
-using Tgs.GameProviders.Pluggable.Core.Models;
 
 namespace Tgs.GameProviders.Pluggable.Repositories;
 
 internal class GameCacheRepository : IGame
 {
+    private readonly TimeSpan _absoluteExpiration;
     private readonly IGame _game;
     private readonly IMemoryCache _memoryCache;
-    private readonly TimeSpan _absoluteExpiration;
 
     public GameCacheRepository(
         IGame game,
@@ -23,7 +23,7 @@ internal class GameCacheRepository : IGame
 
     public async ValueTask<GameInfo> GetAsync(int gameId, CancellationToken cancellationToken = default)
     {
-        var key = $"game:{gameId}";
+        var key = $"game:pluggable:gamecache:get:{gameId}";
         if (!_memoryCache.TryGetValue(key, out GameInfo? game))
         {
             game = await _game

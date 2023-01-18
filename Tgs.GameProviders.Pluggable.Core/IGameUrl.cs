@@ -8,8 +8,12 @@ namespace Tgs.GameProviders.Pluggable.Core;
 
 public interface IGameUrl
 {
+    ValueTask<GameSM01PlatformLoginInfo> GetGamePlatformLoginBySM01Async(
+        string playerCode,
+        CancellationToken cancellationToken = default);
+
     ValueTask<Uri> GetGameUrlAsync(
-        string gameProviderCode,
+            string gameProviderCode,
         GameProvidersClientGameType gameType,
         int gameId,
         string brandCode,
@@ -35,10 +39,6 @@ public interface IGameUrl
         string ipAddress,
         Uri? backUrl,
         Guid defaultWalletId,
-        CancellationToken cancellationToken = default);
-
-    ValueTask<GameSM01PlatformLoginInfo> GetGamePlatformLoginBySM01Async(
-        string playerCode,
         CancellationToken cancellationToken = default);
 
     ValueTask<Uri> GetGameUrlByBetConstructAsync(

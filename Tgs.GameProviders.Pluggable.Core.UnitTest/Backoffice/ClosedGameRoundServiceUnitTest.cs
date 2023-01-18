@@ -1,10 +1,9 @@
-using System;
+ï»¿using System;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
-using Tgs.GameProviders.Pluggable.Core.Models;
 using Tgs.GameRounds.Client;
 using Tgs.GameRounds.Common;
 
@@ -72,7 +71,7 @@ public class ClosedGameRoundServiceUnitTest
         var clientRoundStatus = GameRoundClientStatus.Loss;
         var externalClosedOn = DateTimeOffset.Parse("2021-06-03 13:57:05.000 +0800");
         var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
-        var remark = "´ú¸Õ½Õ¾ã";
+        var remark = "æ¸¬è©¦èª¿æ•´";
         var adjustAmount = 100m;
 
         var gameRoundResponse = new GameRoundResponse { HttpStatusCode = System.Net.HttpStatusCode.OK, Success = true };

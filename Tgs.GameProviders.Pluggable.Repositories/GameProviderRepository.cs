@@ -1,15 +1,15 @@
-﻿using Tgs.GameProviders.Pluggable.Core;
-using Tgs.GameProviders.Pluggable.Core.Models;
-using Tgs.GameProviders.QueryServer.Client;
+﻿using Tgs.GameCommand.Client;
+using Tgs.GameCommand.Common;
+using Tgs.GameProviders.Pluggable.Core;
 
 namespace Tgs.GameProviders.Pluggable.Repositories;
 
 internal class GameProviderRepository : IGameProvider
 {
-    private readonly IGameProvidersQueryServerClient _client;
+    private readonly IGameCommandClient _client;
 
     public GameProviderRepository(
-        IGameProvidersQueryServerClient client)
+        IGameCommandClient client)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
@@ -17,62 +17,30 @@ internal class GameProviderRepository : IGameProvider
     public async ValueTask<GameProviderInfo> GetAsync(
         Guid gameProviderId,
         CancellationToken cancellationToken = default)
-    {
-        var data = await _client
-                .GameProviderGetAsync(
-                    gameProviderId,
-                    cancellationToken)
-                .ConfigureAwait(false)
-            ?? throw new ArgumentException($"game provider doesn't exist.{gameProviderId}");
-
-        return new GameProviderInfo(
-               GameProviderId: data.GameProviderId,
-               GameProviderCode: data.GameProviderCode);
-    }
-
-    public async ValueTask<GameProviderInfo> GetAsync(
-        string gameProviderCode,
-        CancellationToken cancellationToken = default)
-    {
-        var gameProviderId = await _client
-                .GameProviderGetGameProviderIdAsync(
-                    gameProviderCode,
-                    cancellationToken)
-                .ConfigureAwait(false)
-                ?? throw new Exception($"game provider does not exist.({gameProviderCode})");
-
-        return await GetAsync(
-                gameProviderId,
-                cancellationToken)
-            .ConfigureAwait(false);
-    }
+        => await _client
+        .GameProviderGetAsync(
+            gameProviderId: gameProviderId,
+            cancellationToken: cancellationToken)
+        .ConfigureAwait(false)
+        ?? throw new ArgumentException($"game provider doesn't exist.{gameProviderId}");
 
     public async ValueTask<GameProviderConfigInfo> GetConfigurationAsync(
         Guid gameProviderConfigId,
         CancellationToken cancellationToken = default)
-    {
-        var data = await _client
-            .GameProviderConfigurationGetAsync(
-                gameProviderConfigId,
-                cancellationToken)
-            .ConfigureAwait(false)
-            ?? throw new ArgumentException($"game provider config doesn't exist.{gameProviderConfigId}");
-
-        return new GameProviderConfigInfo(
-            data.GameProviderConfigId,
-            data.GameProviderId,
-            data.DesktopEndpoint,
-            data.MobileEndpoint,
-            data.ConfigurationData);
-    }
+        => await _client
+        .GameProviderConfigurationGetAsync(
+            gameProviderConfigId: gameProviderConfigId,
+            cancellationToken: cancellationToken)
+        .ConfigureAwait(false)
+        ?? throw new ArgumentException($"game provider config doesn't exist.{gameProviderConfigId}");
 
     public async ValueTask<Guid> GetGameProviderIdAsync(
         string gameProviderCode,
         CancellationToken cancellationToken = default)
         => await _client
-                .GameProviderGetGameProviderIdAsync(
-                    gameProviderCode,
-                    cancellationToken)
-                .ConfigureAwait(false)
-                ?? throw new Exception($"game provider does not exist.({gameProviderCode})");
+        .GameProviderGetGameProviderIdAsync(
+            gameProviderCode: gameProviderCode,
+            cancellationToken: cancellationToken)
+        .ConfigureAwait(false)
+        ?? throw new Exception($"game provider does not exist.({gameProviderCode})");
 }

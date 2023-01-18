@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Tgs.GameProviders.Pluggable.Core.Models;
+using Tgs.GameCommand.Common;
 
 namespace Tgs.GameProviders.Pluggable.Core;
 

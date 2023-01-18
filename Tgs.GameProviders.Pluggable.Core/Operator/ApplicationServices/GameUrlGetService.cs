@@ -61,7 +61,7 @@ internal class GameUrlGetService : IGetService<GameUrlQuery, Uri>
             => await _gameUrl
                 .GetGameUrlByAsiaGamingAsync(
                     gameProvider.GameProviderCode,
-                    (GameProvidersClientGameType)game.GameType,
+                    (GameProvidersClientGameType)game.Type,
                     query.GameId,
                     player.BrandCode,
                     player.PlayerCode,
@@ -78,7 +78,7 @@ internal class GameUrlGetService : IGetService<GameUrlQuery, Uri>
             => await _gameUrl
                 .GetGameUrlByBetConstructAsync(
                     gameProvider.GameProviderCode,
-                    (GameProvidersClientGameType)game.GameType,
+                    (GameProvidersClientGameType)game.Type,
                     query.GameId,
                     player.BrandCode,
                     player.PlayerCode,
@@ -95,7 +95,7 @@ internal class GameUrlGetService : IGetService<GameUrlQuery, Uri>
             _ => await _gameUrl
                 .GetGameUrlAsync(
                     gameProvider.GameProviderCode,
-                    (GameProvidersClientGameType)game.GameType,
+                    (GameProvidersClientGameType)game.Type,
                     query.GameId,
                     player.BrandCode,
                     player.PlayerCode,

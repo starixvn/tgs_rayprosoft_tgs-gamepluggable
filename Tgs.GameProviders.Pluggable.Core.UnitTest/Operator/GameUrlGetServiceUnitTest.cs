@@ -2,13 +2,11 @@
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
+using Tgs.GameCommand.Common;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
-using Tgs.GameProviders.Pluggable.Core.Models;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameVerification.Client;
-using GamePlatformType = Tgs.GameProviders.QueryServer.Models.GamePlatformType;
-using GameType = Tgs.GameProviders.QueryServer.Models.GameType;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTest.Operator;
 
@@ -34,10 +32,15 @@ public class GameUrlGetServiceUnitTest
              new("https://dev-t1.rpgp.cc/"));
 
         var player = new PlayerInfo(
-            Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
             "GPI",
             "4ucmqplxb029",
-            Guid.Parse("36a6cdef-094f-eb11-8d88-70b5e82b6b8d"),
+            "4ucmqplxb029",
+            Guid.NewGuid(),
             "CNY");
         _ = fakePlayer
             .GetAsync(
@@ -51,12 +54,23 @@ public class GameUrlGetServiceUnitTest
             .Returns(true);
 
         var game = new GameInfo(
-            GameId: 1000001,
-            GameExternalId: "0",
+            GameId: 1,
+            GameCode: "lobby",
             GameProviderId: Guid.NewGuid(),
-            GameType: GameType.CardGameLobby,
+            GameProviderCode: GameProviderType.KY,
+            GameExternalId: "lobby",
+            Type: GameType.CardGameLobby,
             PlatformType: GamePlatformType.DesktopAndMobile,
-            GameCode: "Lobby",
+            Name: GameProviderType.KY,
+            SubGame: true,
+            AvailableToBrand: true,
+            HasTurnoverOnTieBet: true,
+            Html5: true,
+            Description: GameProviderType.KY,
+            EndpointPath: null,
+            RuleUrl: null,
+            AvailableCurrencies: null,
+            Localization: null,
             SubGameProviderCode: GameProviderType.KY);
         _ = fakeGame
             .GetAsync(
@@ -64,8 +78,18 @@ public class GameUrlGetServiceUnitTest
             .Returns(ValueTask.FromResult(game));
 
         var gameProvider = new GameProviderInfo(
-             game.GameProviderId,
-             GameProviderType.KY);
+            GameProviderId: game.GameProviderId,
+            GameProviderCode: GameProviderType.KY,
+            UniqueId: 1,
+            Name: GameProviderType.KY,
+            TransferWallet: true,
+            AutoCloseRound: true,
+            SupportTestPlayer: true,
+            AllowKickPlayer: true,
+            PlaceBetTimeout: 0,
+            SettleBetTimeout: 0,
+            Description: GameProviderType.KY,
+            Localization: null);
         _ = fakeGameProvider
             .GetAsync(
                 Arg.Is(game.GameProviderId))
@@ -75,7 +99,7 @@ public class GameUrlGetServiceUnitTest
         _ = fakeGameUrl
             .GetGameUrlAsync(
                 Arg.Is(gameProvider.GameProviderCode),
-                Arg.Is((GameProvidersClientGameType)game.GameType),
+                Arg.Is((GameProvidersClientGameType)game.Type),
                 Arg.Is(query.GameId),
                 Arg.Is(player.BrandCode),
                 Arg.Is(player.PlayerCode),
@@ -119,10 +143,15 @@ public class GameUrlGetServiceUnitTest
              new("https://dev-t1.rpgp.cc/"));
 
         var player = new PlayerInfo(
-            Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
             "GPI",
             "4ucmqplxb029",
-            Guid.Parse("36a6cdef-094f-eb11-8d88-70b5e82b6b8d"),
+            "4ucmqplxb029",
+            Guid.NewGuid(),
             "CNY");
         _ = fakePlayer
             .GetAsync(
@@ -136,21 +165,41 @@ public class GameUrlGetServiceUnitTest
             .Returns(true);
 
         var game = new GameInfo(
-            GameId: 1000001,
-            GameExternalId: "0",
+            GameId: 1,
+            GameCode: "lobby",
             GameProviderId: Guid.NewGuid(),
-            GameType: GameType.LotteryLobby,
+            GameProviderCode: GameProviderType.AsiaGaming,
+            GameExternalId: "lobby",
+            Type: GameType.LotteryLobby,
             PlatformType: GamePlatformType.DesktopAndMobile,
-            GameCode: "Lobby",
+            Name: GameProviderType.KY,
+            SubGame: true,
+            AvailableToBrand: true,
+            HasTurnoverOnTieBet: true,
+            Html5: true,
+            Description: GameProviderType.AsiaGaming,
+            EndpointPath: null,
+            RuleUrl: null,
+            AvailableCurrencies: null,
+            Localization: null,
             SubGameProviderCode: GameProviderType.AsiaGaming);
         _ = fakeGame
             .GetAsync(
                 Arg.Is(query.GameId))
             .Returns(ValueTask.FromResult(game));
-
         var gameProvider = new GameProviderInfo(
-             game.GameProviderId,
-             GameProviderType.AsiaGaming);
+            GameProviderId: game.GameProviderId,
+            GameProviderCode: GameProviderType.AsiaGaming,
+            UniqueId: 1,
+            Name: GameProviderType.AsiaGaming,
+            TransferWallet: true,
+            AutoCloseRound: true,
+            SupportTestPlayer: true,
+            AllowKickPlayer: true,
+            PlaceBetTimeout: 0,
+            SettleBetTimeout: 0,
+            Description: GameProviderType.AsiaGaming,
+            Localization: null);
         _ = fakeGameProvider
             .GetAsync(
                 Arg.Is(game.GameProviderId))
@@ -160,7 +209,7 @@ public class GameUrlGetServiceUnitTest
         _ = fakeGameUrl
             .GetGameUrlByAsiaGamingAsync(
                 Arg.Is(gameProvider.GameProviderCode),
-                Arg.Is((GameProvidersClientGameType)game.GameType),
+                Arg.Is((GameProvidersClientGameType)game.Type),
                 Arg.Is(query.GameId),
                 Arg.Is(player.BrandCode),
                 Arg.Is(player.PlayerCode),
@@ -205,10 +254,15 @@ public class GameUrlGetServiceUnitTest
              new("https://dev-t1.rpgp.cc/"));
 
         var player = new PlayerInfo(
-            Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
             "GPI",
             "4ucmqplxb029",
-            Guid.Parse("36a6cdef-094f-eb11-8d88-70b5e82b6b8d"),
+            "4ucmqplxb029",
+            Guid.NewGuid(),
             "CNY");
         _ = fakePlayer
             .GetAsync(
@@ -220,14 +274,24 @@ public class GameUrlGetServiceUnitTest
                 Arg.Is(query.PlayerCode),
                 Arg.Is(query.GameId))
             .Returns(true);
-
         var game = new GameInfo(
-            GameId: 1000001,
-            GameExternalId: "0",
+            GameId: 1,
+            GameCode: "lobby",
             GameProviderId: Guid.NewGuid(),
-            GameType: GameType.Sportsbook,
+            GameProviderCode: GameProviderType.BetConstruct,
+            GameExternalId: "lobby",
+            Type: GameType.Sportsbook,
             PlatformType: GamePlatformType.DesktopAndMobile,
-            GameCode: "Lobby",
+            Name: GameProviderType.KY,
+            SubGame: true,
+            AvailableToBrand: true,
+            HasTurnoverOnTieBet: true,
+            Html5: true,
+            Description: GameProviderType.BetConstruct,
+            EndpointPath: null,
+            RuleUrl: null,
+            AvailableCurrencies: null,
+            Localization: null,
             SubGameProviderCode: GameProviderType.BetConstruct);
         _ = fakeGame
             .GetAsync(
@@ -235,8 +299,18 @@ public class GameUrlGetServiceUnitTest
             .Returns(ValueTask.FromResult(game));
 
         var gameProvider = new GameProviderInfo(
-             game.GameProviderId,
-             GameProviderType.BetConstruct);
+            GameProviderId: game.GameProviderId,
+            GameProviderCode: GameProviderType.BetConstruct,
+            UniqueId: 1,
+            Name: GameProviderType.BetConstruct,
+            TransferWallet: false,
+            AutoCloseRound: true,
+            SupportTestPlayer: true,
+            AllowKickPlayer: true,
+            PlaceBetTimeout: 0,
+            SettleBetTimeout: 0,
+            Description: GameProviderType.BetConstruct,
+            Localization: null);
         _ = fakeGameProvider
             .GetAsync(
                 Arg.Is(game.GameProviderId))
@@ -246,7 +320,7 @@ public class GameUrlGetServiceUnitTest
         _ = fakeGameUrl
             .GetGameUrlByBetConstructAsync(
                 Arg.Is(gameProvider.GameProviderCode),
-                Arg.Is((GameProvidersClientGameType)game.GameType),
+                Arg.Is((GameProvidersClientGameType)game.Type),
                 Arg.Is(query.GameId),
                 Arg.Is(player.BrandCode),
                 Arg.Is(player.PlayerCode),

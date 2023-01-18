@@ -1,15 +1,15 @@
-﻿using Tgs.GameProviders.Pluggable.Core;
-using Tgs.GameProviders.Pluggable.Core.Models;
-using Tgs.GameProviders.QueryServer.Client;
+﻿using Tgs.GameCommand.Client;
+using Tgs.GameCommand.Common;
+using Tgs.GameProviders.Pluggable.Core;
 
 namespace Tgs.GameProviders.Pluggable.Repositories;
 
 internal class PlayerRepository : IPlayer
 {
-    private readonly IGameProvidersQueryServerClient _client;
+    private readonly IGameCommandClient _client;
 
     public PlayerRepository(
-        IGameProvidersQueryServerClient client)
+        IGameCommandClient client)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
@@ -17,19 +17,10 @@ internal class PlayerRepository : IPlayer
     public async ValueTask<PlayerInfo> GetAsync(
         string playerCode,
         CancellationToken cancellationToken = default)
-    {
-        var data = await _client
-            .PlayerGetAsync(
-                playerCode,
-                cancellationToken)
-            .ConfigureAwait(false)
-            ?? throw new Exception($"This player does not exist.({playerCode})");
-
-        return new PlayerInfo(
-               BrandId: data.BrandId,
-               BrandCode: data.BrandCode,
-               PlayerCode: data.PlayerCode,
-               DefaultWalletId: data.DefaultWalletId,
-               DefaultWalletCurrencyCode: data.DefaultWalletCurrencyCode);
-    }
+        => await _client
+        .PlayerGetAsync(
+            playerCode: playerCode,
+            cancellationToken: cancellationToken)
+        .ConfigureAwait(false)
+        ?? throw new Exception($"This player does not exist.({playerCode})");
 }

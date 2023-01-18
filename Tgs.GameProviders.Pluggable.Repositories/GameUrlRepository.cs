@@ -24,8 +24,21 @@ internal class GameUrlRepository : IGameUrl
         _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
     }
 
+    public async ValueTask<GameSM01PlatformLoginInfo> GetGamePlatformLoginBySM01Async(
+        string playerCode,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _gameProvidersClient
+            .GamePlatformLoginBySM01Async(
+                playerCode,
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        return new GameSM01PlatformLoginInfo(result!.MerchantId, result.CustomerName, result.Timestamp, result.Sign);
+    }
+
     public async ValueTask<Uri> GetGameUrlAsync(
-        string gameProviderCode,
+            string gameProviderCode,
         GameProvidersClientGameType gameType,
         int gameId,
         string brandCode,
@@ -91,19 +104,6 @@ internal class GameUrlRepository : IGameUrl
                     cancellationToken)
                 .ConfigureAwait(false)
                 ?? throw new NullReferenceException();
-    }
-
-    public async ValueTask<GameSM01PlatformLoginInfo> GetGamePlatformLoginBySM01Async(
-        string playerCode,
-        CancellationToken cancellationToken = default)
-    {
-        var result = await _gameProvidersClient
-            .GamePlatformLoginBySM01Async(
-                playerCode,
-                cancellationToken)
-            .ConfigureAwait(false);
-
-        return new GameSM01PlatformLoginInfo(result!.MerchantId, result.CustomerName, result.Timestamp, result.Sign);
     }
 
     public async ValueTask<Uri> GetGameUrlByBetConstructAsync(

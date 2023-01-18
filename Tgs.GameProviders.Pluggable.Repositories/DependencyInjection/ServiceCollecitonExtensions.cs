@@ -12,11 +12,10 @@ public static class ServiceCollecitonExtensions
         .RegisterAllServiceUtilityTypes(
             Assembly.GetExecutingAssembly(),
             ServiceLifetime.Transient)
-        .AddMemoryCache()
         .AddTransient<IPlayer, PlayerRepository>()
-        .Decorate<IPlayer>((innerRepository, sp) => ActivatorUtilities.CreateInstance<PlayerCacheRepository>(sp, innerRepository, TimeSpan.FromMinutes(5)))
+        .Decorate<IPlayer>((innerRepository, sp) => ActivatorUtilities.CreateInstance<PlayerCacheRepository>(sp, innerRepository, TimeSpan.FromMinutes(30)))
         .AddTransient<IGame, GameRepository>()
-        .Decorate<IGame>((innerRepository, sp) => ActivatorUtilities.CreateInstance<GameCacheRepository>(sp, innerRepository, TimeSpan.FromMinutes(5)))
+        .Decorate<IGame>((innerRepository, sp) => ActivatorUtilities.CreateInstance<GameCacheRepository>(sp, innerRepository, TimeSpan.FromMinutes(30)))
         .AddTransient<IGameProvider, GameProviderRepository>()
         .Decorate<IGameProvider>((innerRepository, sp) => ActivatorUtilities.CreateInstance<GameProviderCacheRepository>(sp, innerRepository))
         .AddTransient<IPlayerGameBalance, PlayerGameBalance>()

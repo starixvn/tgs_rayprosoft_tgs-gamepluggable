@@ -3,10 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
+using Tgs.GameCommand.Common;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GameFundTransfer.Protos;
 using Tgs.GameProviders.Domains;
-using Tgs.GameProviders.Pluggable.Core.Models;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameVerification.Client;
 
@@ -30,10 +30,15 @@ public class FundInGetServiceUnitTest
             1);
 
         var player = new PlayerInfo(
-            Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
             "GPI",
             "4ucmqplxb029",
-            Guid.Parse("36a6cdef-094f-eb11-8d88-70b5e82b6b8d"),
+            "4ucmqplxb029",
+            Guid.NewGuid(),
             "CNY");
         _ = fakePlayer
             .GetAsync(
@@ -45,10 +50,19 @@ public class FundInGetServiceUnitTest
             .GetGameProviderIdAsync(
                 Arg.Is(query.GameProviderCode))
             .Returns(ValueTask.FromResult(gameProviderId));
-
         var gameProvider = new GameProviderInfo(
-            gameProviderId,
-            GameProviderType.KY);
+            GameProviderId: gameProviderId,
+            GameProviderCode: GameProviderType.KY,
+            UniqueId: 1,
+            Name: GameProviderType.KY,
+            TransferWallet: true,
+            AutoCloseRound: true,
+            SupportTestPlayer: true,
+            AllowKickPlayer: true,
+            PlaceBetTimeout: 0,
+            SettleBetTimeout: 0,
+            Description: GameProviderType.KY,
+            Localization: null);
         _ = fakeGameProvider
             .GetAsync(
                 Arg.Is(gameProviderId))
@@ -100,10 +114,15 @@ public class FundInGetServiceUnitTest
             123M);
 
         var player = new PlayerInfo(
-            Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
             "GPI",
             "4ucmqplxb029",
-            Guid.Parse("36a6cdef-094f-eb11-8d88-70b5e82b6b8d"),
+            "4ucmqplxb029",
+            Guid.NewGuid(),
             "CNY");
         _ = fakePlayer
             .GetAsync(
@@ -117,8 +136,18 @@ public class FundInGetServiceUnitTest
             .Returns(ValueTask.FromResult(gameProviderId));
 
         var gameProvider = new GameProviderInfo(
-            gameProviderId,
-            GameProviderType.SM01);
+            GameProviderId: gameProviderId,
+            GameProviderCode: GameProviderType.SM01,
+            UniqueId: 1,
+            Name: GameProviderType.SM01,
+            TransferWallet: true,
+            AutoCloseRound: true,
+            SupportTestPlayer: true,
+            AllowKickPlayer: true,
+            PlaceBetTimeout: 0,
+            SettleBetTimeout: 0,
+            Description: GameProviderType.SM01,
+            Localization: null);
         _ = fakeGameProvider
             .GetAsync(
                 Arg.Is(gameProviderId))

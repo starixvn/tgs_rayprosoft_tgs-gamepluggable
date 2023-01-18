@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
@@ -13,7 +13,6 @@ using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using Tgs.GameProviders.Pluggable;
 using Tgs.GameProviders.Pluggable.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,28 +36,25 @@ builder.Logging
     });
 
 // Add services to the container.
+
 builder.Services
     .AddRouting(options => options.LowercaseUrls = true)
     .AddControllers(options =>
     {
         options.Filters.Add(new ProducesAttribute(MediaTypeNames.Application.Json));
         options.Filters.Add(new ConsumesAttribute(MediaTypeNames.Application.Json));
-        _ = options.Filters.Add<ExceptionFilter>();
     })
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services
-    .AddSwaggerGen(c =>
-    {
-        var xmlFileNames = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml");
-        foreach (var xmlFileName in xmlFileNames)
-            c.IncludeXmlComments(xmlFileName);
-    });
+builder.Services.AddSwaggerGen(c =>
+{
+    var xmlFileNames = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml");
+    foreach (var xmlFileName in xmlFileNames) c.IncludeXmlComments(xmlFileName);
+});
 
 builder.Services.AddGameProvidersPluggable(
     (options, sp) =>
@@ -74,7 +70,7 @@ builder.Services.AddGameProvidersPluggable(
     (options, sp) =>
     {
         var configuration = sp.GetRequiredService<IConfiguration>();
-        options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameProvidersQueryServerClientBaseUrl");
+        options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameCommandClientBaseUrl");
     },
     (options, sp) =>
     {
@@ -126,19 +122,26 @@ builder.Services
         .AddProfileViewExporter()
         .AddOtlpExporter())
     .AddProfileViewer()
-    .Configure<AspNetCoreInstrumentationOptions>(options
-        => options.Filter = httpContext
-            => !httpContext.Request.Path.HasValue
+    .Configure<AspNetCoreInstrumentationOptions>(options =>
+    {
+        options.Filter = httpContext =>
+        {
+            return !httpContext.Request.Path.HasValue
                 || !httpContext.Request.Path.StartsWithSegments("/swagger")
                 && !httpContext.Request.Path.StartsWithSegments("/healthz")
-                && !httpContext.Request.Path.StartsWithSegments("/metrics")
                 && !httpContext.Request.Path.StartsWithSegments("/profiler/")
-                && !new[] { "html", "ico", "png", "jpg" }.Any(
-                    ext => httpContext.Request.Path.Value.EndsWith($".{ext}")));
+                && !httpContext.Request.Path.StartsWithSegments("/hangfire")
+                && !httpContext.Request.Path.StartsWithSegments("/metrics")
+                   && !new[] { "html", "ico", "png", "jpg" }.Any(
+                       ext => httpContext.Request.Path.Value.EndsWith($".{ext}"));
+        };
+    });
 
 builder.Services
     .AddInterceptionService()
-    .AddServiceUtiltiyInterceptors()
+    .AddServiceUtiltiyInterceptors();
+
+builder.Services
     .AddHealthChecks();
 
 var app = builder.Build();
@@ -152,10 +155,10 @@ _ = app.UseAuthorization();
 
 _ = app.MapControllers();
 
-_ = app.UseGameProviderRegister();
-
 app.MapProfileViewer();
 
 app.MapHealthChecks("/healthz");
+
+_ = app.UseGameProviderRegister();
 
 app.Run();

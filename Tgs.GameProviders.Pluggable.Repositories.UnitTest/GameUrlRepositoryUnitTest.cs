@@ -1,8 +1,9 @@
-using NSubstitute;
+﻿using NSubstitute;
 using Tgs.CashService.Client;
+using Tgs.GameCommand.Common;
 using Tgs.GameProviders.Client;
+using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Core;
-using Tgs.GameProviders.Pluggable.Core.Models;
 
 namespace Tgs.GameProviders.Pluggable.Repositories.UnitTest;
 
@@ -43,7 +44,7 @@ public class GameUrlRepositoryUnitTest
                 Arg.Is(language),
                 Arg.Is(ipAddress),
                 Arg.Is(backUrl))
-            .Returns(ValueTask.FromResult<Uri?>(gameUrl));
+            .Returns(gameUrl);
 
         var sut = new GameUrlRepository(
             fakeBrand,
@@ -111,7 +112,7 @@ public class GameUrlRepositoryUnitTest
                 Arg.Is(ipAddress),
                 Arg.Is(backUrl),
                 Arg.Is(gameBalance))
-            .Returns(ValueTask.FromResult<Uri?>(gameUrl));
+            .Returns(gameUrl);
 
         var sut = new GameUrlRepository(
             fakeBrand,
@@ -169,11 +170,18 @@ public class GameUrlRepositoryUnitTest
             .Returns(gameProviderConfigurationId);
 
         var gameProviderConfiguration = new GameProviderConfigInfo(
-            gameProviderConfigurationId,
-            gameProviderId,
-            "https://devsportsbook.srvttt.com",
-            "https://devmobile.srvttt.com",
-            string.Empty);
+            GameProviderId: gameProviderId,
+            GameProviderCode: GameProviderType.BetConstruct,
+            GameProviderConfigId: gameProviderConfigurationId,
+            Status: GameProviderConfigStatus.Active,
+            Name: $"{GameProviderType.BetConstruct} Configuration",
+            Description: $"{GameProviderType.BetConstruct} Configuration",
+            ClientId: $"{GameProviderType.BetConstruct}-GPI",
+            SecretKey: Guid.NewGuid().ToString("N"),
+            DesktopEndpoint: "https://devsportsbook.srvttt.com",
+            MobileEndpoint: "https://devmobile.srvttt.com",
+            ConfigurationData: string.Empty,
+            IsDefault: false);
         _ = fakeGameProvider
             .GetConfigurationAsync(
                 Arg.Is(gameProviderConfigurationId))
@@ -193,7 +201,7 @@ public class GameUrlRepositoryUnitTest
                 Arg.Is(ipAddress),
                 Arg.Is(backUrl),
                 Arg.Is(gameProviderConfiguration.DesktopEndpoint))
-            .Returns(ValueTask.FromResult<Uri?>(gameUrl));
+            .Returns(gameUrl);
 
         var sut = new GameUrlRepository(
             fakeBrand,
@@ -252,11 +260,18 @@ public class GameUrlRepositoryUnitTest
             .Returns(gameProviderConfigurationId);
 
         var gameProviderConfiguration = new GameProviderConfigInfo(
-            gameProviderConfigurationId,
-            gameProviderId,
-            "https://devsportsbook.srvttt.com",
-            "https://devmobile.srvttt.com",
-            string.Empty);
+            GameProviderId: gameProviderId,
+            GameProviderCode: GameProviderType.BetConstruct,
+            GameProviderConfigId: gameProviderConfigurationId,
+            Status: GameProviderConfigStatus.Active,
+            Name: $"{GameProviderType.BetConstruct} Configuration",
+            Description: $"{GameProviderType.BetConstruct} Configuration",
+            ClientId: $"{GameProviderType.BetConstruct}-GPI",
+            SecretKey: Guid.NewGuid().ToString("N"),
+            DesktopEndpoint: "https://devsportsbook.srvttt.com",
+            MobileEndpoint: "https://devmobile.srvttt.com",
+            ConfigurationData: string.Empty,
+            IsDefault: false);
         _ = fakeGameProvider
             .GetConfigurationAsync(
                 Arg.Is(gameProviderConfigurationId))
@@ -276,7 +291,7 @@ public class GameUrlRepositoryUnitTest
                 Arg.Is(ipAddress),
                 Arg.Is(backUrl),
                 Arg.Is(gameProviderConfiguration.MobileEndpoint))
-            .Returns(ValueTask.FromResult<Uri?>(gameUrl));
+            .Returns(gameUrl);
 
         var sut = new GameUrlRepository(
             fakeBrand,

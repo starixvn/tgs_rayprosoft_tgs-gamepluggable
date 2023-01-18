@@ -24,20 +24,19 @@ internal class PlayerGameBalance : IPlayerGameBalance
         CancellationToken cancellationToken = default)
     {
         var gameProviderBalance = await _gameProvidersClient
-                    .PlayerBalanceAsync(
-                        gameProviderCode,
-                        playerCode,
-                        cancellationToken: cancellationToken)
-                    .ConfigureAwait(false)
-                    ?? throw new Exception($"The player's game balance failed to obtain.({playerCode})");
+            .PlayerBalanceAsync(
+                gameProviderCode,
+                playerCode,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
         var exchangeRateBalanceResult = await _gameCurrencyClient
-                    .ConvertPlatformBalanceAsync(
-                        gameProviderCode,
-                        currencyCode,
-                        gameProviderBalance,
-                        cancellationToken)
-                    .ConfigureAwait(false);
+            .ConvertPlatformBalanceAsync(
+                gameProviderCode,
+                currencyCode,
+                gameProviderBalance,
+                cancellationToken)
+            .ConfigureAwait(false);
 
         return exchangeRateBalanceResult.Balance;
     }
