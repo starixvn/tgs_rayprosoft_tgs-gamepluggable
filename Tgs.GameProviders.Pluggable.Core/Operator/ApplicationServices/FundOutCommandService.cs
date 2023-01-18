@@ -55,6 +55,11 @@ internal class FundOutCommandService : ICommandService<FundOutCommand>
                             cancellationToken)
                         .ConfigureAwait(false);
 
+        if (!gameProvider.TransferWallet)
+        {
+            throw new Exception($"This game provider does not provide multi-wallet functionality.({gameProvider.GameProviderCode})");
+        }
+
         if (!await _gameVerificationClient.VerifyPlayerFundAsync(player.PlayerCode, gameProvider.GameProviderId).ConfigureAwait(false))
         {
             throw new Exception("Transfer verification failed. (1. The player does not exist or is not enabled. 2. The game manufacturer does not exist or is not enabled. 3. The game market does not support this currency.)");

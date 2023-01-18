@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Tgs.GameCommand.Client;
 using Tgs.GameProviders.Pluggable.Core;
-using Tgs.GameProviders.QueryServer.Client;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             using (var scope = app.Services.CreateScope())
             {
-                var client = scope.ServiceProvider.GetRequiredService<IGameProvidersQueryServerClient>();
+                var client = scope.ServiceProvider.GetRequiredService<IGameCommandClient>();
                 var gameProvider = scope.ServiceProvider.GetRequiredService<IGameProvider>();
 
                 var gameProviderIds = await client

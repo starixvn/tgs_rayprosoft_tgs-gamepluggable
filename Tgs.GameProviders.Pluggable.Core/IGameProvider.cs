@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Tgs.GameProviders.Pluggable.Core.Models;
+using Tgs.GameCommand.Common;
 
 namespace Tgs.GameProviders.Pluggable.Core;
 
@@ -16,6 +16,6 @@ public interface IGameProvider
         CancellationToken cancellationToken = default);
 
     ValueTask<Guid> GetGameProviderIdAsync(
-                        string gameProviderCode,
+        string gameProviderCode,
         CancellationToken cancellationToken = default);
 }

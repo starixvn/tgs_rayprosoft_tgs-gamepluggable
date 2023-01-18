@@ -10,7 +10,7 @@ data:
         "GameProvidersClientBaseUrl": "http://game-gameproviders/",
         "CashServiceClientBaseUrl": "http://cashservice-api/",
         "GamePlayerLogOutClientBaseUrl": "http://game-gameplayerlogout:9090/",
-        "GameProvidersQueryServerClientBaseUrl": "http://game-gameprovider-queryserver/",
+        "GameCommandClientBaseUrl": "http://game-gamecommand/",
         "GameVerificationClientBaseUrl": "http://game-gameverification:9090/",
         "GameFundTransferClientBaseUrl": "http://game-gamefundtransfer:9090/",
         "GameCurrencyClientBaseUrl": "http://game-gamecurrency/",

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Reflection;
 using Tgs.CashService.Client;
+using Tgs.GameCommand.Client;
 using Tgs.GameCurrency.Client;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GamePlayerLogOut.Client;
 using Tgs.GameProviders.Client;
-using Tgs.GameProviders.QueryServer.Client;
 using Tgs.GameRounds.Client;
 using Tgs.GameVerification.Client;
 
@@ -17,7 +17,7 @@ public static class ServiceCollecitonExtensions
         this IServiceCollection services,
         Action<CashServiceClientOptions, IServiceProvider> cashServiceClientOptions,
         Action<GameProvidersClientOptions, IServiceProvider> gameProvidersClientOptions,
-        Action<GameProvidersQueryServerClientOptions, IServiceProvider> gameProvidersQueryServerClientOptions,
+        Action<GameCommandClientOptions, IServiceProvider> gameCommandClientOptions,
         Action<GamePlayerLogOutClientOptions, IServiceProvider> gamePlayerLogOutClientOptions,
         Action<GameVerificationClientOptions, IServiceProvider> gameVerificationClientOptions,
         Action<GameFundTransferClientOptions, IServiceProvider> gameTransferClientOptions,
@@ -29,7 +29,7 @@ public static class ServiceCollecitonExtensions
             ServiceLifetime.Transient)
         .AddCashServiceClient(cashServiceClientOptions)
         .AddGameProvidersClient(gameProvidersClientOptions)
-        .AddGameProvidersQueryServerClient(gameProvidersQueryServerClientOptions)
+        .AddGameCommandClient(gameCommandClientOptions)
         .AddGamePlayerLogOutClient(gamePlayerLogOutClientOptions)
         .AddGameVerificationClient(gameVerificationClientOptions)
         .AddGameFundTransferClient(gameTransferClientOptions)

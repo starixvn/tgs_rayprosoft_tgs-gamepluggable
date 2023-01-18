@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
+using Tgs.GameCommand.Common;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GameFundTransfer.Protos;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
-using Tgs.GameProviders.Pluggable.Core.Models;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTest.Backoffice;
 
@@ -26,11 +26,16 @@ public class FundInCommandServiceUnitTest
              GameProviderCode: "KY");
 
         var player = new PlayerInfo(
-            BrandId: Guid.NewGuid(),
-            BrandCode: "GPI",
-            PlayerCode: command.PlayerCode,
-            DefaultWalletId: Guid.NewGuid(),
-            DefaultWalletCurrencyCode: "CNY");
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "GPI",
+            "4ucmqplxb029",
+            "4ucmqplxb029",
+            Guid.NewGuid(),
+            "CNY");
         _ = fakePlayer
             .GetAsync(
                 Arg.Is(command.PlayerCode))
@@ -44,7 +49,17 @@ public class FundInCommandServiceUnitTest
 
         var gameProvider = new GameProviderInfo(
             GameProviderId: gameProviderId,
-            GameProviderCode: command.GameProviderCode);
+            GameProviderCode: command.GameProviderCode,
+            UniqueId: 1,
+            Name: command.GameProviderCode,
+            TransferWallet: true,
+            AutoCloseRound: true,
+            SupportTestPlayer: true,
+            AllowKickPlayer: true,
+            PlaceBetTimeout: 0,
+            SettleBetTimeout: 0,
+            Description: command.GameProviderCode,
+            Localization: null);
         _ = fakeGameProvider
             .GetAsync(
                 Arg.Is(gameProviderId))
@@ -86,11 +101,16 @@ public class FundInCommandServiceUnitTest
              GameProviderCode: "KY");
 
         var player = new PlayerInfo(
-            BrandId: Guid.NewGuid(),
-            BrandCode: "GPI",
-            PlayerCode: command.PlayerCode,
-            DefaultWalletId: Guid.NewGuid(),
-            DefaultWalletCurrencyCode: "CNY");
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "GPI",
+            "4ucmqplxb029",
+            "4ucmqplxb029",
+            Guid.NewGuid(),
+            "CNY");
         _ = fakePlayer
             .GetAsync(
                 Arg.Is(command.PlayerCode))
@@ -104,7 +124,17 @@ public class FundInCommandServiceUnitTest
 
         var gameProvider = new GameProviderInfo(
             GameProviderId: gameProviderId,
-            GameProviderCode: command.GameProviderCode);
+            GameProviderCode: command.GameProviderCode,
+            UniqueId: 1,
+            Name: command.GameProviderCode,
+            TransferWallet: true,
+            AutoCloseRound: true,
+            SupportTestPlayer: true,
+            AllowKickPlayer: true,
+            PlaceBetTimeout: 0,
+            SettleBetTimeout: 0,
+            Description: command.GameProviderCode,
+            Localization: null);
         _ = fakeGameProvider
             .GetAsync(
                 Arg.Is(gameProviderId))
@@ -146,11 +176,16 @@ public class FundInCommandServiceUnitTest
              GameProviderCode: "KY");
 
         var player = new PlayerInfo(
-            BrandId: Guid.NewGuid(),
-            BrandCode: "GPI",
-            PlayerCode: command.PlayerCode,
-            DefaultWalletId: Guid.NewGuid(),
-            DefaultWalletCurrencyCode: "CNY");
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "GPI",
+            "4ucmqplxb029",
+            "4ucmqplxb029",
+            Guid.NewGuid(),
+            "CNY");
         _ = fakePlayer
             .GetAsync(
                 Arg.Is(command.PlayerCode))
@@ -164,7 +199,17 @@ public class FundInCommandServiceUnitTest
 
         var gameProvider = new GameProviderInfo(
             GameProviderId: gameProviderId,
-            GameProviderCode: command.GameProviderCode);
+            GameProviderCode: command.GameProviderCode,
+            UniqueId: 1,
+            Name: command.GameProviderCode,
+            TransferWallet: true,
+            AutoCloseRound: true,
+            SupportTestPlayer: true,
+            AllowKickPlayer: true,
+            PlaceBetTimeout: 0,
+            SettleBetTimeout: 0,
+            Description: command.GameProviderCode,
+            Localization: null);
         _ = fakeGameProvider
             .GetAsync(
                 Arg.Is(gameProviderId))
@@ -206,11 +251,16 @@ public class FundInCommandServiceUnitTest
              GameProviderCode: "KY");
 
         var player = new PlayerInfo(
-            BrandId: Guid.NewGuid(),
-            BrandCode: "GPI",
-            PlayerCode: command.PlayerCode,
-            DefaultWalletId: Guid.NewGuid(),
-            DefaultWalletCurrencyCode: "CNY");
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "GPI",
+            "4ucmqplxb029",
+            "4ucmqplxb029",
+            Guid.NewGuid(),
+            "CNY");
         _ = fakePlayer
             .GetAsync(
                 Arg.Is(command.PlayerCode))
@@ -224,7 +274,17 @@ public class FundInCommandServiceUnitTest
 
         var gameProvider = new GameProviderInfo(
             GameProviderId: gameProviderId,
-            GameProviderCode: command.GameProviderCode);
+            GameProviderCode: command.GameProviderCode,
+            UniqueId: 1,
+            Name: command.GameProviderCode,
+            TransferWallet: true,
+            AutoCloseRound: true,
+            SupportTestPlayer: true,
+            AllowKickPlayer: true,
+            PlaceBetTimeout: 0,
+            SettleBetTimeout: 0,
+            Description: command.GameProviderCode,
+            Localization: null);
         _ = fakeGameProvider
             .GetAsync(
                 Arg.Is(gameProviderId))
@@ -277,11 +337,16 @@ public class FundInCommandServiceUnitTest
              GameProviderCode: "SM01");
 
         var player = new PlayerInfo(
-            BrandId: Guid.NewGuid(),
-            BrandCode: "GPI",
-            PlayerCode: command.PlayerCode,
-            DefaultWalletId: Guid.NewGuid(),
-            DefaultWalletCurrencyCode: "CNY");
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "GPI",
+            "4ucmqplxb029",
+            "4ucmqplxb029",
+            Guid.NewGuid(),
+            "CNY");
         _ = fakePlayer
             .GetAsync(
                 Arg.Is(command.PlayerCode))
@@ -295,7 +360,17 @@ public class FundInCommandServiceUnitTest
 
         var gameProvider = new GameProviderInfo(
             GameProviderId: gameProviderId,
-            GameProviderCode: command.GameProviderCode);
+            GameProviderCode: command.GameProviderCode,
+            UniqueId: 1,
+            Name: command.GameProviderCode,
+            TransferWallet: true,
+            AutoCloseRound: true,
+            SupportTestPlayer: true,
+            AllowKickPlayer: true,
+            PlaceBetTimeout: 0,
+            SettleBetTimeout: 0,
+            Description: command.GameProviderCode,
+            Localization: null);
         _ = fakeGameProvider
             .GetAsync(
                 Arg.Is(gameProviderId))
@@ -337,11 +412,16 @@ public class FundInCommandServiceUnitTest
              GameProviderCode: "SM01");
 
         var player = new PlayerInfo(
-            BrandId: Guid.NewGuid(),
-            BrandCode: "GPI",
-            PlayerCode: command.PlayerCode,
-            DefaultWalletId: Guid.NewGuid(),
-            DefaultWalletCurrencyCode: "CNY");
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "GPI",
+            "4ucmqplxb029",
+            "4ucmqplxb029",
+            Guid.NewGuid(),
+            "CNY");
         _ = fakePlayer
             .GetAsync(
                 Arg.Is(command.PlayerCode))
@@ -355,7 +435,17 @@ public class FundInCommandServiceUnitTest
 
         var gameProvider = new GameProviderInfo(
             GameProviderId: gameProviderId,
-            GameProviderCode: command.GameProviderCode);
+            GameProviderCode: command.GameProviderCode,
+            UniqueId: 1,
+            Name: command.GameProviderCode,
+            TransferWallet: true,
+            AutoCloseRound: true,
+            SupportTestPlayer: true,
+            AllowKickPlayer: true,
+            PlaceBetTimeout: 0,
+            SettleBetTimeout: 0,
+            Description: command.GameProviderCode,
+            Localization: null);
         _ = fakeGameProvider
             .GetAsync(
                 Arg.Is(gameProviderId))
@@ -397,11 +487,16 @@ public class FundInCommandServiceUnitTest
              GameProviderCode: "SM01");
 
         var player = new PlayerInfo(
-            BrandId: Guid.NewGuid(),
-            BrandCode: "GPI",
-            PlayerCode: command.PlayerCode,
-            DefaultWalletId: Guid.NewGuid(),
-            DefaultWalletCurrencyCode: "CNY");
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "GPI",
+            "4ucmqplxb029",
+            "4ucmqplxb029",
+            Guid.NewGuid(),
+            "CNY");
         _ = fakePlayer
             .GetAsync(
                 Arg.Is(command.PlayerCode))
@@ -415,7 +510,17 @@ public class FundInCommandServiceUnitTest
 
         var gameProvider = new GameProviderInfo(
             GameProviderId: gameProviderId,
-            GameProviderCode: command.GameProviderCode);
+            GameProviderCode: command.GameProviderCode,
+            UniqueId: 1,
+            Name: command.GameProviderCode,
+            TransferWallet: true,
+            AutoCloseRound: true,
+            SupportTestPlayer: true,
+            AllowKickPlayer: true,
+            PlaceBetTimeout: 0,
+            SettleBetTimeout: 0,
+            Description: command.GameProviderCode,
+            Localization: null);
         _ = fakeGameProvider
             .GetAsync(
                 Arg.Is(gameProviderId))

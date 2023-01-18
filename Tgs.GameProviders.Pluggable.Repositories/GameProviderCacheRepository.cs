@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using Tgs.GameCommand.Common;
 using Tgs.GameProviders.Pluggable.Core;
-using Tgs.GameProviders.Pluggable.Core.Models;
 
 namespace Tgs.GameProviders.Pluggable.Repositories;
 
@@ -22,7 +22,7 @@ internal class GameProviderCacheRepository : IGameProvider
         Guid gameProviderId,
         CancellationToken cancellationToken = default)
     {
-        var key = $"gameprovider:{gameProviderId}";
+        var key = $"game:pluggable:gameprovidercache:get:{gameProviderId}";
         if (!_memoryCache.TryGetValue(key, out GameProviderInfo? gameProvider))
         {
             gameProvider = await _gameProvider
@@ -47,7 +47,7 @@ internal class GameProviderCacheRepository : IGameProvider
         string gameProviderCode,
         CancellationToken cancellationToken = default)
     {
-        var key = $"gameprovider:{gameProviderCode}";
+        var key = $"game:pluggable:gameprovidercache:get:gameproviderid:{gameProviderCode}";
         if (!_memoryCache.TryGetValue(key, out Guid gameProviderId))
         {
             gameProviderId = await _gameProvider

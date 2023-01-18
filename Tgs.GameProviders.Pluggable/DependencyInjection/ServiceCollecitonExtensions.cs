@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Tgs.CashService.Client;
+using Tgs.GameCommand.Client;
 using Tgs.GameCurrency.Client;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GamePlayerLogOut.Client;
 using Tgs.GameProviders.Client;
-using Tgs.GameProviders.QueryServer.Client;
 using Tgs.GameRounds.Client;
 using Tgs.GameVerification.Client;
 
@@ -17,20 +17,22 @@ public static class ServiceCollecitonExtensions
         this IServiceCollection services,
         Action<CashServiceClientOptions, IServiceProvider> cashServiceClientOptions,
         Action<GameProvidersClientOptions, IServiceProvider> gameProvidersClientOptions,
-        Action<GameProvidersQueryServerClientOptions, IServiceProvider> gameProvidersQueryServerClientOptions,
+        Action<GameCommandClientOptions, IServiceProvider> gameCommandClientOptions,
         Action<GamePlayerLogOutClientOptions, IServiceProvider> gamePlayerLogOutClientOptions,
         Action<GameVerificationClientOptions, IServiceProvider> gameVerificationClientOptions,
         Action<GameFundTransferClientOptions, IServiceProvider> gameTransferClientOptions,
         Action<GameCurrencyClientOptions, IServiceProvider> gameCurrencyClientOptions,
         Action<GameRoundsClientOptions, IServiceProvider> gameRoundsConfigure)
-        => services.AddGameProvidersPluggableCore(
-            cashServiceClientOptions,
-            gameProvidersClientOptions,
-            gameProvidersQueryServerClientOptions,
-            gamePlayerLogOutClientOptions,
-            gameVerificationClientOptions,
-            gameTransferClientOptions,
-            gameCurrencyClientOptions,
-            gameRoundsConfigure)
+        => services
+        .AddMemoryCache()
+        .AddGameProvidersPluggableCore(
+            cashServiceClientOptions: cashServiceClientOptions,
+            gameProvidersClientOptions: gameProvidersClientOptions,
+            gameCommandClientOptions: gameCommandClientOptions,
+            gamePlayerLogOutClientOptions: gamePlayerLogOutClientOptions,
+            gameVerificationClientOptions: gameVerificationClientOptions,
+            gameTransferClientOptions: gameTransferClientOptions,
+            gameCurrencyClientOptions: gameCurrencyClientOptions,
+            gameRoundsConfigure: gameRoundsConfigure)
         .AddGameProvidersPluggableRepositories();
 }

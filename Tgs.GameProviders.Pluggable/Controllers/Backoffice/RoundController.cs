@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.Pluggable.Core.Models;
 using Tgs.GameProviders.Pluggable.ViewModels;
-using Tgs.GameProviders.QueryServer.Models;
 using Tgs.GameRounds.Common;
 using Tgs.ServiceUtility;
 
@@ -78,7 +77,7 @@ public class RoundController : ControllerBase
     /// </remarks>
     [HttpGet("{roundId}/gameactionquery")]
     public IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(
-                [FromServices] IQueryService<Guid, GameActionModel> queryService,
+                [FromServices] IQueryService<Guid, GameActionInfo> queryService,
                 Guid roundId)
         => queryService.QueryAsync(roundId)
             .Select(data => new GameActionViewModel(

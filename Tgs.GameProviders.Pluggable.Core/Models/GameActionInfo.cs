@@ -1,5 +1,5 @@
 ﻿using System;
-using Tgs.GameProviders.QueryServer.Models;
+using Tgs.GameCommand.Common;
 
 namespace Tgs.GameProviders.Pluggable.Core.Models;
 

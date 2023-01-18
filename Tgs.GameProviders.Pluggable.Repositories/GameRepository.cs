@@ -1,14 +1,14 @@
-﻿using Tgs.GameProviders.Pluggable.Core;
-using Tgs.GameProviders.Pluggable.Core.Models;
-using Tgs.GameProviders.QueryServer.Client;
+﻿using Tgs.GameCommand.Client;
+using Tgs.GameCommand.Common;
+using Tgs.GameProviders.Pluggable.Core;
 
 namespace Tgs.GameProviders.Pluggable.Repositories;
 
 internal class GameRepository : IGame
 {
-    private readonly IGameProvidersQueryServerClient _client;
+    private readonly IGameCommandClient _client;
 
-    public GameRepository(IGameProvidersQueryServerClient client)
+    public GameRepository(IGameCommandClient client)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
@@ -16,21 +16,10 @@ internal class GameRepository : IGame
     public async ValueTask<GameInfo> GetAsync(
         int gameId,
         CancellationToken cancellationToken = default)
-    {
-        var data = await _client
-                .GameGetAsync(
-                    gameId,
-                    cancellationToken)
-                .ConfigureAwait(false)
-            ?? throw new ArgumentException($"The game doesn't exist.{gameId}");
-
-        return new GameInfo(
-            GameId: data.GameId,
-            GameExternalId: data.GameExternalId,
-            GameProviderId: data.GameProviderId,
-            GameType: data.GameType,
-            PlatformType: data.PlatformType,
-            GameCode: data.GameCode,
-            SubGameProviderCode: data.SubGameProviderCode);
-    }
+        => await _client
+        .GameGetAsync(
+            gameId,
+            cancellationToken)
+        .ConfigureAwait(false)
+        ?? throw new ArgumentException($"The game doesn't exist.{gameId}");
 }

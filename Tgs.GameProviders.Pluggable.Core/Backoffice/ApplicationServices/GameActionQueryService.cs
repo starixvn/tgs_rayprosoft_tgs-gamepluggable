@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Tgs.GameCommand.Client;
 using Tgs.GameProviders.Pluggable.Core.Models;
-using Tgs.GameProviders.QueryServer.Client;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
 internal class GameActionQueryService : IQueryService<Guid, GameActionInfo>
 {
-    private readonly IGameProvidersQueryServerClient _client;
+    private readonly IGameCommandClient _client;
 
-    public GameActionQueryService(IGameProvidersQueryServerClient client)
+    public GameActionQueryService(IGameCommandClient client)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }

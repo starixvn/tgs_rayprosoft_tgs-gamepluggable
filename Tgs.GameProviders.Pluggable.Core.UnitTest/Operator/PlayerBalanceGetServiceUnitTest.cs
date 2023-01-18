@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
-using Tgs.GameProviders.Pluggable.Core.Models;
+using Tgs.GameCommand.Common;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTest.Operator;
@@ -21,10 +21,15 @@ public class PlayerBalanceGetServiceUnitTest
             "KY");
 
         var player = new PlayerInfo(
-            Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
             "GPI",
             "4ucmqplxb029",
-            Guid.Parse("36a6cdef-094f-eb11-8d88-70b5e82b6b8d"),
+            "4ucmqplxb029",
+            Guid.NewGuid(),
             "CNY");
         _ = fakePlayer
             .GetAsync(

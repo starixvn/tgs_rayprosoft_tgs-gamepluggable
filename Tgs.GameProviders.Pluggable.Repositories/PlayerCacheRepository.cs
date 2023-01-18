@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using Tgs.GameCommand.Common;
 using Tgs.GameProviders.Pluggable.Core;
-using Tgs.GameProviders.Pluggable.Core.Models;
 
 namespace Tgs.GameProviders.Pluggable.Repositories;
 
@@ -25,7 +25,7 @@ internal class PlayerCacheRepository : IPlayer
         string playerCode,
         CancellationToken cancellationToken = default)
     {
-        var key = $"player:{playerCode}";
+        var key = $"game:pluggable:playercache:get:{playerCode}";
         if (!_memoryCache.TryGetValue(key, out PlayerInfo? player))
         {
             player = await _player

@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Tgs.GameCommand.Client;
 using Tgs.GameProviders.Domains;
-using Tgs.GameProviders.QueryServer.Client;
 using Tgs.GameVerification.Client;
 using Tgs.ServiceUtility;
 
@@ -14,13 +14,13 @@ internal class GameSM01PlatformLoginGetService : IGetService<GameSM01PlatformLog
     private readonly IGameProvider _gameProvider;
     private readonly IGameUrl _gameUrl;
     private readonly IGameVerificationClient _gameVerificationClient;
-    private readonly IGameProvidersQueryServerClient _queryServerClient;
+    private readonly IGameCommandClient _queryServerClient;
 
     public GameSM01PlatformLoginGetService(
         IGameUrl gameUrl,
         IGameVerificationClient gameVerificationClient,
         IGameProvider gameProvider,
-        IGameProvidersQueryServerClient queryServerClient)
+        IGameCommandClient queryServerClient)
     {
         _gameUrl = gameUrl ?? throw new ArgumentNullException(nameof(gameUrl));
         _gameVerificationClient = gameVerificationClient ?? throw new ArgumentNullException(nameof(gameVerificationClient));

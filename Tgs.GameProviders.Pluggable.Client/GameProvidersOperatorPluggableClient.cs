@@ -79,7 +79,7 @@ internal class GameProvidersOperatorPluggableClient : IGameProvidersOperatorPlug
     {
         var request = new
         {
-            PlayerCode = playerCode,            
+            PlayerCode = playerCode,
         };
         var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
         requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);

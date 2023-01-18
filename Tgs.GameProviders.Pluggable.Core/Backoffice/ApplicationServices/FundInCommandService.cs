@@ -47,6 +47,11 @@ internal class FundInCommandService : ICommandService<FundInCommand>
                             cancellationToken)
                         .ConfigureAwait(false);
 
+        if (!gameProvider.TransferWallet)
+        {
+            throw new Exception($"This game provider does not provide multi-wallet functionality.({gameProvider.GameProviderCode})");
+        }
+
         var gameProviderBalance = await _playerGameBalance.GetBalanceAsync(
             gameProviderCode: gameProvider.GameProviderCode,
             playerCode: player.PlayerCode,
