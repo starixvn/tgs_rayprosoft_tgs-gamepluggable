@@ -16,7 +16,7 @@
     <PackageReference Include="Tgs.GameFundTransfer.Client" Version="0.0.4" />    
     <PackageReference Include="Tgs.GamePlayerLogOut.Client" Version="0.0.1" />
     <PackageReference Include="Tgs.GameProviders.Client" Version="0.0.52" />
-    <PackageReference Include="Tgs.GameRounds.Client" Version="0.0.33" />
+    <PackageReference Include="Tgs.GameRounds.Client" Version="0.0.34" />
     <PackageReference Include="Tgs.GameVerification.Client" Version="0.0.11" />
     <PackageReference Include="TGS.ServiceUtility" Version="0.2.0" />
   </ItemGroup>
