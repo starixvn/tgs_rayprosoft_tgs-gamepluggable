@@ -37,6 +37,11 @@ internal class FundOutCommandService : ICommandService<FundOutCommand>
 
     public async ValueTask ExecuteAsync(FundOutCommand command, CancellationToken cancellationToken = default)
     {
+        if (command.Amount == 0)
+        {
+            return;
+        }
+
         var player = await _player
             .GetAsync(
                 command.PlayerCode,

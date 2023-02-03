@@ -33,6 +33,11 @@ internal class FundInCommandService : ICommandService<FundInCommand>
 
     public async ValueTask ExecuteAsync(FundInCommand command, CancellationToken cancellationToken = default)
     {
+        if (command.Amount == 0)
+        {
+            return;
+        }
+
         var player = await _player
             .GetAsync(
                 command.PlayerCode,
