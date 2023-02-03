@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Tgs.CashService.Client;
 using Tgs.GameCommand.Common;
 using Tgs.GameFundTransfer.Client;
-using Tgs.GameFundTransfer.Protos;
 using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameVerification.Client;
@@ -103,7 +103,15 @@ public class FundOutGetServiceUnitTest
 
         _ = fakeGameFundTransferClient
             .Received(1)
-            .FundOutAsync(Arg.Any<GameFundTransferFundRequest>());
+            .FundOutAsync(
+                gameProviderId: Arg.Is(gameProviderId),
+                gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+                brandCode: Arg.Is(player.BrandCode),
+                playerCode: Arg.Is(player.PlayerCode),
+                walletId: Arg.Is(player.DefaultWalletId),
+                currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+                amount: Arg.Is(query.Amount),
+                cancellationToken: Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -191,21 +199,16 @@ public class FundOutGetServiceUnitTest
 
         await fakeService.ExecuteAsync(query).ConfigureAwait(false);
 
-        var fundRequest = new GameFundTransferFundRequest
-        {
-            Amount = 123M,
-            BrandCode = "GPI",
-            CurrencyCode = "CNY",
-            GameProviderCode = GameProviderType.SM01,
-            GameProviderId = gameProvider.GameProviderId,
-            PlayerCode = player.PlayerCode,
-            WalletId = player.DefaultWalletId
-        };
-
         _ = fakeGameFundTransferClient
             .Received(1)
-            .FundOutAsync(Arg.Is(fundRequest));
-
-        Assert.AreEqual(123M, fundRequest.Amount.ToDecimal());
+            .FundOutAsync(
+                gameProviderId: Arg.Is(gameProviderId),
+                gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+                brandCode: Arg.Is(player.BrandCode),
+                playerCode: Arg.Is(player.PlayerCode),
+                walletId: Arg.Is(player.DefaultWalletId),
+                currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+                amount: Arg.Is(123M),
+                cancellationToken: Arg.Any<CancellationToken>());
     }
 }

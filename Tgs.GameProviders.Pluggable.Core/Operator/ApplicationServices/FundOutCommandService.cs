@@ -38,22 +38,22 @@ internal class FundOutCommandService : ICommandService<FundOutCommand>
     public async ValueTask ExecuteAsync(FundOutCommand command, CancellationToken cancellationToken = default)
     {
         var player = await _player
-                        .GetAsync(
-                            command.PlayerCode,
-                            cancellationToken: cancellationToken)
-                        .ConfigureAwait(false);
+            .GetAsync(
+                command.PlayerCode,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
         var gameProviderId = await _gameProvider
-                        .GetGameProviderIdAsync(
-                            command.GameProviderCode,
-                            cancellationToken)
-                        .ConfigureAwait(false);
+            .GetGameProviderIdAsync(
+                command.GameProviderCode,
+                cancellationToken)
+            .ConfigureAwait(false);
 
         var gameProvider = await _gameProvider
-                        .GetAsync(
-                            gameProviderId,
-                            cancellationToken)
-                        .ConfigureAwait(false);
+            .GetAsync(
+                gameProviderId,
+                cancellationToken)
+            .ConfigureAwait(false);
 
         if (!gameProvider.TransferWallet)
         {
@@ -94,8 +94,16 @@ internal class FundOutCommandService : ICommandService<FundOutCommand>
             Amount = amount
         };
 
-        _ = await _gameFundTransferClient.FundOutAsync(
-             request: request,
-             cancellationToken: cancellationToken).ConfigureAwait(false);
+        _ = await _gameFundTransferClient
+            .FundOutAsync(
+                gameProviderId: gameProvider.GameProviderId,
+                gameProviderCode: gameProvider.GameProviderCode,
+                brandCode: player.BrandCode,
+                playerCode: player.PlayerCode,
+                walletId: player.DefaultWalletId,
+                currencyCode: player.DefaultWalletCurrencyCode,
+                amount: amount,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
     }
 }

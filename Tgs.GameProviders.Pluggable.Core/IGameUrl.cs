@@ -13,7 +13,7 @@ public interface IGameUrl
         CancellationToken cancellationToken = default);
 
     ValueTask<Uri> GetGameUrlAsync(
-            string gameProviderCode,
+        string gameProviderCode,
         GameProvidersClientGameType gameType,
         int gameId,
         string brandCode,
