@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
@@ -84,8 +85,15 @@ public class FundInCommandServiceUnitTest
 
         _ = fakeGameFundTransferClient
             .Received(0)
-            .FundInAsync(
-                Arg.Any<GameFundTransferFundRequest>());
+            .FundInResultAsync(
+                gameProviderId: Arg.Any<Guid>(),
+                gameProviderCode: Arg.Any<string>(),
+                brandCode: Arg.Any<string>(),
+                playerCode: Arg.Any<string>(),
+                walletId: Arg.Any<Guid>(),
+                currencyCode: Arg.Any<string>(),
+                amount: Arg.Any<decimal>(),
+                cancellationToken: Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -159,8 +167,15 @@ public class FundInCommandServiceUnitTest
 
         _ = fakeGameFundTransferClient
             .Received(0)
-            .FundInAsync(
-                Arg.Any<GameFundTransferFundRequest>());
+            .FundInResultAsync(
+                gameProviderId: Arg.Any<Guid>(),
+                gameProviderCode: Arg.Any<string>(),
+                brandCode: Arg.Any<string>(),
+                playerCode: Arg.Any<string>(),
+                walletId: Arg.Any<Guid>(),
+                currencyCode: Arg.Any<string>(),
+                amount: Arg.Any<decimal>(),
+                cancellationToken: Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -234,8 +249,15 @@ public class FundInCommandServiceUnitTest
 
         _ = fakeGameFundTransferClient
             .Received(1)
-            .FundInAsync(
-                Arg.Any<GameFundTransferFundRequest>());
+            .FundInResultAsync(
+                gameProviderId: Arg.Is(gameProviderId),
+                gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+                brandCode: Arg.Is(player.BrandCode),
+                playerCode: Arg.Is(player.PlayerCode),
+                walletId: Arg.Is(player.DefaultWalletId),
+                currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+                amount: Arg.Is(gameProviderBalance),
+                cancellationToken: Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -307,21 +329,17 @@ public class FundInCommandServiceUnitTest
                 command)
             .ConfigureAwait(false);
 
-        var request = new GameFundTransferFundRequest()
-        {
-            GameProviderId = gameProvider.GameProviderId,
-            GameProviderCode = gameProvider.GameProviderCode,
-            BrandCode = player.BrandCode,
-            PlayerCode = player.PlayerCode,
-            CurrencyCode = player.DefaultWalletCurrencyCode,
-            WalletId = player.DefaultWalletId,
-            Amount = 123.45m
-        };
-
         _ = fakeGameFundTransferClient
             .Received(1)
-            .FundInAsync(
-                Arg.Is(request));
+            .FundInResultAsync(
+                gameProviderId: Arg.Is(gameProviderId),
+                gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+                brandCode: Arg.Is(player.BrandCode),
+                playerCode: Arg.Is(player.PlayerCode),
+                walletId: Arg.Is(player.DefaultWalletId),
+                currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+                amount: Arg.Is(123.45m),
+                cancellationToken: Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -395,8 +413,15 @@ public class FundInCommandServiceUnitTest
 
         _ = fakeGameFundTransferClient
             .Received(0)
-            .FundInAsync(
-                Arg.Any<GameFundTransferFundRequest>());
+            .FundInResultAsync(
+                gameProviderId: Arg.Any<Guid>(),
+                gameProviderCode: Arg.Any<string>(),
+                brandCode: Arg.Any<string>(),
+                playerCode: Arg.Any<string>(),
+                walletId: Arg.Any<Guid>(),
+                currencyCode: Arg.Any<string>(),
+                amount: Arg.Any<decimal>(),
+                cancellationToken: Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -470,8 +495,15 @@ public class FundInCommandServiceUnitTest
 
         _ = fakeGameFundTransferClient
             .Received(0)
-            .FundInAsync(
-                Arg.Any<GameFundTransferFundRequest>());
+            .FundInResultAsync(
+                gameProviderId: Arg.Any<Guid>(),
+                gameProviderCode: Arg.Any<string>(),
+                brandCode: Arg.Any<string>(),
+                playerCode: Arg.Any<string>(),
+                walletId: Arg.Any<Guid>(),
+                currencyCode: Arg.Any<string>(),
+                amount: Arg.Any<decimal>(),
+                cancellationToken: Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -556,7 +588,14 @@ public class FundInCommandServiceUnitTest
 
         _ = fakeGameFundTransferClient
             .Received(1)
-            .FundInAsync(
-                Arg.Is(request));
+            .FundInResultAsync(
+                gameProviderId: Arg.Is(gameProviderId),
+                gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+                brandCode: Arg.Is(player.BrandCode),
+                playerCode: Arg.Is(player.PlayerCode),
+                walletId: Arg.Is(player.DefaultWalletId),
+                currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+                amount: Arg.Is(123M),
+                cancellationToken: Arg.Any<CancellationToken>());
     }
 }

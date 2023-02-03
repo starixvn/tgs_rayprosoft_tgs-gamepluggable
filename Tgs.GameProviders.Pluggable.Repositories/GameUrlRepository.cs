@@ -38,7 +38,7 @@ internal class GameUrlRepository : IGameUrl
     }
 
     public async ValueTask<Uri> GetGameUrlAsync(
-            string gameProviderCode,
+        string gameProviderCode,
         GameProvidersClientGameType gameType,
         int gameId,
         string brandCode,

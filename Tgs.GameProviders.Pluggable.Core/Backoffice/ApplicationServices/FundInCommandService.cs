@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Tgs.GameFundTransfer.Client;
-using Tgs.GameFundTransfer.Protos;
 using Tgs.GameProviders.Domains;
 using Tgs.ServiceUtility;
 
@@ -30,22 +29,22 @@ internal class FundInCommandService : ICommandService<FundInCommand>
     public async ValueTask ExecuteAsync(FundInCommand command, CancellationToken cancellationToken = default)
     {
         var player = await _player
-                        .GetAsync(
-                            command.PlayerCode,
-                            cancellationToken: cancellationToken)
-                        .ConfigureAwait(false);
+            .GetAsync(
+                command.PlayerCode,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
         var gameProviderId = await _gameProvider
-                        .GetGameProviderIdAsync(
-                            command.GameProviderCode,
-                            cancellationToken)
-                        .ConfigureAwait(false);
+            .GetGameProviderIdAsync(
+                command.GameProviderCode,
+                cancellationToken)
+            .ConfigureAwait(false);
 
         var gameProvider = await _gameProvider
-                        .GetAsync(
-                            gameProviderId,
-                            cancellationToken)
-                        .ConfigureAwait(false);
+            .GetAsync(
+                gameProviderId,
+                cancellationToken)
+            .ConfigureAwait(false);
 
         if (!gameProvider.TransferWallet)
         {
@@ -78,19 +77,16 @@ internal class FundInCommandService : ICommandService<FundInCommand>
         if (amount == 0)
             return;
 
-        var request = new GameFundTransferFundRequest()
-        {
-            GameProviderId = gameProvider.GameProviderId,
-            GameProviderCode = gameProvider.GameProviderCode,
-            BrandCode = player.BrandCode,
-            PlayerCode = player.PlayerCode,
-            CurrencyCode = player.DefaultWalletCurrencyCode,
-            WalletId = player.DefaultWalletId,
-            Amount = amount
-        };
-
-        _ = await _client.FundInAsync(
-             request: request,
-             cancellationToken: cancellationToken).ConfigureAwait(false);
+        _ = await _client
+            .FundInResultAsync(
+                gameProviderId: gameProvider.GameProviderId,
+                gameProviderCode: gameProvider.GameProviderCode,
+                brandCode: player.BrandCode,
+                playerCode: player.PlayerCode,
+                walletId: player.DefaultWalletId,
+                currencyCode: player.DefaultWalletCurrencyCode,
+                amount: amount,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
     }
 }

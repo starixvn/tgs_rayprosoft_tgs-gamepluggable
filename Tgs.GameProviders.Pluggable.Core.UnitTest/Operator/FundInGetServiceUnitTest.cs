@@ -5,7 +5,6 @@ using NSubstitute;
 using NUnit.Framework;
 using Tgs.GameCommand.Common;
 using Tgs.GameFundTransfer.Client;
-using Tgs.GameFundTransfer.Protos;
 using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameVerification.Client;
@@ -96,7 +95,15 @@ public class FundInGetServiceUnitTest
 
         _ = fakeGameFundTransferClient
             .Received(1)
-            .FundInAsync(Arg.Any<GameFundTransferFundRequest>());
+            .FundInAsync(
+                gameProviderId: Arg.Is(gameProviderId),
+                gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+                brandCode: Arg.Is(player.BrandCode),
+                playerCode: Arg.Is(player.PlayerCode),
+                walletId: Arg.Is(player.DefaultWalletId),
+                currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+                amount: Arg.Is(query.Amount),
+                cancellationToken: Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -179,21 +186,16 @@ public class FundInGetServiceUnitTest
             .ExecuteAsync(query)
             .ConfigureAwait(false);
 
-        var request = new GameFundTransferFundRequest
-        {
-            Amount = 123M,
-            BrandCode = player.BrandCode,
-            CurrencyCode = "CNY",
-            GameProviderCode = GameProviderType.SM01,
-            GameProviderId = gameProvider.GameProviderId,
-            PlayerCode = player.PlayerCode,
-            WalletId = player.DefaultWalletId
-        };
-
         _ = fakeGameFundTransferClient
             .Received(1)
-            .FundInAsync(Arg.Is(request));
-
-        Assert.AreEqual(123M, request.Amount.ToDecimal());
+            .FundInAsync(
+                gameProviderId: Arg.Is(gameProviderId),
+                gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+                brandCode: Arg.Is(player.BrandCode),
+                playerCode: Arg.Is(player.PlayerCode),
+                walletId: Arg.Is(player.DefaultWalletId),
+                currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+                amount: Arg.Is(123M),
+                cancellationToken: Arg.Any<CancellationToken>());
     }
 }
