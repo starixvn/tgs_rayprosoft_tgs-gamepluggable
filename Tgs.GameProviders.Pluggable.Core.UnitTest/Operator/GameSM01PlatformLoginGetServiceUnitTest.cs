@@ -78,6 +78,7 @@ public class GameSM01PlatformLoginGetServiceUnitTest
             .Returns(true);
 
         var loginInfo = new GameSM01PlatformLoginInfo(
+            "https://cn.ucfclive.com",
             "SQjCxm2cX5bahBta",
             "4ucmqplxb029",
             1670390195123,

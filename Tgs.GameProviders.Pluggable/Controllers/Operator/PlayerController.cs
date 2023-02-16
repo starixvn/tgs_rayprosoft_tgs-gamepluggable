@@ -186,6 +186,6 @@ public class PlayerController : ControllerBase
                   model.PlayerCode))
               .ConfigureAwait(false);
 
-        return new SM01PlatformLoginResult(info.MerchantId, info.CustomerName, info.Timestamp, info.Sign);
+        return new SM01PlatformLoginResult(info.ApiUrl, info.MerchantId, info.CustomerName, info.Timestamp, info.Sign);
     }
 }
