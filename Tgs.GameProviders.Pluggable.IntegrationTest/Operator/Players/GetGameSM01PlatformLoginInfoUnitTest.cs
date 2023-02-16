@@ -19,6 +19,7 @@ public class GetGameSM01PlatformLoginInfoUnitTest
         var gameId = 1000001;
 
         var loginInfo = new GameSM01PlatformLoginInfo(
+            ApiUrl: "https://cn.ucfclive.com",
             MerchantId: "SQjCxm2cX5bahBta",
             CustomerName: playerCode,
             Timestamp: 1670390195123,

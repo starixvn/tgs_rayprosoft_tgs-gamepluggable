@@ -34,7 +34,7 @@ internal class GameUrlRepository : IGameUrl
                 cancellationToken)
             .ConfigureAwait(false);
 
-        return new GameSM01PlatformLoginInfo(result!.MerchantId, result.CustomerName, result.Timestamp, result.Sign);
+        return new GameSM01PlatformLoginInfo(result!.ApiUrl, result.MerchantId, result.CustomerName, result.Timestamp, result.Sign);
     }
 
     public async ValueTask<Uri> GetGameUrlAsync(

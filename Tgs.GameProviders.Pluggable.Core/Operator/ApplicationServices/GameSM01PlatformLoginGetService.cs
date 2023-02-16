@@ -52,6 +52,6 @@ internal class GameSM01PlatformLoginGetService : IGetService<GameSM01PlatformLog
                 .GetGamePlatformLoginBySM01Async(query.PlayerCode, cancellationToken)
                 .ConfigureAwait(false);
 
-        return new GameSM01PlatformLoginInfo(info.MerchantId, info.CustomerName, info.Timestamp, info.Sign);
+        return new GameSM01PlatformLoginInfo(info.ApiUrl, info.MerchantId, info.CustomerName, info.Timestamp, info.Sign);
     }
 }
