@@ -5,10 +5,9 @@ using Tgs.GameProviders.Pluggable.Core;
 
 namespace Tgs.GameProviders.Pluggable.Repositories.UnitTest;
 
-[TestClass]
 public class PlayerCacheRepositoryUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Get()
     {
         var fakePlayer = Substitute.For<IPlayer>();

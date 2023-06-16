@@ -24,14 +24,11 @@ internal class GameRoundClosedService : ICommandService<GameRoundClosedCommand>
     public async ValueTask ExecuteAsync(GameRoundClosedCommand command, CancellationToken cancellationToken = default)
     {
         var gameRoundModel = await _gameRoundsClient
-            .GetGameRoundAsync(command.RoundId, cancellationToken)
-            .ConfigureAwait(false);
-
-        if (gameRoundModel == null)
-        {
-            throw new Exception($"Game round number does not exist.({command.RoundId})");
-        }
-
+            .GetGameRoundAsync(
+                roundId: command.RoundId,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false)
+            ?? throw new Exception($"Game round number does not exist.({command.RoundId})");
         if (gameRoundModel.Data!.Status == GameRoundStatus.Closed)
         {
             throw new Exception($"Game round number has been closed.({command.RoundId})");

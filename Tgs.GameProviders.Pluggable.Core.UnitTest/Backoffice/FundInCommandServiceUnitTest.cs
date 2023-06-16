@@ -3,18 +3,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
-using NUnit.Framework;
 using Tgs.GameCommand.Common;
 using Tgs.GameFundTransfer.Client;
-using Tgs.GameFundTransfer.Protos;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTest.Backoffice;
 
-[TestFixture]
 public class FundInCommandServiceUnitTest
 {
-    [Test]
+    [Fact]
     public async Task Game_Provider_Balance_0_006_Transferred_To_Main_Wallet()
     {
         var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
@@ -96,7 +93,7 @@ public class FundInCommandServiceUnitTest
                 cancellationToken: Arg.Any<CancellationToken>());
     }
 
-    [Test]
+    [Fact]
     public async Task Game_Provider_Balance_0_Transferred_To_Main_Wallet()
     {
         var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
@@ -178,7 +175,7 @@ public class FundInCommandServiceUnitTest
                 cancellationToken: Arg.Any<CancellationToken>());
     }
 
-    [Test]
+    [Fact]
     public async Task Game_Provider_Balance_100_Transferred_To_Main_Wallet()
     {
         var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
@@ -260,7 +257,7 @@ public class FundInCommandServiceUnitTest
                 cancellationToken: Arg.Any<CancellationToken>());
     }
 
-    [Test]
+    [Fact]
     public async Task Game_Provider_Balance_123_456_Transferred_To_Main_Wallet_Amount_123_45()
     {
         var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
@@ -342,7 +339,7 @@ public class FundInCommandServiceUnitTest
                 cancellationToken: Arg.Any<CancellationToken>());
     }
 
-    [Test]
+    [Fact]
     public async Task Game_Provider_SM01_Balance_0_006_Can_Not_Transferred_To_Main_Wallet()
     {
         var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
@@ -424,7 +421,7 @@ public class FundInCommandServiceUnitTest
                 cancellationToken: Arg.Any<CancellationToken>());
     }
 
-    [Test]
+    [Fact]
     public async Task Game_Provider_SM01_Balance_0_Can_Not_Transferred_To_Main_Wallet()
     {
         var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
@@ -506,7 +503,7 @@ public class FundInCommandServiceUnitTest
                 cancellationToken: Arg.Any<CancellationToken>());
     }
 
-    [Test]
+    [Fact]
     public async Task Game_Provider_SM01_Balance_123_456_Transferred_To_Main_Wallet_Amount_123()
     {
         var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
@@ -574,17 +571,6 @@ public class FundInCommandServiceUnitTest
             .ExecuteAsync(
                 command)
             .ConfigureAwait(false);
-
-        var request = new GameFundTransferFundRequest()
-        {
-            GameProviderId = gameProvider.GameProviderId,
-            GameProviderCode = gameProvider.GameProviderCode,
-            BrandCode = player.BrandCode,
-            PlayerCode = player.PlayerCode,
-            CurrencyCode = player.DefaultWalletCurrencyCode,
-            WalletId = player.DefaultWalletId,
-            Amount = 123M
-        };
 
         _ = fakeGameFundTransferClient
             .Received(1)

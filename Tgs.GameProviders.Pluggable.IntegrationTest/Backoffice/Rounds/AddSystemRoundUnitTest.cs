@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Client;
@@ -11,10 +10,9 @@ using Tgs.GameRounds.Common;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTest.Backoffice.Rounds;
 
-[TestClass]
 public class AddSystemRoundUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Add_System_Round()
     {
         var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
@@ -95,7 +93,9 @@ public class AddSystemRoundUnitTest
             Remark = remark
         };
 
-        var actual = sut.AddCompanyRoundAsync(model);
-        Assert.IsNotNull(actual);
+        await sut
+            .AddCompanyRoundAsync(
+                viewModel: model)
+            .ConfigureAwait(false);
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using NSubstitute;
-using NUnit.Framework;
 using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameRounds.Client;
@@ -9,10 +8,9 @@ using Tgs.GameRounds.Common;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTest.Backoffice;
 
-[TestFixture]
 public class ClosedGameRoundServiceUnitTest
 {
-    [Test]
+    [Fact]
     public async Task Closed_Game_Round()
     {
         var fakeCashServiceClient = Substitute.For<ICashServiceClient>();

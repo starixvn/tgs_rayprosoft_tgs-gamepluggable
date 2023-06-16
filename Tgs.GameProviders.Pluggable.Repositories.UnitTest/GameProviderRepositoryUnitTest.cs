@@ -5,10 +5,9 @@ using Tgs.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Repositories.UnitTest;
 
-[TestClass]
 public class GameProviderRepositoryUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Get()
     {
         var fakeClient = Substitute.For<IGameCommandClient>();
@@ -41,10 +40,10 @@ public class GameProviderRepositoryUnitTest
                gameProviderId)
            .ConfigureAwait(false);
 
-        Assert.IsNotNull(actual);
+        Assert.NotNull(actual);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task GetConfiguration()
     {
         var fakeClient = Substitute.For<IGameCommandClient>();
@@ -77,10 +76,10 @@ public class GameProviderRepositoryUnitTest
                gameProviderConfigId)
            .ConfigureAwait(false);
 
-        Assert.IsNotNull(actual);
+        Assert.NotNull(actual);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task GetGameProviderId()
     {
         var fakeClient = Substitute.For<IGameCommandClient>();
@@ -101,6 +100,6 @@ public class GameProviderRepositoryUnitTest
                gameProviderCode)
            .ConfigureAwait(false);
 
-        Assert.IsNotNull(actual);
+        Assert.Equal(gameProviderId, actual);
     }
 }

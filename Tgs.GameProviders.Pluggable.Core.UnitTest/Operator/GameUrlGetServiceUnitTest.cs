@@ -1,25 +1,22 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
-using NUnit.Framework;
 using Tgs.GameCommand.Common;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
-using Tgs.GameVerification.Client;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTest.Operator;
 
-[TestFixture]
 public class GameUrlGetServiceUnitTest
 {
-    [Test]
+    [Fact]
     public async Task Game_Url()
     {
         var fakeGame = Substitute.For<IGame>();
-        var fakeGameProvider = Substitute.For<IGameProvider>();
         var fakeGameUrl = Substitute.For<IGameUrl>();
-        var fakeGameVerificationClient = Substitute.For<IGameVerificationClient>();
+        var fakeVerification = Substitute.For<IVerification>();
         var fakePlayer = Substitute.For<IPlayer>();
 
         var query = new GameUrlQuery(
@@ -44,14 +41,9 @@ public class GameUrlGetServiceUnitTest
             "CNY");
         _ = fakePlayer
             .GetAsync(
-                Arg.Is(query.PlayerCode))
+                playerCode: Arg.Is(query.PlayerCode),
+                cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(player));
-
-        _ = fakeGameVerificationClient
-            .VerifyPlayerGameUrlAsync(
-                Arg.Is(query.PlayerCode),
-                Arg.Is(query.GameId))
-            .Returns(true);
 
         var game = new GameInfo(
             GameId: 1,
@@ -74,31 +66,14 @@ public class GameUrlGetServiceUnitTest
             SubGameProviderCode: GameProviderType.KY);
         _ = fakeGame
             .GetAsync(
-                Arg.Is(query.GameId))
+                gameId: Arg.Is(query.GameId),
+                cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(game));
-
-        var gameProvider = new GameProviderInfo(
-            GameProviderId: game.GameProviderId,
-            GameProviderCode: GameProviderType.KY,
-            UniqueId: 1,
-            Name: GameProviderType.KY,
-            TransferWallet: true,
-            AutoCloseRound: true,
-            SupportTestPlayer: true,
-            AllowKickPlayer: true,
-            PlaceBetTimeout: 0,
-            SettleBetTimeout: 0,
-            Description: GameProviderType.KY,
-            Localization: null);
-        _ = fakeGameProvider
-            .GetAsync(
-                Arg.Is(game.GameProviderId))
-            .Returns(ValueTask.FromResult(gameProvider));
 
         var gameUrl = new Uri("https://www.google.com/");
         _ = fakeGameUrl
             .GetGameUrlAsync(
-                Arg.Is(gameProvider.GameProviderCode),
+                Arg.Is(game.GameProviderCode),
                 Arg.Is((GameProvidersClientGameType)game.Type),
                 Arg.Is(query.GameId),
                 Arg.Is(player.BrandCode),
@@ -113,24 +88,29 @@ public class GameUrlGetServiceUnitTest
 
         var sut = new GameUrlGetService(
             fakeGame,
-            fakeGameProvider,
             fakeGameUrl,
-            fakeGameVerificationClient,
+            fakeVerification,
             fakePlayer);
 
         var actual = await sut.GetAsync(query).ConfigureAwait(false);
 
         Assert.NotNull(actual);
-        Assert.AreEqual(gameUrl, actual);
+        Assert.Equal(gameUrl, actual);
+
+        _ = fakeVerification
+            .Received(1)
+            .VerifyPlayerGameUrlAsync(
+               player: Arg.Is(player),
+               game: Arg.Is(game),
+               cancellationToken: Arg.Any<CancellationToken>());
     }
 
-    [Test]
+    [Fact]
     public async Task Get_AsiaGaming_Game_Url()
     {
         var fakeGame = Substitute.For<IGame>();
-        var fakeGameProvider = Substitute.For<IGameProvider>();
         var fakeGameUrl = Substitute.For<IGameUrl>();
-        var fakeGameVerificationClient = Substitute.For<IGameVerificationClient>();
+        var fakeVerification = Substitute.For<IVerification>();
         var fakePlayer = Substitute.For<IPlayer>();
 
         var query = new GameUrlQuery(
@@ -155,14 +135,9 @@ public class GameUrlGetServiceUnitTest
             "CNY");
         _ = fakePlayer
             .GetAsync(
-                Arg.Is(query.PlayerCode))
+                playerCode: Arg.Is(query.PlayerCode),
+                cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(player));
-
-        _ = fakeGameVerificationClient
-            .VerifyPlayerGameUrlAsync(
-                Arg.Is(query.PlayerCode),
-                Arg.Is(query.GameId))
-            .Returns(true);
 
         var game = new GameInfo(
             GameId: 1,
@@ -185,30 +160,14 @@ public class GameUrlGetServiceUnitTest
             SubGameProviderCode: GameProviderType.AsiaGaming);
         _ = fakeGame
             .GetAsync(
-                Arg.Is(query.GameId))
+                gameId: Arg.Is(query.GameId),
+                cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(game));
-        var gameProvider = new GameProviderInfo(
-            GameProviderId: game.GameProviderId,
-            GameProviderCode: GameProviderType.AsiaGaming,
-            UniqueId: 1,
-            Name: GameProviderType.AsiaGaming,
-            TransferWallet: true,
-            AutoCloseRound: true,
-            SupportTestPlayer: true,
-            AllowKickPlayer: true,
-            PlaceBetTimeout: 0,
-            SettleBetTimeout: 0,
-            Description: GameProviderType.AsiaGaming,
-            Localization: null);
-        _ = fakeGameProvider
-            .GetAsync(
-                Arg.Is(game.GameProviderId))
-            .Returns(ValueTask.FromResult(gameProvider));
 
         var gameUrl = new Uri("https://www.google.com/");
         _ = fakeGameUrl
             .GetGameUrlByAsiaGamingAsync(
-                Arg.Is(gameProvider.GameProviderCode),
+                Arg.Is(game.GameProviderCode),
                 Arg.Is((GameProvidersClientGameType)game.Type),
                 Arg.Is(query.GameId),
                 Arg.Is(player.BrandCode),
@@ -224,24 +183,29 @@ public class GameUrlGetServiceUnitTest
 
         var sut = new GameUrlGetService(
             fakeGame,
-            fakeGameProvider,
             fakeGameUrl,
-            fakeGameVerificationClient,
+            fakeVerification,
             fakePlayer);
 
         var actual = await sut.GetAsync(query).ConfigureAwait(false);
 
         Assert.NotNull(actual);
-        Assert.AreEqual(gameUrl, actual);
+        Assert.Equal(gameUrl, actual);
+
+        _ = fakeVerification
+            .Received(1)
+            .VerifyPlayerGameUrlAsync(
+               player: Arg.Is(player),
+               game: Arg.Is(game),
+               cancellationToken: Arg.Any<CancellationToken>());
     }
 
-    [Test]
+    [Fact]
     public async Task Get_BetConstruct_Game_Url()
     {
         var fakeGame = Substitute.For<IGame>();
-        var fakeGameProvider = Substitute.For<IGameProvider>();
         var fakeGameUrl = Substitute.For<IGameUrl>();
-        var fakeGameVerificationClient = Substitute.For<IGameVerificationClient>();
+        var fakeVerification = Substitute.For<IVerification>();
         var fakePlayer = Substitute.For<IPlayer>();
 
         var query = new GameUrlQuery(
@@ -266,14 +230,10 @@ public class GameUrlGetServiceUnitTest
             "CNY");
         _ = fakePlayer
             .GetAsync(
-                Arg.Is(query.PlayerCode))
+                playerCode: Arg.Is(query.PlayerCode),
+                cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(player));
 
-        _ = fakeGameVerificationClient
-            .VerifyPlayerGameUrlAsync(
-                Arg.Is(query.PlayerCode),
-                Arg.Is(query.GameId))
-            .Returns(true);
         var game = new GameInfo(
             GameId: 1,
             GameCode: "lobby",
@@ -295,31 +255,14 @@ public class GameUrlGetServiceUnitTest
             SubGameProviderCode: GameProviderType.BetConstruct);
         _ = fakeGame
             .GetAsync(
-                Arg.Is(query.GameId))
+                gameId: Arg.Is(query.GameId),
+                cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(game));
-
-        var gameProvider = new GameProviderInfo(
-            GameProviderId: game.GameProviderId,
-            GameProviderCode: GameProviderType.BetConstruct,
-            UniqueId: 1,
-            Name: GameProviderType.BetConstruct,
-            TransferWallet: false,
-            AutoCloseRound: true,
-            SupportTestPlayer: true,
-            AllowKickPlayer: true,
-            PlaceBetTimeout: 0,
-            SettleBetTimeout: 0,
-            Description: GameProviderType.BetConstruct,
-            Localization: null);
-        _ = fakeGameProvider
-            .GetAsync(
-                Arg.Is(game.GameProviderId))
-            .Returns(ValueTask.FromResult(gameProvider));
 
         var gameUrl = new Uri("https://www.google.com/");
         _ = fakeGameUrl
             .GetGameUrlByBetConstructAsync(
-                Arg.Is(gameProvider.GameProviderCode),
+                Arg.Is(game.GameProviderCode),
                 Arg.Is((GameProvidersClientGameType)game.Type),
                 Arg.Is(query.GameId),
                 Arg.Is(player.BrandCode),
@@ -331,19 +274,25 @@ public class GameUrlGetServiceUnitTest
                 Arg.Is(query.IpAddress),
                 Arg.Is(query.BackUrl),
                 Arg.Is(player.BrandId),
-                Arg.Is(gameProvider.GameProviderId))
+                Arg.Is(game.GameProviderId))
             .Returns(ValueTask.FromResult(gameUrl));
 
         var sut = new GameUrlGetService(
             fakeGame,
-            fakeGameProvider,
             fakeGameUrl,
-            fakeGameVerificationClient,
+            fakeVerification,
             fakePlayer);
 
         var actual = await sut.GetAsync(query).ConfigureAwait(false);
 
         Assert.NotNull(actual);
-        Assert.AreEqual(gameUrl, actual);
+        Assert.Equal(gameUrl, actual);
+
+        _ = fakeVerification
+            .Received(1)
+            .VerifyPlayerGameUrlAsync(
+               player: Arg.Is(player),
+               game: Arg.Is(game),
+               cancellationToken: Arg.Any<CancellationToken>());
     }
 }

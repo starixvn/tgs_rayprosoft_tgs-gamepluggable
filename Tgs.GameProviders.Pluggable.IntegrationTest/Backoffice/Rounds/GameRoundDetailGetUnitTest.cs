@@ -2,7 +2,6 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Tgs.GameProviders.Domains.RoundDetail;
 using Tgs.GameProviders.Pluggable.Client;
@@ -11,10 +10,9 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTest.Backoffice.Rounds;
 
-[TestClass]
 public class GameRoundDetailGetUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task GameRoundDetailGetAsync()
     {
         var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
@@ -54,6 +52,6 @@ public class GameRoundDetailGetUnitTest
         var actual = await sut
             .GameRoundDetailGetAsync(roundId, language)
             .ConfigureAwait(false);
-        Assert.IsNotNull(actual);
+        Assert.NotNull(actual);
     }
 }

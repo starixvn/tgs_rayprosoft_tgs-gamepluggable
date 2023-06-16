@@ -7,10 +7,9 @@ using Tgs.GameProviders.Pluggable.Core;
 
 namespace Tgs.GameProviders.Pluggable.Repositories.UnitTest;
 
-[TestClass]
 public class GameUrlRepositoryUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process_Game_Url()
     {
         var fakeBrand = Substitute.For<IBrand>();
@@ -67,11 +66,11 @@ public class GameUrlRepositoryUnitTest
                  backUrl)
              .ConfigureAwait(false);
 
-        Assert.IsNotNull(actual);
-        Assert.AreEqual(gameUrl, actual);
+        Assert.NotNull(actual);
+        Assert.Equal(gameUrl, actual);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process_Get_GameUrl_By_AsiaGaming()
     {
         var fakeBrand = Substitute.For<IBrand>();
@@ -136,11 +135,11 @@ public class GameUrlRepositoryUnitTest
                  defaultWalletId)
              .ConfigureAwait(false);
 
-        Assert.IsNotNull(actual);
-        Assert.AreEqual(gameUrl, actual);
+        Assert.NotNull(actual);
+        Assert.Equal(gameUrl, actual);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process_Get_GameUrl_By_BetConstruct_Desktop()
     {
         var fakeBrand = Substitute.For<IBrand>();
@@ -226,11 +225,11 @@ public class GameUrlRepositoryUnitTest
                  gameProviderId)
              .ConfigureAwait(false);
 
-        Assert.IsNotNull(actual);
-        Assert.AreEqual(gameUrl, actual);
+        Assert.NotNull(actual);
+        Assert.Equal(gameUrl, actual);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Normal_Process_Get_GameUrl_By_BetConstruct_Mobile()
     {
         var fakeBrand = Substitute.For<IBrand>();
@@ -316,7 +315,7 @@ public class GameUrlRepositoryUnitTest
                  gameProviderId)
              .ConfigureAwait(false);
 
-        Assert.IsNotNull(actual);
-        Assert.AreEqual(gameUrl, actual);
+        Assert.NotNull(actual);
+        Assert.Equal(gameUrl, actual);
     }
 }

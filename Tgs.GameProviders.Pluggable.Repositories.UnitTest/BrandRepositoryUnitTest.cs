@@ -3,10 +3,9 @@ using Tgs.GameCommand.Client;
 
 namespace Tgs.GameProviders.Pluggable.Repositories.UnitTest;
 
-[TestClass]
 public class BrandRepositoryUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Get_GameProvider_ConfigurationId()
     {
         var fakeClient = Substitute.For<IGameCommandClient>();
@@ -30,6 +29,6 @@ public class BrandRepositoryUnitTest
                 gameProviderId: gameProviderId)
            .ConfigureAwait(false);
 
-        Assert.IsNotNull(actual);
+        Assert.Equal(gameProviderConfigurationId, actual);
     }
 }

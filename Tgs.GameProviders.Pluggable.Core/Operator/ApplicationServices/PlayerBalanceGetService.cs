@@ -21,14 +21,18 @@ internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, decimal
 
     public async ValueTask<decimal> GetAsync(PlayerBalanceQuery query, CancellationToken cancellationToken = default)
     {
-        var player = await _player.GetAsync(
-            query.PlayerCode,
-            cancellationToken).ConfigureAwait(false);
+        var player = await _player
+            .GetAsync(
+                playerCode: query.PlayerCode,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
-        return await _playerGameBalance.GetBalanceAsync(
+        return await _playerGameBalance
+            .GetBalanceAsync(
                 query.GameProviderCode,
                 player.PlayerCode,
                 player.DefaultWalletCurrencyCode,
-                cancellationToken: cancellationToken).ConfigureAwait(false);
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
     }
 }

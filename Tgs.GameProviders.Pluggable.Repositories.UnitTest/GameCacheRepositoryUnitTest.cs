@@ -6,10 +6,9 @@ using Tgs.GameProviders.Pluggable.Core;
 
 namespace Tgs.GameProviders.Pluggable.Repositories.UnitTest;
 
-[TestClass]
 public class GameCacheRepositoryUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Get()
     {
         var fakeGame = Substitute.For<IGame>();

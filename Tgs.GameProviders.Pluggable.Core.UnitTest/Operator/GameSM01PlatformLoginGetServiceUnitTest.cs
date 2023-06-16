@@ -1,26 +1,25 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
-using NUnit.Framework;
 using Tgs.GameCommand.Client;
 using Tgs.GameCommand.Common;
 using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
-using Tgs.GameVerification.Client;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTest.Operator;
 
-[TestFixture]
 public class GameSM01PlatformLoginGetServiceUnitTest
 {
-    [Test]
+    [Fact]
     public async Task Get_SM01_Platform_Login()
     {
         var fakeGameUrl = Substitute.For<IGameUrl>();
-        var fakeGameVerificationClient = Substitute.For<IGameVerificationClient>();
+        var fakeVerification = Substitute.For<IVerification>();
         var fakeGameProvider = Substitute.For<IGameProvider>();
         var fakeGameCommandClient = Substitute.For<IGameCommandClient>();
+        var fakePlayer = Substitute.For<IPlayer>();
 
         var gameId = 5200001;
         var gameProviderId = Guid.Parse("ba2997d9-b856-4589-91ae-5060a952cc3c");
@@ -39,6 +38,11 @@ public class GameSM01PlatformLoginGetServiceUnitTest
             "4ucmqplxb029",
             Guid.NewGuid(),
             "CNY");
+        _ = fakePlayer
+            .GetAsync(
+                playerCode: Arg.Is(query.PlayerCode),
+                cancellationToken: Arg.Any<CancellationToken>())
+            .Returns(ValueTask.FromResult(player));
 
         _ = fakeGameProvider
             .GetGameProviderIdAsync(GameProviderType.SM01)
@@ -68,39 +72,44 @@ public class GameSM01PlatformLoginGetServiceUnitTest
         };
 
         _ = fakeGameCommandClient
-            .GameQueryAsync(gameProviderId)
+            .GameQueryAsync(
+                gameProviderId: Arg.Is(gameProviderId),
+                cancellationToken: Arg.Any<CancellationToken>())
             .Returns(games.ToAsyncEnumerable());
 
-        _ = fakeGameVerificationClient
-            .VerifyPlayerGameUrlAsync(
-                Arg.Is(query.PlayerCode),
-                Arg.Is(gameId))
-            .Returns(true);
-
         var loginInfo = new GameSM01PlatformLoginInfo(
-            "https://cn.ucfclive.com",
-            "SQjCxm2cX5bahBta",
-            "4ucmqplxb029",
-            1670390195123,
-            "46C9EA4F03900B74379A15A56ED14229");
+            ApiUrl: "https://cn.ucfclive.com",
+            MerchantId: "SQjCxm2cX5bahBta",
+            CustomerName: "4ucmqplxb029",
+            Timestamp: 1670390195123,
+            Sign: "46C9EA4F03900B74379A15A56ED14229");
 
         _ = fakeGameUrl
             .GetGamePlatformLoginBySM01Async(
-                Arg.Is(player.PlayerCode))
+                playerCode: Arg.Is(player.PlayerCode),
+                cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(loginInfo));
 
         var sut = new GameSM01PlatformLoginGetService(
             fakeGameUrl,
-            fakeGameVerificationClient,
+            fakeVerification,
             fakeGameProvider,
-            fakeGameCommandClient);
+            fakeGameCommandClient,
+            fakePlayer);
 
         var actual = await sut.GetAsync(query).ConfigureAwait(false);
 
         Assert.NotNull(actual);
-        Assert.AreEqual(loginInfo.MerchantId, actual.MerchantId);
-        Assert.AreEqual(loginInfo.CustomerName, actual.CustomerName);
-        Assert.AreEqual(loginInfo.Timestamp, actual.Timestamp);
-        Assert.AreEqual(loginInfo.Sign, actual.Sign);
+        Assert.Equal(loginInfo.MerchantId, actual.MerchantId);
+        Assert.Equal(loginInfo.CustomerName, actual.CustomerName);
+        Assert.Equal(loginInfo.Timestamp, actual.Timestamp);
+        Assert.Equal(loginInfo.Sign, actual.Sign);
+
+        _ = fakeVerification
+            .Received(1)
+            .VerifyPlayerGameUrlAsync(
+               player: Arg.Is(player),
+               game: Arg.Is(games.ElementAt(0)),
+               cancellationToken: Arg.Any<CancellationToken>());
     }
 }

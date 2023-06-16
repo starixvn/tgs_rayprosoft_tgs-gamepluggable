@@ -5,10 +5,9 @@ using Tgs.GameProviders.Domains;
 
 namespace Tgs.GameProviders.Pluggable.Repositories.UnitTest;
 
-[TestClass]
 public class GameRepositoryUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Get()
     {
         var fakeClient = Substitute.For<IGameCommandClient>();
@@ -47,6 +46,6 @@ public class GameRepositoryUnitTest
                gameId)
            .ConfigureAwait(false);
 
-        Assert.IsNotNull(actual);
+        Assert.NotNull(actual);
     }
 }

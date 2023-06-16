@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
@@ -11,10 +10,9 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTest.Backoffice.Rounds;
 
-[TestClass]
 public class AdjustClosedRoundUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Adjust_Closed_Game_Round()
     {
         var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
@@ -69,7 +67,10 @@ public class AdjustClosedRoundUnitTest
 
         var sut = new GameProvidersBackofficePluggableClient(httpClient);
 
-        var actual = sut.AdjustClosedRoundAsync(roundId, model);
-        Assert.IsNotNull(actual);
+        await sut
+            .AdjustClosedRoundAsync(
+                roundId: roundId,
+                viewModel: model)
+            .ConfigureAwait(false);
     }
 }

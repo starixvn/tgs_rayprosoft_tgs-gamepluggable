@@ -25,17 +25,17 @@ internal class PlayerGameBalance : IPlayerGameBalance
     {
         var gameProviderBalance = await _gameProvidersClient
             .PlayerBalanceAsync(
-                gameProviderCode,
-                playerCode,
+                gameProviderCode: gameProviderCode,
+                playerCode: playerCode,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         var exchangeRateBalanceResult = await _gameCurrencyClient
             .ConvertPlatformBalanceAsync(
-                gameProviderCode,
-                currencyCode,
-                gameProviderBalance,
-                cancellationToken)
+                gameProviderCode: gameProviderCode,
+                currencyCode: currencyCode,
+                balance: gameProviderBalance,
+                cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         return exchangeRateBalanceResult.Balance;

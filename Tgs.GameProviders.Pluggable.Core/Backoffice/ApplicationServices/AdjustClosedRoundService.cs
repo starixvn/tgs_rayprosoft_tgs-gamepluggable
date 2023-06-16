@@ -22,12 +22,12 @@ internal class AdjustClosedRoundService : ICommandService<AdjustClosedRoundComma
 
     public async ValueTask ExecuteAsync(AdjustClosedRoundCommand command, CancellationToken cancellationToken = default)
     {
-        var gameRoundModel = await _gameRoundsClient.GetGameRoundAsync(command.RoundId, cancellationToken).ConfigureAwait(false);
-
-        if (gameRoundModel == null)
-        {
-            throw new Exception($"Game round number does not exist.({command.RoundId})");
-        }
+        var gameRoundModel = await _gameRoundsClient
+            .GetGameRoundAsync(
+                command.RoundId,
+                cancellationToken)
+            .ConfigureAwait(false)
+            ?? throw new Exception($"Game round number does not exist.({command.RoundId})");
 
         var response = await _gameRoundsClient
             .AdjustClosedRoundAsync(
