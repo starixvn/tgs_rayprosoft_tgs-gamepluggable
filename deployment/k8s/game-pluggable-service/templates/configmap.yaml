@@ -6,31 +6,51 @@ metadata:
 data:
   appsettings.json: |
     {
+      "Logging": {
+        "LogLevel": {
+          "Default": "Warning"
+        }
+      },
       "Pluggable": {
         "GameProvidersClientBaseUrl": "http://game-gameproviders/",
         "CashServiceClientBaseUrl": "http://cashservice-api/",
         "GamePlayerLogOutClientBaseUrl": "http://game-gameplayerlogout:9090/",
         "GameCommandClientBaseUrl": "http://game-gamecommand/",
-        "GameVerificationClientBaseUrl": "http://game-gameverification:9090/",
         "GameFundTransferClientBaseUrl": "http://game-gamefundtransfer:9090/",
         "GameCurrencyClientBaseUrl": "http://game-gamecurrency/",
         "GameRoundsClientBaseUrl": "http://game-gamerounds"
       }
     }
-  monitor.settings.json: |
-    {
-      "Metrics": {
-        "MetricCount": "1"
-      },
-      "Logging":{
-        "Console": {
-          "FormatterName": "json"
-        },
-        "LogLevel": {
-          "Default": "Warning",
-          "Microsoft": "Warning",
-          "Microsoft.Diagnostics": "Warning",
-          "Microsoft.Hosting.Lifetime": "Information"
-        }
-      }
-    }
+  otel-collector-config.yaml: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+
+    processors:
+      batch:
+
+    exporters:
+      otlp:
+        endpoint: "$NODE_IP:4317"
+        tls:
+          insecure: true
+      prometheus:
+        endpoint: "0.0.0.0:8889"
+        namespace: "tgs"
+
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+
+    service:
+      extensions: [health_check]
+      pipelines:
+        traces: 
+          receivers: [otlp]
+          processors:
+            - batch
+          exporters: [otlp]
+        metrics:
+          receivers: [otlp]
+          exporters: [prometheus]

@@ -6,10 +6,9 @@ using Tgs.GameProviders.Pluggable.Core;
 
 namespace Tgs.GameProviders.Pluggable.Repositories.UnitTest;
 
-[TestClass]
 public class GameProviderCacheRepositoryUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Get()
     {
         var fakeGameProvider = Substitute.For<IGameProvider>();
@@ -52,7 +51,7 @@ public class GameProviderCacheRepositoryUnitTest
                gameProviderId)
            .ConfigureAwait(false);
 
-        Assert.IsNotNull(actual);
+        Assert.NotNull(actual);
 
         _ = fakeMemoryCache
             .Received(1)
@@ -61,7 +60,7 @@ public class GameProviderCacheRepositoryUnitTest
                 gameProvider);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task GetConfiguration()
     {
         var fakeGameProvider = Substitute.For<IGameProvider>();
@@ -96,10 +95,10 @@ public class GameProviderCacheRepositoryUnitTest
                gameProviderConfigId)
            .ConfigureAwait(false);
 
-        Assert.IsNotNull(actual);
+        Assert.NotNull(actual);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task GetGameProviderId()
     {
         var fakeGameProvider = Substitute.For<IGameProvider>();
@@ -130,7 +129,7 @@ public class GameProviderCacheRepositoryUnitTest
                gameProviderCode)
            .ConfigureAwait(false);
 
-        Assert.IsNotNull(actual);
+        Assert.Equal(gameProviderId, actual);
 
         _ = fakeMemoryCache
             .Received(1)

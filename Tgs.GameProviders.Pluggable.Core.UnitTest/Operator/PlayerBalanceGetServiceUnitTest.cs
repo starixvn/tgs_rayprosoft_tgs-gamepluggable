@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 using NSubstitute;
-using NUnit.Framework;
 using Tgs.GameCommand.Common;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTest.Operator;
 
-[TestFixture]
 public class PlayerBalanceGetServiceUnitTest
 {
-    [Test]
+    [Fact]
     public async Task Player_Balance()
     {
         var fakePlayer = Substitute.For<IPlayer>();
@@ -48,6 +46,6 @@ public class PlayerBalanceGetServiceUnitTest
 
         var actual = await fakeService.GetAsync(query);
 
-        Assert.AreEqual(gameProviderBalance, actual);
+        Assert.Equal(gameProviderBalance, actual);
     }
 }

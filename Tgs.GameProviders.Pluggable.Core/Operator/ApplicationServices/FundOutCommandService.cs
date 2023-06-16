@@ -3,9 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tgs.CashService.Client;
 using Tgs.GameFundTransfer.Client;
-using Tgs.GameFundTransfer.Protos;
 using Tgs.GameProviders.Domains;
-using Tgs.GameVerification.Client;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
@@ -15,22 +13,22 @@ internal class FundOutCommandService : ICommandService<FundOutCommand>
     private readonly ICashServiceClient _cashServiceClient;
     private readonly IGameFundTransferClient _gameFundTransferClient;
     private readonly IGameProvider _gameProvider;
-    private readonly IGameVerificationClient _gameVerificationClient;
     private readonly IPlayer _player;
     private readonly IPlayerGameBalance _playerGameBalance;
+    private readonly IVerification _verification;
 
     public FundOutCommandService(
         ICashServiceClient cashServiceClient,
         IGameFundTransferClient gameFundTransferClient,
         IGameProvider gameProvider,
-        IGameVerificationClient gameVerificationClient,
+        IVerification verification,
         IPlayer player,
         IPlayerGameBalance playerGameBalance)
     {
         _cashServiceClient = cashServiceClient ?? throw new ArgumentNullException(nameof(cashServiceClient));
         _gameFundTransferClient = gameFundTransferClient ?? throw new ArgumentNullException(nameof(gameFundTransferClient));
         _gameProvider = gameProvider ?? throw new ArgumentNullException(nameof(gameProvider));
-        _gameVerificationClient = gameVerificationClient ?? throw new ArgumentNullException(nameof(gameVerificationClient));
+        _verification = verification ?? throw new ArgumentNullException(nameof(verification));
         _player = player ?? throw new ArgumentNullException(nameof(player));
         _playerGameBalance = playerGameBalance ?? throw new ArgumentNullException(nameof(playerGameBalance));
     }
@@ -65,10 +63,12 @@ internal class FundOutCommandService : ICommandService<FundOutCommand>
             throw new Exception($"This game provider does not provide multi-wallet functionality.({gameProvider.GameProviderCode})");
         }
 
-        if (!await _gameVerificationClient.VerifyPlayerFundAsync(player.PlayerCode, gameProvider.GameProviderId).ConfigureAwait(false))
-        {
-            throw new Exception("Transfer verification failed. (1. The player does not exist or is not enabled. 2. The game manufacturer does not exist or is not enabled. 3. The game market does not support this currency.)");
-        }
+        await _verification
+            .VerifyPlayerAsync(
+                player: player,
+                gameProvider: gameProvider,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
         _ = await _playerGameBalance.GetBalanceAsync(
                 gameProvider.GameProviderCode,
@@ -87,17 +87,6 @@ internal class FundOutCommandService : ICommandService<FundOutCommand>
 
         if (gameProvider.GameProviderCode == GameProviderType.SM01)
             amount = Math.Floor(command.Amount);
-
-        var request = new GameFundTransferFundRequest()
-        {
-            GameProviderId = gameProvider.GameProviderId,
-            GameProviderCode = gameProvider.GameProviderCode,
-            BrandCode = player.BrandCode,
-            PlayerCode = player.PlayerCode,
-            CurrencyCode = player.DefaultWalletCurrencyCode,
-            WalletId = player.DefaultWalletId,
-            Amount = amount
-        };
 
         _ = await _gameFundTransferClient
             .FundOutAsync(

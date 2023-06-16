@@ -2,26 +2,23 @@
 using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
-using NUnit.Framework;
 using Tgs.CashService.Client;
 using Tgs.GameCommand.Common;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
-using Tgs.GameVerification.Client;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTest.Operator;
 
-[TestFixture]
 public class FundOutGetServiceUnitTest
 {
-    [Test]
+    [Fact]
     public async Task Fund_Out()
     {
         var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
         var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
         var fakeGameProvider = Substitute.For<IGameProvider>();
-        var fakeGameVerificationClient = Substitute.For<IGameVerificationClient>();
+        var fakeVerification = Substitute.For<IVerification>();
         var fakePlayer = Substitute.For<IPlayer>();
         var fakePlayerGameBalance = Substitute.For<IPlayerGameBalance>();
 
@@ -44,13 +41,15 @@ public class FundOutGetServiceUnitTest
             "CNY");
         _ = fakePlayer
             .GetAsync(
-                Arg.Is(query.PlayerCode))
+                playerCode: Arg.Is(query.PlayerCode),
+                cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(player));
 
         var gameProviderId = Guid.NewGuid();
         _ = fakeGameProvider
             .GetGameProviderIdAsync(
-                Arg.Is(query.GameProviderCode))
+                gameProviderCode: Arg.Is(query.GameProviderCode),
+                cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(gameProviderId));
 
         var gameProvider = new GameProviderInfo(
@@ -68,14 +67,9 @@ public class FundOutGetServiceUnitTest
             Localization: null);
         _ = fakeGameProvider
             .GetAsync(
-                Arg.Is(gameProviderId))
+                gameProviderId: Arg.Is(gameProviderId),
+                cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(gameProvider));
-
-        _ = fakeGameVerificationClient
-            .VerifyPlayerFundAsync(
-                Arg.Is(player.PlayerCode),
-                Arg.Is(gameProvider.GameProviderId))
-            .Returns(true);
 
         decimal gameProviderBalance = 0m;
         _ = fakePlayerGameBalance
@@ -95,11 +89,18 @@ public class FundOutGetServiceUnitTest
             fakeCashServiceClient,
             fakeGameFundTransferClient,
             fakeGameProvider,
-            fakeGameVerificationClient,
+            fakeVerification,
             fakePlayer,
             fakePlayerGameBalance);
 
         await fakeService.ExecuteAsync(query).ConfigureAwait(false);
+
+        _ = fakeVerification
+            .Received(1)
+            .VerifyPlayerAsync(
+               player: Arg.Is(player),
+               gameProvider: Arg.Is(gameProvider),
+               cancellationToken: Arg.Any<CancellationToken>());
 
         _ = fakeGameFundTransferClient
             .Received(1)
@@ -114,13 +115,13 @@ public class FundOutGetServiceUnitTest
                 cancellationToken: Arg.Any<CancellationToken>());
     }
 
-    [Test]
+    [Fact]
     public async Task GameProvider_SM01_Fund_Out_Amount_Only_Integer()
     {
         var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
         var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
         var fakeGameProvider = Substitute.For<IGameProvider>();
-        var fakeGameVerificationClient = Substitute.For<IGameVerificationClient>();
+        var fakeVerification = Substitute.For<IVerification>();
         var fakePlayer = Substitute.For<IPlayer>();
         var fakePlayerGameBalance = Substitute.For<IPlayerGameBalance>();
 
@@ -169,12 +170,6 @@ public class FundOutGetServiceUnitTest
                 Arg.Is(gameProviderId))
             .Returns(ValueTask.FromResult(gameProvider));
 
-        _ = fakeGameVerificationClient
-            .VerifyPlayerFundAsync(
-                Arg.Is(player.PlayerCode),
-                Arg.Is(gameProvider.GameProviderId))
-            .Returns(true);
-
         decimal gameProviderBalance = 0M;
         _ = fakePlayerGameBalance
             .GetBalanceAsync(
@@ -193,11 +188,18 @@ public class FundOutGetServiceUnitTest
             fakeCashServiceClient,
             fakeGameFundTransferClient,
             fakeGameProvider,
-            fakeGameVerificationClient,
+            fakeVerification,
             fakePlayer,
             fakePlayerGameBalance);
 
         await fakeService.ExecuteAsync(query).ConfigureAwait(false);
+
+        _ = fakeVerification
+            .Received(1)
+            .VerifyPlayerAsync(
+               player: Arg.Is(player),
+               gameProvider: Arg.Is(gameProvider),
+               cancellationToken: Arg.Any<CancellationToken>());
 
         _ = fakeGameFundTransferClient
             .Received(1)

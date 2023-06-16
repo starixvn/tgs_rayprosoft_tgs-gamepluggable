@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Pluggable.Client;
@@ -10,10 +9,9 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTest.Operator.Players;
 
-[TestClass]
 public class GetGameUrlUnitTest
 {
-    [TestMethod]
+    [Fact]
     public async Task GetGameUrlAsync()
     {
         string playerCode = "4ucmqplxb029";
@@ -62,7 +60,7 @@ public class GetGameUrlUnitTest
             ipAddress,
             backUrl).ConfigureAwait(false);
 
-        Assert.IsNotNull(actual);
-        Assert.AreEqual(gameurl, actual);
+        Assert.NotNull(actual);
+        Assert.Equal(gameurl, actual);
     }
 }

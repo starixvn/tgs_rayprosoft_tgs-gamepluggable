@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
-using Tgs.GameVerification.Client;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
@@ -11,56 +10,49 @@ namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 internal class GameUrlGetService : IGetService<GameUrlQuery, Uri>
 {
     private readonly IGame _game;
-    private readonly IGameProvider _gameProvider;
     private readonly IGameUrl _gameUrl;
-    private readonly IGameVerificationClient _gameVerificationClient;
     private readonly IPlayer _player;
+    private readonly IVerification _verification;
 
     public GameUrlGetService(
         IGame game,
-        IGameProvider gameProvider,
         IGameUrl gameUrl,
-        IGameVerificationClient gameVerificationClient,
+        IVerification verification,
         IPlayer player)
     {
         _game = game ?? throw new ArgumentNullException(nameof(game));
-        _gameProvider = gameProvider ?? throw new ArgumentNullException(nameof(gameProvider));
         _gameUrl = gameUrl ?? throw new ArgumentNullException(nameof(gameUrl));
-        _gameVerificationClient = gameVerificationClient ?? throw new ArgumentNullException(nameof(gameVerificationClient));
+        _verification = verification ?? throw new ArgumentNullException(nameof(verification));
         _player = player ?? throw new ArgumentNullException(nameof(player));
     }
 
     public async ValueTask<Uri> GetAsync(GameUrlQuery query, CancellationToken cancellationToken = default)
     {
         var player = await _player
-                        .GetAsync(
-                            query.PlayerCode,
-                            cancellationToken: cancellationToken)
-                        .ConfigureAwait(false);
-
-        if (!await _gameVerificationClient.VerifyPlayerGameUrlAsync(query.PlayerCode, query.GameId).ConfigureAwait(false))
-        {
-            throw new Exception($"Failed to get game URL. (1. The player does not exist or is not enabled. 2. The game does not exist or is not enabled. 3. The game does not support this currency.)");
-        }
+            .GetAsync(
+                playerCode: query.PlayerCode,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
         var game = await _game
-                    .GetAsync(
-                        query.GameId,
-                        cancellationToken)
-                    .ConfigureAwait(false);
+            .GetAsync(
+                gameId: query.GameId,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
-        var gameProvider = await _gameProvider
-                    .GetAsync(
-                        game.GameProviderId,
-                        cancellationToken)
-                    .ConfigureAwait(false);
+        await _verification
+            .VerifyPlayerGameUrlAsync(
+                player: player,
+                game: game,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
-        return gameProvider.GameProviderCode switch
+        return game.GameProviderCode switch
         {
             var o when o == GameProviderType.AsiaGaming
             => await _gameUrl
                 .GetGameUrlByAsiaGamingAsync(
-                    gameProvider.GameProviderCode,
+                    game.GameProviderCode,
                     (GameProvidersClientGameType)game.Type,
                     query.GameId,
                     player.BrandCode,
@@ -77,7 +69,7 @@ internal class GameUrlGetService : IGetService<GameUrlQuery, Uri>
             var o when o == GameProviderType.BetConstruct
             => await _gameUrl
                 .GetGameUrlByBetConstructAsync(
-                    gameProvider.GameProviderCode,
+                    game.GameProviderCode,
                     (GameProvidersClientGameType)game.Type,
                     query.GameId,
                     player.BrandCode,
@@ -89,12 +81,12 @@ internal class GameUrlGetService : IGetService<GameUrlQuery, Uri>
                     query.IpAddress,
                     query.BackUrl,
                     player.BrandId,
-                    gameProvider.GameProviderId,
+                    game.GameProviderId,
                     cancellationToken)
                 .ConfigureAwait(false),
             _ => await _gameUrl
                 .GetGameUrlAsync(
-                    gameProvider.GameProviderCode,
+                    game.GameProviderCode,
                     (GameProvidersClientGameType)game.Type,
                     query.GameId,
                     player.BrandCode,

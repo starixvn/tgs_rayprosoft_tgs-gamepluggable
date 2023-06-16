@@ -7,7 +7,6 @@ using Tgs.GameFundTransfer.Client;
 using Tgs.GamePlayerLogOut.Client;
 using Tgs.GameProviders.Client;
 using Tgs.GameRounds.Client;
-using Tgs.GameVerification.Client;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -19,7 +18,6 @@ public static class ServiceCollecitonExtensions
         Action<GameProvidersClientOptions, IServiceProvider> gameProvidersClientOptions,
         Action<GameCommandClientOptions, IServiceProvider> gameCommandClientOptions,
         Action<GamePlayerLogOutClientOptions, IServiceProvider> gamePlayerLogOutClientOptions,
-        Action<GameVerificationClientOptions, IServiceProvider> gameVerificationClientOptions,
         Action<GameFundTransferClientOptions, IServiceProvider> gameTransferClientOptions,
         Action<GameCurrencyClientOptions, IServiceProvider> gameCurrencyClientOptions,
         Action<GameRoundsClientOptions, IServiceProvider> gameRoundsConfigure)
@@ -31,7 +29,6 @@ public static class ServiceCollecitonExtensions
         .AddGameProvidersClient(gameProvidersClientOptions)
         .AddGameCommandClient(gameCommandClientOptions)
         .AddGamePlayerLogOutClient(gamePlayerLogOutClientOptions)
-        .AddGameVerificationClient(gameVerificationClientOptions)
         .AddGameFundTransferClient(gameTransferClientOptions)
         .AddGameCurrencyClient(gameCurrencyClientOptions)
         .AddGameRoundsClient(gameRoundsConfigure);
