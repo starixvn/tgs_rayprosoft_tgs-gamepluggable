@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Client;
+using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.Pluggable.ViewModels;
 using Tgs.GameRounds.Client;
 using Tgs.GameRounds.Common;
+using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTest.Backoffice.Rounds;
 
@@ -34,21 +37,19 @@ public class AddSystemRoundUnitTest
 
         await using var web = new TestPluggableApplication(builder =>
         {
-            _ = builder.ConfigureServices(services =>
+            _ = builder.ConfigureServices(async services =>
             {
-                var fakeGameRoundsClient = Substitute.For<IGameRoundsClient>();
-                var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
+                var service = Substitute.For<ICommandService<AddCompanyRoundCommand>>();
 
-                _ = fakeGameRoundsClient.AddCompanyRoundAsync(new GameRounds.Common.ViewModels.AddCompanyRoundViewModel
+                var command = new AddCompanyRoundCommand
                 {
                     BrandId = brandId,
                     PlayerCode = playerCode,
                     WalletId = walletId,
                     GameId = 123,
                     GameProviderId = gameProviderId,
-                    GameProviderConfigurationId = Guid.NewGuid(),
                     ExternalRoundId = "exRoundId",
-                    ClientStatus = clientRoundStatus,
+                    ClientRoundStatus = (short)clientRoundStatus,
                     ExternalCreatedOn = externalCreatedOn,
                     ExternalClosedOn = externalClosedOn,
                     CurrencyCode = "CNY",
@@ -60,10 +61,15 @@ public class AddSystemRoundUnitTest
                     CompanyWinLoss = winLoss,
                     OperatorId = operatorId,
                     Remark = remark
-                });
+                };
 
-                _ = services.AddSingleton(fakeGameRoundsClient);
-                _ = services.AddSingleton(fakeCashServiceClient);
+                await service
+                .ExecuteAsync(
+                    command: command,
+                    cancellationToken: Arg.Any<CancellationToken>())
+                .ConfigureAwait(false);
+
+                _ = services.AddSingleton(service);
             });
         });
 

@@ -63,8 +63,10 @@ public class GameRoundGetUnitTest
         var sut = new GameProvidersBackofficePluggableClient(httpClient);
 
         var actual = await sut
-            .GameRoundGetAsync(roundId)
+            .GameRoundGetAsync(
+                roundId: roundId)
             .ConfigureAwait(false);
+
         Assert.NotNull(actual);
         Assert.Equal(roundId, actual!.RoundId);
     }
