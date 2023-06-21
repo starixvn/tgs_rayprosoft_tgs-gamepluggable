@@ -3,11 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
-using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.Pluggable.ViewModels;
-using Tgs.GameRounds.Client;
 using Tgs.GameRounds.Common;
 using Tgs.ServiceUtility;
 
