@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tgs.CashService.Client;
 using Tgs.GameRounds.Client;
+using Tgs.GameRounds.Common.ViewModels;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
@@ -24,46 +25,42 @@ internal class AdjustClosedRoundService : ICommandService<AdjustClosedRoundComma
     {
         var gameRoundModel = await _gameRoundsClient
             .GetGameRoundAsync(
-                command.RoundId,
-                cancellationToken)
+            roundId: command.RoundId,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false)
             ?? throw new Exception($"Game round number does not exist.({command.RoundId})");
 
-        var response = await _gameRoundsClient
+        var adjustClosedRound = new AdjustClosedRoundViewModel
+        {
+            ClientStatus = command.RoundClientStatus,
+            ExternalClosedOn = command.ExternalClosedOn,
+            BetAmount = command.BetAmount,
+            SettleAmount = command.SettleAmount,
+            ValidBetAmount = command.ValidBetAmount,
+            Commission = command.Commission,
+            Turnover = command.Turnover,
+            CompanyWinLoss = command.WinLoss,
+            OperatorId = command.OperatorId,
+            Remark = command.Remark
+        };
+        await _gameRoundsClient
             .AdjustClosedRoundAsync(
-                command.RoundId,
-                new GameRounds.Common.ViewModels.AdjustClosedRoundViewModel
-                {
-                    ClientStatus = command.RoundClientStatus,
-                    ExternalClosedOn = command.ExternalClosedOn,
-                    BetAmount = command.BetAmount,
-                    SettleAmount = command.SettleAmount,
-                    ValidBetAmount = command.ValidBetAmount,
-                    Commission = command.Commission,
-                    Turnover = command.Turnover,
-                    CompanyWinLoss = command.WinLoss,
-                    OperatorId = command.OperatorId,
-                    Remark = command.Remark
-                },
-                cancellationToken: cancellationToken)
+            command.RoundId,
+            source: adjustClosedRound,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        if (response.Success)
+        if (command.AdjustAmount.HasValue)
         {
-            if (command.AdjustAmount.HasValue)
-            {
-                _ = await _cashServiceClient.AdjustResettledBetManualAsync(
-                       gameRoundModel.Data!.WalletId,
-                       command.AdjustAmount.Value,
-                       command.Remark,
-                       gameRoundModel.Data.RoundId.ToString(),
-                       command.OperatorId,
-                       cancellationToken);
-            }
-        }
-        else
-        {
-            throw new Exception($"Failed to adjust closed game record.({command.RoundId})");
+            _ = await _cashServiceClient
+                .AdjustResettledBetManualAsync(
+                walletId: gameRoundModel.WalletId,
+                amount: command.AdjustAmount.Value,
+                description: command.Remark,
+                externalId: gameRoundModel.RoundId.ToString(),
+                createdByUserId: command.OperatorId,
+                cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
         }
     }
 }

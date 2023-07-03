@@ -30,19 +30,14 @@ internal class RoundDetailGetService : IGetService<RoundDetailQuery, JsonDocumen
     {
         var data = await _gameRoundsClient
             .GetGameRoundAsync(
-                roundId: query.RoundId,
-                cancellationToken: cancellationToken)
+            roundId: query.RoundId,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false)
             ?? throw new Exception($"Game Round does not exist.({query})");
 
-        if (!data.Success || data.Data is null)
-        {
-            throw new Exception($"Game Round does not exist.({query})");
-        }
-
-        if (data.Data.Status is GameRoundStatus.Open or GameRoundStatus.New
+        if (data.Status is GameRoundStatus.Open or GameRoundStatus.New
             ||
-            data.Data.ClientStatus is GameRoundClientStatus.Open)
+            data.ClientStatus is GameRoundClientStatus.Open)
         {
             return JsonDocument.Parse(JsonSerializer.Serialize(new RoundDetailDataText()
             {
@@ -51,19 +46,20 @@ internal class RoundDetailGetService : IGetService<RoundDetailQuery, JsonDocumen
         }
 
         var gameProviderModel = await _gameProvider
-                    .GetAsync(
-                        data.Data.GameProviderId,
-                        cancellationToken)
-                    .ConfigureAwait(false);
+            .GetAsync(
+            gameProviderId: data.GameProviderId,
+            cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
         try
         {
             var roundDetailResult = await _gameProvidersClient
                 .RoundDetailAsync(
-                    gameProviderModel!.GameProviderCode,
-                    data.Data.RoundId,
-                    query.Language,
-                    cancellationToken: cancellationToken).ConfigureAwait(false);
+                gameProviderCode: gameProviderModel!.GameProviderCode,
+                roundId: data.RoundId,
+                language: query.Language,
+                cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
             return JsonDocument.Parse(JsonSerializer.Serialize(roundDetailResult));
         }
         catch

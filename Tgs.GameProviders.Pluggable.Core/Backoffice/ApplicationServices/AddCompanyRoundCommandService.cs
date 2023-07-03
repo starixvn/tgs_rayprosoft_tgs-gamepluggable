@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tgs.GameRounds.Client;
 using Tgs.GameRounds.Common;
+using Tgs.GameRounds.Common.ViewModels;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
@@ -29,29 +30,32 @@ internal class AddCompanyRoundCommandService : ICommandService<AddCompanyRoundCo
                 cancellationToken)
             .ConfigureAwait(false);
 
-        _ = await _gameRoundsClient.AddCompanyRoundAsync(
-            new GameRounds.Common.ViewModels.AddCompanyRoundViewModel
-            {
-                BrandId = command.BrandId,
-                PlayerCode = command.PlayerCode,
-                WalletId = command.WalletId,
-                GameId = command.GameId,
-                GameProviderId = command.GameProviderId,
-                GameProviderConfigurationId = gameProviderConfigurationId,
-                ExternalRoundId = command.ExternalRoundId,
-                ClientStatus = (GameRoundClientStatus)command.ClientRoundStatus,
-                ExternalCreatedOn = command.ExternalCreatedOn,
-                ExternalClosedOn = command.ExternalClosedOn,
-                CurrencyCode = command.CurrencyCode,
-                BetAmount = command.BetAmount,
-                SettleAmount = command.SettleAmount,
-                ValidBetAmount = command.ValidBetAmount,
-                Turnover = command.Turnover,
-                Commission = command.Commission,
-                CompanyWinLoss = command.CompanyWinLoss,
-                OperatorId = command.OperatorId,
-                Remark = command.Remark
-            }, cancellationToken)
+        var addCompanyRound = new AddCompanyRoundViewModel
+        {
+            BrandId = command.BrandId,
+            PlayerCode = command.PlayerCode,
+            WalletId = command.WalletId,
+            GameId = command.GameId,
+            GameProviderId = command.GameProviderId,
+            GameProviderConfigurationId = gameProviderConfigurationId,
+            ExternalRoundId = command.ExternalRoundId,
+            ClientStatus = (GameRoundClientStatus)command.ClientRoundStatus,
+            ExternalCreatedOn = command.ExternalCreatedOn,
+            ExternalClosedOn = command.ExternalClosedOn,
+            CurrencyCode = command.CurrencyCode,
+            BetAmount = command.BetAmount,
+            SettleAmount = command.SettleAmount,
+            ValidBetAmount = command.ValidBetAmount,
+            Turnover = command.Turnover,
+            Commission = command.Commission,
+            CompanyWinLoss = command.CompanyWinLoss,
+            OperatorId = command.OperatorId,
+            Remark = command.Remark
+        };
+        await _gameRoundsClient
+            .AddCompanyRoundAsync(
+            source: addCompanyRound,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
 }

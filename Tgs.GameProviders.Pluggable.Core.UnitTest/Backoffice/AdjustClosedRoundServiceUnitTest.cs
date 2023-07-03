@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
 using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameRounds.Client;
 using Tgs.GameRounds.Common;
+using Tgs.GameRounds.Common.ViewModels;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTest.Backoffice;
 
@@ -33,49 +35,44 @@ public class AdjustClosedRoundServiceUnitTest
         var remark = "測試調整Closed Round";
         var adjustAmount = 100m;
 
-        var gameRoundDataResponse = new GameRoundDataResponse
+        var gameRound = new GameRoundViewModel
         {
-            Data = new GameRounds.Common.ViewModels.GameRoundViewModel(
-                RoundId: roundId,
-                ExternalRoundId: "50-1636345294-40676339-2",
-                GameProviderId: Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
-                GameProviderCode: "EVO",
-                PlayerCode: "4uf6j0t01809",
-                GameId: 1000015,
-                ExternalGameId: "",
-                CurrencyCode: "CNY",
-                Status: GameRoundStatus.Open,
-                GameProviderConfigurationId: Guid.Parse("fa0d7706-f910-4e98-bf71-bd7084140304"),
-                WalletId: Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9"),
-                CreatedOn: DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
-                ClosedOn: null,
-                UpdatedOn: DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
-                BrandId: Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
-                ExternalCreatedOn: DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
-                ExternalClosedOn: null,
-                BetAmount: 0.060000m,
-                ValidBetAmount: 0.060000m,
-                SettleAmount: 0m,
-                Commission: 0m,
-                Turnover: 0m,
-                CompanyWinLoss: 0m,
-                TieBetAdjustment: 0m,
-                ClientStatus: GameRoundClientStatus.Open,
-                ReopenTurnoverAdjustment: null,
-                ReopenedOn: null,
-                EffectiveBettingPercentage: null,
-                AdditionalData: null),
-            Success = true,
-            HttpStatusCode = System.Net.HttpStatusCode.OK
+            RoundId = roundId,
+            ExternalRoundId = "50-1636345294-40676339-2",
+            GameProviderId = Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
+            GameProviderCode = "EVO",
+            PlayerCode = "4uf6j0t01809",
+            GameId = 1000015,
+            ExternalGameId = "bacc",
+            CurrencyCode = "CNY",
+            Status = GameRoundStatus.Open,
+            GameProviderConfigurationId = Guid.Parse("fa0d7706-f910-4e98-bf71-bd7084140304"),
+            WalletId = Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9"),
+            CreatedOn = DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
+            ClosedOn = null,
+            UpdatedOn = DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
+            BrandId = Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
+            ExternalCreatedOn = DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
+            ExternalClosedOn = null,
+            BetAmount = 0.060000m,
+            ValidBetAmount = 0.060000m,
+            SettleAmount = 0m,
+            Commission = 0m,
+            Turnover = 0m,
+            CompanyWinLoss = 0m,
+            TieBetAdjustment = 0m,
+            ClientStatus = GameRoundClientStatus.Open,
+            ReopenTurnoverAdjustment = null,
+            ReopenedOn = null,
+            EffectiveBettingPercentage = null,
+            AdditionalData = null
         };
 
         _ = fakeGameRoundsClient
             .GetGameRoundAsync(roundId)
-            .Returns(gameRoundDataResponse);
+            .Returns(gameRound);
 
-        var gameRepsonse = new GameRoundResponse { Success = true, HttpStatusCode = System.Net.HttpStatusCode.OK };
-
-        var adjustClosed = new GameRounds.Common.ViewModels.AdjustClosedRoundViewModel
+        var adjustClosed = new AdjustClosedRoundViewModel
         {
             BetAmount = betAmount,
             ValidBetAmount = validBetAmount,
@@ -88,10 +85,6 @@ public class AdjustClosedRoundServiceUnitTest
             OperatorId = operatorId,
             Remark = remark
         };
-
-        _ = fakeGameRoundsClient
-            .AdjustClosedRoundAsync(roundId, adjustClosed)
-            .Returns(gameRepsonse);
 
         var command = new AdjustClosedRoundCommand
         {
@@ -119,13 +112,21 @@ public class AdjustClosedRoundServiceUnitTest
 
         var walletId = Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9");
 
+        _ = fakeGameRoundsClient
+            .Received(1)
+            .AdjustClosedRoundAsync(
+            roundId: Arg.Is(roundId),
+            source: Arg.Is(adjustClosed),
+            cancellationToken: Arg.Any<CancellationToken>());
+
         _ = fakeCashServiceClient
             .Received(1)
             .AdjustResettledBetManualAsync(
-                Arg.Is(walletId),
-                Arg.Is(adjustAmount),
-                Arg.Is(remark),
-                Arg.Is(roundId.ToString()),
-                Arg.Is(operatorId));
+            walletId: Arg.Is(walletId),
+            amount: Arg.Is(adjustAmount),
+            description: Arg.Is(remark),
+            externalId: Arg.Is(roundId.ToString()),
+            createdByUserId: Arg.Is(operatorId),
+            cancellationToken: Arg.Any<CancellationToken>());
     }
 }

@@ -20,39 +20,37 @@ internal class GameRoundGetService : IGetService<Guid, GameRoundInfo>
     {
         var data = await _client
             .GetGameRoundAsync(
-                roundId: query,
-                cancellationToken: cancellationToken)
+            roundId: query,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false)
             ?? throw new Exception($"Game Round does not exist.({query})");
 
-        return data.Data is null
-            ? throw new Exception($"Game Round does not exist.({query})")
-            : new GameRoundInfo(
-            data.Data.RoundId,
-            data.Data.ExternalRoundId,
-            data.Data.GameProviderId,
-            data.Data.PlayerCode,
-            data.Data.GameId,
-            data.Data.CurrencyCode,
-            data.Data.Status,
-            data.Data.GameProviderConfigurationId,
-            data.Data.WalletId,
-            data.Data.CreatedOn,
-            data.Data.ClosedOn,
-            data.Data.UpdatedOn,
-            data.Data.BrandId,
-            data.Data.ExternalCreatedOn,
-            data.Data.ExternalClosedOn,
-            data.Data.BetAmount,
-            data.Data.ValidBetAmount,
-            data.Data.SettleAmount,
-            data.Data.Commission,
-            data.Data.Turnover,
-            data.Data.CompanyWinLoss,
-            data.Data.TieBetAdjustment,
-            data.Data.ClientStatus,
-            data.Data.ReopenTurnoverAdjustment,
-            data.Data.ReopenedOn,
-            data.Data.EffectiveBettingPercentage);
+        return new GameRoundInfo(
+            RoundId: data.RoundId,
+            ExternalRoundId: data.ExternalRoundId,
+            GameProviderId: data.GameProviderId,
+            PlayerCode: data.PlayerCode,
+            GameId: data.GameId,
+            CurrencyCode: data.CurrencyCode,
+            Status: data.Status,
+            GameProviderConfigurationId: data.GameProviderConfigurationId,
+            WalletId: data.WalletId,
+            CreatedOn: data.CreatedOn,
+            ClosedOn: data.ClosedOn,
+            UpdatedOn: data.UpdatedOn,
+            BrandId: data.BrandId,
+            ExternalCreatedOn: data.ExternalCreatedOn,
+            ExternalClosedOn: data.ExternalClosedOn,
+            BetAmount: data.BetAmount,
+            ValidBetAmount: data.ValidBetAmount,
+            SettleAmount: data.SettleAmount,
+            Commission: data.Commission,
+            Turnover: data.Turnover,
+            WinLoss: data.CompanyWinLoss,
+            TieBetAdjustment: data.TieBetAdjustment,
+            ClientStatus: data.ClientStatus,
+            ReopenTurnoverAdjustment: data.ReopenTurnoverAdjustment,
+            ReopenedOn: data.ReopenedOn,
+            EffectiveBettingPercentage: data.EffectiveBettingPercentage);
     }
 }
