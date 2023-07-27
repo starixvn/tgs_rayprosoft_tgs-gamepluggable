@@ -105,7 +105,7 @@ public class ClosedGameRoundServiceUnitTest
             .Received(1)
             .ManualCloseRoundAsync(
              Arg.Is(roundId),
-             Arg.Is(manualClose) );
+             Arg.Is(manualClose));
 
         _ = fakeCashServiceClient
             .Received(1)

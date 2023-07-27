@@ -28,21 +28,21 @@ public class GameCacheRepositoryUnitTest
             GameId: 1,
             GameCode: "lobby",
             GameProviderId: Guid.NewGuid(),
-            GameProviderCode: GameProviderType.KY,
+            GameProviderCode: GameProviderType.Kaiyuan,
             GameExternalId: "lobby",
             Type: GameType.CardGameLobby,
             PlatformType: GamePlatformType.DesktopAndMobile,
-            Name: GameProviderType.KY,
+            Name: GameProviderType.Kaiyuan,
             SubGame: true,
             AvailableToBrand: true,
             HasTurnoverOnTieBet: true,
             Html5: true,
-            Description: GameProviderType.KY,
+            Description: GameProviderType.Kaiyuan,
             EndpointPath: null,
             RuleUrl: null,
             AvailableCurrencies: null,
             Localization: null,
-            SubGameProviderCode: GameProviderType.KY);
+            SubGameProviderCode: GameProviderType.Kaiyuan);
         _ = fakeGame
             .GetAsync(
                 gameId: Arg.Is(gameId))

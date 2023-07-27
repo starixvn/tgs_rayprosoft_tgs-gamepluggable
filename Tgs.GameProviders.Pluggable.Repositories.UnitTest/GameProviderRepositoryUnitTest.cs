@@ -16,16 +16,16 @@ public class GameProviderRepositoryUnitTest
 
         var gameProvider = new GameProviderInfo(
             GameProviderId: gameProviderId,
-            GameProviderCode: GameProviderType.KY,
+            GameProviderCode: GameProviderType.Kaiyuan,
             UniqueId: 1,
-            Name: GameProviderType.KY,
+            Name: GameProviderType.Kaiyuan,
             TransferWallet: true,
             AutoCloseRound: true,
             SupportTestPlayer: true,
             AllowKickPlayer: true,
             PlaceBetTimeout: 0,
             SettleBetTimeout: 0,
-            Description: GameProviderType.KY,
+            Description: GameProviderType.Kaiyuan,
             Localization: null);
         _ = fakeClient
             .GameProviderGetAsync(

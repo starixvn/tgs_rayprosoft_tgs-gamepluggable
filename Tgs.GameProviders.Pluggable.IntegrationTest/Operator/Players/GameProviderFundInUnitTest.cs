@@ -13,7 +13,7 @@ public class GameProviderFundInUnitTest
     [Fact]
     public async Task GameProviderFundInAsync()
     {
-        string gameProviderCode = GameProviderType.KY;
+        string gameProviderCode = GameProviderType.Kaiyuan;
         string playerCode = "4ucmqplxb029";
         var amount = 1m;
 

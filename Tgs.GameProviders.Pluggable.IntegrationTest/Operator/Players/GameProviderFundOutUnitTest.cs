@@ -14,7 +14,7 @@ public class GameProviderFundOutUnitTest
     [Fact]
     public async Task GameProviderFundOutAsync()
     {
-        string gameProviderCode = GameProviderType.KY;
+        string gameProviderCode = GameProviderType.Kaiyuan;
         string playerCode = "4ucmqplxb029";
         var gameProviderFundTransferTransactionId = Guid.NewGuid();
         var orderId = gameProviderFundTransferTransactionId.ToString("N");

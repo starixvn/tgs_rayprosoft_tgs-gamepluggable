@@ -23,7 +23,7 @@ public class FundOutGetServiceUnitTest
         var fakePlayerGameBalance = Substitute.For<IPlayerGameBalance>();
 
         var query = new FundOutCommand(
-            GameProviderType.KY,
+            GameProviderType.Kaiyuan,
             "4ucmqplxb029",
             1
             );
@@ -54,16 +54,16 @@ public class FundOutGetServiceUnitTest
 
         var gameProvider = new GameProviderInfo(
             GameProviderId: gameProviderId,
-            GameProviderCode: GameProviderType.KY,
+            GameProviderCode: GameProviderType.Kaiyuan,
             UniqueId: 1,
-            Name: GameProviderType.KY,
+            Name: GameProviderType.Kaiyuan,
             TransferWallet: true,
             AutoCloseRound: true,
             SupportTestPlayer: true,
             AllowKickPlayer: true,
             PlaceBetTimeout: 0,
             SettleBetTimeout: 0,
-            Description: GameProviderType.KY,
+            Description: GameProviderType.Kaiyuan,
             Localization: null);
         _ = fakeGameProvider
             .GetAsync(
