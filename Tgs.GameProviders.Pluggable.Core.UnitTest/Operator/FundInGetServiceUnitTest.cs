@@ -5,6 +5,7 @@ using NSubstitute;
 using Tgs.GameCommand.Common;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GameProviders.Domains;
+using Tgs.GameProviders.Pluggable.Core.Models;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTest.Operator;
@@ -64,14 +65,16 @@ public class FundInGetServiceUnitTest
                 Arg.Is(gameProviderId))
             .Returns(ValueTask.FromResult(gameProvider));
 
-        decimal gameProviderBalance = 10.0m;
+        var platformBalance = new PlatformBalanceInfo(
+            Balance: 100.0m,
+            FreeBalance: 10.0m,
+            OutstandingBalance: 90.0m);
         _ = fakePlayerGameBalance
             .GetBalanceAsync(
-                Arg.Is(query.GameProviderCode),
-                Arg.Is(player.PlayerCode),
-                Arg.Is(player.DefaultWalletCurrencyCode),
-                Arg.Any<CancellationToken>())
-            .Returns(ValueTask.FromResult(gameProviderBalance));
+            gameProviderCode: Arg.Is(query.GameProviderCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
+            .Returns(platformBalance);
 
         var fakeService = new FundInCommandService(
             fakeGameFundTransferClient,
@@ -158,14 +161,16 @@ public class FundInGetServiceUnitTest
                 Arg.Is(gameProviderId))
             .Returns(ValueTask.FromResult(gameProvider));
 
-        decimal gameProviderBalance = 123.456m;
+        var platformBalance = new PlatformBalanceInfo(
+            Balance: 1000.0m,
+            FreeBalance: 123.456m,
+            OutstandingBalance: 876.544m);
         _ = fakePlayerGameBalance
             .GetBalanceAsync(
-                Arg.Is(query.GameProviderCode),
-                Arg.Is(player.PlayerCode),
-                Arg.Is(player.DefaultWalletCurrencyCode),
-                Arg.Any<CancellationToken>())
-            .Returns(ValueTask.FromResult(gameProviderBalance));
+            gameProviderCode: Arg.Is(query.GameProviderCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
+            .Returns(platformBalance);
 
         var fakeService = new FundInCommandService(
             fakeGameFundTransferClient,

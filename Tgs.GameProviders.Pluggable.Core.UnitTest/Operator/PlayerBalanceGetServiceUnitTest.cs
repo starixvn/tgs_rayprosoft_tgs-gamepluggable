@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using NSubstitute;
 using Tgs.GameCommand.Common;
+using Tgs.GameProviders.Pluggable.Core.Models;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTest.Operator;
@@ -34,11 +35,16 @@ public class PlayerBalanceGetServiceUnitTest
                 Arg.Is(query.PlayerCode))
             .Returns(ValueTask.FromResult(player));
 
-        decimal gameProviderBalance = 1000m;
-        _ = fakePlayerGameBalance.GetBalanceAsync(
-            Arg.Is(query.GameProviderCode),
-            Arg.Is(query.PlayerCode),
-            Arg.Is(player.DefaultWalletCurrencyCode)).Returns(gameProviderBalance);
+        var platformBalance = new PlatformBalanceInfo(
+            Balance: 10000m,
+            FreeBalance: 1000m,
+            OutstandingBalance: 9000m);
+        _ = fakePlayerGameBalance
+            .GetBalanceAsync(
+            gameProviderCode: Arg.Is(query.GameProviderCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
+            .Returns(platformBalance);
 
         var fakeService = new PlayerBalanceGetService(
             fakePlayer,
@@ -46,6 +52,6 @@ public class PlayerBalanceGetServiceUnitTest
 
         var actual = await fakeService.GetAsync(query);
 
-        Assert.Equal(gameProviderBalance, actual);
+        Assert.Equal(platformBalance.FreeBalance, actual);
     }
 }

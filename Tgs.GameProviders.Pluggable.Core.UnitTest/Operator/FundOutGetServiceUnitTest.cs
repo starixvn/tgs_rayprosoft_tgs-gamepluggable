@@ -6,6 +6,7 @@ using Tgs.CashService.Client;
 using Tgs.GameCommand.Common;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GameProviders.Domains;
+using Tgs.GameProviders.Pluggable.Core.Models;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTest.Operator;
@@ -71,13 +72,16 @@ public class FundOutGetServiceUnitTest
                 cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(gameProvider));
 
-        decimal gameProviderBalance = 0m;
+        var platformBalance = new PlatformBalanceInfo(
+            Balance: 1000m,
+            FreeBalance: 0m,
+            OutstandingBalance: 1000m);
         _ = fakePlayerGameBalance
             .GetBalanceAsync(
-                Arg.Is(query.GameProviderCode),
-                Arg.Is(player.PlayerCode),
-                Arg.Is(player.DefaultWalletCurrencyCode))
-            .Returns(ValueTask.FromResult(gameProviderBalance));
+            gameProviderCode: Arg.Is(query.GameProviderCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
+            .Returns(platformBalance);
 
         var balance = 10.0m;
         _ = fakeCashServiceClient
@@ -170,13 +174,16 @@ public class FundOutGetServiceUnitTest
                 Arg.Is(gameProviderId))
             .Returns(ValueTask.FromResult(gameProvider));
 
-        decimal gameProviderBalance = 0M;
+        var platformBalance = new PlatformBalanceInfo(
+            Balance: 1000M,
+            FreeBalance: 0M,
+            OutstandingBalance: 1000m);
         _ = fakePlayerGameBalance
             .GetBalanceAsync(
-                Arg.Is(query.GameProviderCode),
-                Arg.Is(player.PlayerCode),
-                Arg.Is(player.DefaultWalletCurrencyCode))
-            .Returns(ValueTask.FromResult(gameProviderBalance));
+            gameProviderCode: Arg.Is(query.GameProviderCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
+            .Returns(platformBalance);
 
         var balance = 1000.0M;
         _ = fakeCashServiceClient

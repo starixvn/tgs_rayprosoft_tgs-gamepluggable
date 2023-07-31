@@ -51,13 +51,15 @@ internal class FundInCommandService : ICommandService<FundInCommand>
             throw new Exception($"This game provider does not provide multi-wallet functionality.({gameProvider.GameProviderCode})");
         }
 
-        var gameProviderBalance = await _playerGameBalance.GetBalanceAsync(
+        var gameProviderBalance = await _playerGameBalance
+            .GetBalanceAsync(
             gameProviderCode: gameProvider.GameProviderCode,
             playerCode: player.PlayerCode,
             currencyCode: player.DefaultWalletCurrencyCode,
-            cancellationToken: cancellationToken).ConfigureAwait(false);
+            cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
-        var amount = gameProviderBalance;
+        var amount = gameProviderBalance.FreeBalance;
 
         if (gameProvider.GameProviderCode != GameProviderType.SM01)
         {

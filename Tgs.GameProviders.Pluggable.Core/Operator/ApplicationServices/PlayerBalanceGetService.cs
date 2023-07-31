@@ -27,12 +27,14 @@ internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, decimal
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        return await _playerGameBalance
+        var result = await _playerGameBalance
             .GetBalanceAsync(
-                query.GameProviderCode,
-                player.PlayerCode,
-                player.DefaultWalletCurrencyCode,
-                cancellationToken: cancellationToken)
+            gameProviderCode: query.GameProviderCode,
+            playerCode: player.PlayerCode,
+            currencyCode: player.DefaultWalletCurrencyCode,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
+
+        return result.FreeBalance;
     }
 }

@@ -66,15 +66,19 @@ internal class FundInCommandService : ICommandService<FundInCommand>
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var gameProviderBalance = await _playerGameBalance.GetBalanceAsync(
-                 gameProvider.GameProviderCode,
-                 player.PlayerCode,
-                 player.DefaultWalletCurrencyCode,
-                 cancellationToken: cancellationToken).ConfigureAwait(false);
+        var gameProviderBalance = await _playerGameBalance
+            .GetBalanceAsync(
+            gameProvider.GameProviderCode,
+            player.PlayerCode,
+            player.DefaultWalletCurrencyCode,
+            cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
-        if (gameProviderBalance - command.Amount < 0)
+        var freeBalance = gameProviderBalance.FreeBalance;
+
+        if (freeBalance - command.Amount < 0)
         {
-            throw new Exception($"Insufficient game wallet balance.({gameProviderBalance})");
+            throw new Exception($"Insufficient game wallet balance.({freeBalance})");
         }
 
         var amount = command.Amount;

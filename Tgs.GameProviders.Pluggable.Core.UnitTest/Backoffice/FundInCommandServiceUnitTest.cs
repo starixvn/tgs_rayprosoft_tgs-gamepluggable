@@ -6,6 +6,7 @@ using NSubstitute.ReceivedExtensions;
 using Tgs.GameCommand.Common;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
+using Tgs.GameProviders.Pluggable.Core.Models;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTest.Backoffice;
 
@@ -63,11 +64,16 @@ public class FundInCommandServiceUnitTest
                 Arg.Is(gameProviderId))
             .Returns(gameProvider);
 
-        var gameProviderBalance = 0.006m;
-        _ = fakePlayerGameBalance.GetBalanceAsync(
-            Arg.Is(gameProvider.GameProviderCode),
-            Arg.Is(player.PlayerCode),
-            Arg.Is(player.DefaultWalletCurrencyCode)).Returns(gameProviderBalance);
+        var platformBalance = new PlatformBalanceInfo(
+            Balance: 1000.0m,
+            FreeBalance: 0.006m,
+            OutstandingBalance: 999.994m);
+        _ = fakePlayerGameBalance
+            .GetBalanceAsync(
+            gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
+            .Returns(platformBalance);
 
         var service = new FundInCommandService(
             fakeGameFundTransferClient,
@@ -145,11 +151,16 @@ public class FundInCommandServiceUnitTest
                 Arg.Is(gameProviderId))
             .Returns(gameProvider);
 
-        var gameProviderBalance = 0m;
-        _ = fakePlayerGameBalance.GetBalanceAsync(
-            Arg.Is(gameProvider.GameProviderCode),
-            Arg.Is(player.PlayerCode),
-            Arg.Is(player.DefaultWalletCurrencyCode)).Returns(gameProviderBalance);
+        var platformBalance = new PlatformBalanceInfo(
+            Balance: 1000.0m,
+            FreeBalance: 0m,
+            OutstandingBalance: 1000.0m);
+        _ = fakePlayerGameBalance
+            .GetBalanceAsync(
+            gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
+            .Returns(platformBalance);
 
         var service = new FundInCommandService(
             fakeGameFundTransferClient,
@@ -227,11 +238,16 @@ public class FundInCommandServiceUnitTest
                 Arg.Is(gameProviderId))
             .Returns(gameProvider);
 
-        var gameProviderBalance = 100m;
-        _ = fakePlayerGameBalance.GetBalanceAsync(
-            Arg.Is(gameProvider.GameProviderCode),
-            Arg.Is(player.PlayerCode),
-            Arg.Is(player.DefaultWalletCurrencyCode)).Returns(gameProviderBalance);
+        var platformBalance = new PlatformBalanceInfo(
+            Balance: 1000m,
+            FreeBalance: 100m,
+            OutstandingBalance: 900m);
+        _ = fakePlayerGameBalance
+            .GetBalanceAsync(
+            gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
+            .Returns(platformBalance);
 
         var service = new FundInCommandService(
             fakeGameFundTransferClient,
@@ -253,7 +269,7 @@ public class FundInCommandServiceUnitTest
                 playerCode: Arg.Is(player.PlayerCode),
                 walletId: Arg.Is(player.DefaultWalletId),
                 currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
-                amount: Arg.Is(gameProviderBalance),
+                amount: Arg.Is(platformBalance.FreeBalance),
                 cancellationToken: Arg.Any<CancellationToken>());
     }
 
@@ -309,11 +325,16 @@ public class FundInCommandServiceUnitTest
                 Arg.Is(gameProviderId))
             .Returns(gameProvider);
 
-        var gameProviderBalance = 123.456m;
-        _ = fakePlayerGameBalance.GetBalanceAsync(
-            Arg.Is(gameProvider.GameProviderCode),
-            Arg.Is(player.PlayerCode),
-            Arg.Is(player.DefaultWalletCurrencyCode)).Returns(gameProviderBalance);
+        var platformBalance = new PlatformBalanceInfo(
+            Balance: 1000.0m,
+            FreeBalance: 123.456m,
+            OutstandingBalance: 876.554m);
+        _ = fakePlayerGameBalance
+            .GetBalanceAsync(
+            gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
+            .Returns(platformBalance);
 
         var service = new FundInCommandService(
             fakeGameFundTransferClient,
@@ -391,11 +412,16 @@ public class FundInCommandServiceUnitTest
                 Arg.Is(gameProviderId))
             .Returns(gameProvider);
 
-        var gameProviderBalance = 0.006m;
-        _ = fakePlayerGameBalance.GetBalanceAsync(
-            Arg.Is(gameProvider.GameProviderCode),
-            Arg.Is(player.PlayerCode),
-            Arg.Is(player.DefaultWalletCurrencyCode)).Returns(gameProviderBalance);
+        var platformBalance = new PlatformBalanceInfo(
+            Balance: 1000.0m,
+            FreeBalance: 0.006m,
+            OutstandingBalance: 876.544m);
+        _ = fakePlayerGameBalance
+            .GetBalanceAsync(
+            gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
+            .Returns(platformBalance);
 
         var service = new FundInCommandService(
             fakeGameFundTransferClient,
@@ -473,11 +499,16 @@ public class FundInCommandServiceUnitTest
                 Arg.Is(gameProviderId))
             .Returns(gameProvider);
 
-        var gameProviderBalance = 0m;
-        _ = fakePlayerGameBalance.GetBalanceAsync(
-            Arg.Is(gameProvider.GameProviderCode),
-            Arg.Is(player.PlayerCode),
-            Arg.Is(player.DefaultWalletCurrencyCode)).Returns(gameProviderBalance);
+        var platformBalance = new PlatformBalanceInfo(
+            Balance: 0m,
+            FreeBalance: 0m,
+            OutstandingBalance: 0m);
+        _ = fakePlayerGameBalance
+            .GetBalanceAsync(
+            gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
+            .Returns(platformBalance);
 
         var service = new FundInCommandService(
             fakeGameFundTransferClient,
@@ -555,11 +586,16 @@ public class FundInCommandServiceUnitTest
                 Arg.Is(gameProviderId))
             .Returns(gameProvider);
 
-        var gameProviderBalance = 123.456m;
-        _ = fakePlayerGameBalance.GetBalanceAsync(
-            Arg.Is(gameProvider.GameProviderCode),
-            Arg.Is(player.PlayerCode),
-            Arg.Is(player.DefaultWalletCurrencyCode)).Returns(gameProviderBalance);
+        var platformBalance = new PlatformBalanceInfo(
+            Balance: 1000.0m,
+            FreeBalance: 123.456m,
+            OutstandingBalance: 876.544m);
+        _ = fakePlayerGameBalance
+            .GetBalanceAsync(
+            gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
+            .Returns(platformBalance);
 
         var service = new FundInCommandService(
             fakeGameFundTransferClient,
