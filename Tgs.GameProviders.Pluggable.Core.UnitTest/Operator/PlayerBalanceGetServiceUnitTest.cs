@@ -92,7 +92,7 @@ public class PlayerBalanceGetServiceUnitTest
 
         _ = fakeVerification
             .Received(1)
-            .VerifyPlayerAsync(
+            .VerifyPlayerBalanceAsync(
             player: Arg.Is(player),
             gameProvider: Arg.Is(gameProvider),
             cancellationToken: Arg.Any<CancellationToken>());

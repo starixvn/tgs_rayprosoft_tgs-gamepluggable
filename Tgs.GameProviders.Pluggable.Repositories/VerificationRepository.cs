@@ -105,6 +105,72 @@ internal class VerificationRepository : IVerification
         }
     }
 
+    public async ValueTask VerifyPlayerBalanceAsync(
+        PlayerInfo player,
+        GameProviderInfo gameProvider,
+        CancellationToken cancellationToken = default)
+    {
+        var resellerStatus = await _client
+            .ResellerGetStatusAsync(
+                resellerId: player.ResellerId,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+
+        var licenseeStatus = await _client
+            .LicenseeGetStatusAsync(
+                licenseeId: player.LicenseeId,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+
+        var brandStatus = await _client
+            .BrandGetStatusAsync(
+                brandId: player.BrandId,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+
+        var playerStatus = await _client
+            .PlayerGetStatusAsync(
+                playerCode: player.PlayerCode,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+
+        var gameProviderStatus = await _client
+            .GameProviderGetStatusAsync(
+                gameProviderId: gameProvider.GameProviderId,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+
+        if (resellerStatus != ResellerStatus.Active ||
+            licenseeStatus != LicenseeStatus.Active ||
+            brandStatus != BrandStatus.Active ||
+            (playerStatus != PlayerStatus.Enabled &&
+            playerStatus != PlayerStatus.Disabled) ||
+            gameProviderStatus != GameProviderStatus.Active
+            )
+        {
+            throw new VerifyPlayerBalanceException(player.PlayerCode, player.Username, gameProvider.GameProviderCode);
+        }
+
+        var brandCurrency = await _client
+            .BrandGetCurrencyAsync(
+                brandId: player.BrandId,
+                currencyCode: player.DefaultWalletCurrencyCode,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+
+        var gameProviderCurrency = await _client
+            .GameProviderGetCurrencyCodeAsync(
+                gameProviderId: gameProvider.GameProviderId,
+                currencyCode: player.DefaultWalletCurrencyCode,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+
+        if (string.IsNullOrWhiteSpace(brandCurrency) || string.IsNullOrWhiteSpace(gameProviderCurrency))
+        {
+            throw new VerifyPlayerBalanceException(player.PlayerCode, player.Username, gameProvider.GameProviderCode);
+        }
+    }
+
     public async ValueTask VerifyPlayerGameUrlAsync(
         PlayerInfo player,
         GameInfo game,

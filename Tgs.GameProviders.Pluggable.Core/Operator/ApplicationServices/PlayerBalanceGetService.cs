@@ -46,7 +46,7 @@ internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, PlayerB
             .ConfigureAwait(false);
 
         await _verification
-            .VerifyPlayerAsync(
+            .VerifyPlayerBalanceAsync(
             player: player,
             gameProvider: gameProvider,
             cancellationToken: cancellationToken)

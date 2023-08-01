@@ -18,6 +18,11 @@ public interface IVerification
         GameProviderInfo gameProvider,
         CancellationToken cancellationToken = default);
 
+    ValueTask VerifyPlayerBalanceAsync(
+            PlayerInfo player,
+        GameProviderInfo gameProvider,
+        CancellationToken cancellationToken = default);
+
     ValueTask VerifyPlayerGameUrlAsync(
         PlayerInfo player,
         GameInfo game,

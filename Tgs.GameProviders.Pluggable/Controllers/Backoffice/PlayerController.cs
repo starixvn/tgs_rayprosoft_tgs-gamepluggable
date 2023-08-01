@@ -162,5 +162,4 @@ public class PlayerController : ControllerBase
             command: command,
             cancellationToken: HttpContext.RequestAborted);
     }
-
 }

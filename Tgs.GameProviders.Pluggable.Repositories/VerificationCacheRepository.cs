@@ -61,6 +61,25 @@ internal class VerificationCacheRepository : IVerification
         }
     }
 
+    public async ValueTask VerifyPlayerBalanceAsync(
+        PlayerInfo player,
+        GameProviderInfo gameProvider,
+        CancellationToken cancellationToken = default)
+    {
+        var key = $"game:pluggable:verificationcache:player:balance:{player.PlayerCode}:{gameProvider.GameProviderCode}";
+        if (!_memoryCache.TryGetValue(key, out _))
+        {
+            await _verification
+                .VerifyPlayerBalanceAsync(
+                player: player,
+                gameProvider: gameProvider,
+                cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
+
+            _ = _memoryCache.Set(key, DateTime.UtcNow, _absoluteExpiration);
+        }
+    }
+
     public async ValueTask VerifyPlayerGameUrlAsync(
         PlayerInfo player,
         GameInfo game,
