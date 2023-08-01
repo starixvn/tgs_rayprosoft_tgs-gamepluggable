@@ -6,7 +6,7 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
-internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, decimal>
+internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, PlayerBalanceResult>
 {
     private readonly IGameProvider _gameProvider;
     private readonly IPlayer _player;
@@ -25,26 +25,26 @@ internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, decimal
         _playerGameBalance = playerGameBalance ?? throw new ArgumentNullException(nameof(playerGameBalance));
     }
 
-    public async ValueTask<decimal> GetAsync(PlayerBalanceQuery query, CancellationToken cancellationToken = default)
+    public async ValueTask<PlayerBalanceResult> GetAsync(PlayerBalanceQuery query, CancellationToken cancellationToken = default)
     {
         var player = await _player
             .GetAsync(
-                playerCode: query.PlayerCode,
-                cancellationToken: cancellationToken)
+            playerCode: query.PlayerCode,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         var gameProviderId = await _gameProvider
             .GetGameProviderIdAsync(
-                gameProviderCode: query.GameProviderCode,
-                cancellationToken: cancellationToken)
+            gameProviderCode: query.GameProviderCode,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         await _verification
             .VerifyBrandCurrencyAsync(
-                brandId: player.BrandId,
-                gameProviderId: gameProviderId,
-                currencyCode: player.DefaultWalletCurrencyCode,
-                cancellationToken: cancellationToken)
+            brandId: player.BrandId,
+            gameProviderId: gameProviderId,
+            currencyCode: player.DefaultWalletCurrencyCode,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         var result = await _playerGameBalance
@@ -55,6 +55,9 @@ internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, decimal
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        return result.FreeBalance;
+        return new PlayerBalanceResult(
+            Balance: result.Balance,
+            FreeBalance: result.FreeBalance,
+            OutstandingBalance: result.OutstandingBalance);
     }
 }

@@ -24,10 +24,9 @@ public class FundOutGetServiceUnitTest
         var fakePlayerGameBalance = Substitute.For<IPlayerGameBalance>();
 
         var query = new FundOutCommand(
-            GameProviderType.Kaiyuan,
-            "4ucmqplxb029",
-            1
-            );
+            PlayerCode: "4ucmqplxb029",
+            GameProviderCode: "ky",
+            Amount: 1);
 
         var player = new PlayerInfo(
             Guid.NewGuid(),
@@ -42,15 +41,15 @@ public class FundOutGetServiceUnitTest
             "CNY");
         _ = fakePlayer
             .GetAsync(
-                playerCode: Arg.Is(query.PlayerCode),
-                cancellationToken: Arg.Any<CancellationToken>())
+            playerCode: Arg.Is(query.PlayerCode),
+            cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(player));
 
         var gameProviderId = Guid.NewGuid();
         _ = fakeGameProvider
             .GetGameProviderIdAsync(
-                gameProviderCode: Arg.Is(query.GameProviderCode),
-                cancellationToken: Arg.Any<CancellationToken>())
+            gameProviderCode: Arg.Is(query.GameProviderCode),
+            cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(gameProviderId));
 
         var gameProvider = new GameProviderInfo(
@@ -68,8 +67,8 @@ public class FundOutGetServiceUnitTest
             Localization: null);
         _ = fakeGameProvider
             .GetAsync(
-                gameProviderId: Arg.Is(gameProviderId),
-                cancellationToken: Arg.Any<CancellationToken>())
+            gameProviderId: Arg.Is(gameProviderId),
+            cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(gameProvider));
 
         var platformBalance = new PlatformBalanceInfo(
@@ -78,7 +77,7 @@ public class FundOutGetServiceUnitTest
             OutstandingBalance: 1000m);
         _ = fakePlayerGameBalance
             .GetBalanceAsync(
-            gameProviderCode: Arg.Is(query.GameProviderCode),
+            gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
             playerCode: Arg.Is(player.PlayerCode),
             currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
             .Returns(platformBalance);
@@ -86,7 +85,8 @@ public class FundOutGetServiceUnitTest
         var balance = 10.0m;
         _ = fakeCashServiceClient
             .GetBalanceAsync(
-                Arg.Is(player.DefaultWalletId))
+            walletId: Arg.Is(player.DefaultWalletId),
+            cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(balance));
 
         var fakeService = new FundOutCommandService(
@@ -102,21 +102,21 @@ public class FundOutGetServiceUnitTest
         _ = fakeVerification
             .Received(1)
             .VerifyPlayerAsync(
-               player: Arg.Is(player),
-               gameProvider: Arg.Is(gameProvider),
-               cancellationToken: Arg.Any<CancellationToken>());
+            player: Arg.Is(player),
+            gameProvider: Arg.Is(gameProvider),
+            cancellationToken: Arg.Any<CancellationToken>());
 
         _ = fakeGameFundTransferClient
             .Received(1)
             .FundOutAsync(
-                gameProviderId: Arg.Is(gameProviderId),
-                gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
-                brandCode: Arg.Is(player.BrandCode),
-                playerCode: Arg.Is(player.PlayerCode),
-                walletId: Arg.Is(player.DefaultWalletId),
-                currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
-                amount: Arg.Is(query.Amount),
-                cancellationToken: Arg.Any<CancellationToken>());
+            gameProviderId: Arg.Is(gameProviderId),
+            gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+            brandCode: Arg.Is(player.BrandCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            walletId: Arg.Is(player.DefaultWalletId),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+            amount: Arg.Is(query.Amount),
+            cancellationToken: Arg.Any<CancellationToken>());
     }
 
     [Fact]

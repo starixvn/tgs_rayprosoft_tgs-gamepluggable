@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.Pluggable.ViewModels.Operator;
@@ -14,20 +12,13 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Operator;
 [ApiController]
 public class PlayerController : ControllerBase
 {
-    private readonly ILogger<PlayerController> _logger;
-
-    public PlayerController(ILogger<PlayerController> logger)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
     /// <summary>
-    /// Games the provider fund in asynchronous(GameProvider -> Main Wallet).
+    /// Games the provider fund in asynchronous.(GameProvider -> Main Wallet)
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="playerCode">The player code.</param>
     /// <param name="gameProviderCode">The game provider code.</param>
-    /// <param name="model">The model.</param>
+    /// <param name="source">The source.</param>
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
@@ -38,36 +29,30 @@ public class PlayerController : ControllerBase
     ///         }
     /// </remarks>
     [HttpPost("fundin/{playerCode}/{gameProviderCode}")]
-    public async ValueTask GameProviderFundInAsync(
+    public ValueTask GameProviderFundInAsync(
         [FromServices] ICommandService<FundInCommand> service,
         string playerCode,
         string gameProviderCode,
-        [FromBody] GameProviderFundViewModel model)
+        [FromBody] GameProviderFundViewModel source)
     {
-        _logger.Log(LogLevel.Information, new EventId(1000, nameof(PlayerController)),
-            new
-            {
-                PlayerCode = playerCode,
-                GameProviderCode = gameProviderCode,
-                Request = model,
-                ReceiveTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).ToString("O")
-            },
-            null,
-            (state, ex) => JsonSerializer.Serialize(state));
+        var query = new FundInCommand(
+            PlayerCode: playerCode,
+            GameProviderCode: gameProviderCode,
+            Amount: source.Amount);
 
-        await service.ExecuteAsync(new(
-            playerCode,
-            gameProviderCode.ToUpper(),
-            model.Amount)).ConfigureAwait(false);
+        return service
+            .ExecuteAsync(
+            query,
+            cancellationToken: HttpContext.RequestAborted);
     }
 
     /// <summary>
-    /// Games the provider fund out asynchronous(Main Wallet -> GameProvider).
+    /// Games the provider fund out asynchronous.(Main Wallet -> GameProvider)
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="playerCode">The player code.</param>
     /// <param name="gameProviderCode">The game provider code.</param>
-    /// <param name="model">The model.</param>
+    /// <param name="source">The source.</param>
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
@@ -78,27 +63,21 @@ public class PlayerController : ControllerBase
     ///         }
     /// </remarks>
     [HttpPost("fundout/{playerCode}/{gameProviderCode}")]
-    public async ValueTask GameProviderFundOutAsync(
-            [FromServices] ICommandService<FundOutCommand> service,
-            string playerCode,
-            string gameProviderCode,
-            [FromBody] GameProviderFundViewModel model)
+    public ValueTask GameProviderFundOutAsync(
+        [FromServices] ICommandService<FundOutCommand> service,
+        string playerCode,
+        string gameProviderCode,
+        [FromBody] GameProviderFundViewModel source)
     {
-        _logger.Log(LogLevel.Information, new EventId(1000, nameof(PlayerController)),
-            new
-            {
-                PlayerCode = playerCode,
-                GameProviderCode = gameProviderCode,
-                Request = model,
-                ReceiveTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).ToString("O")
-            },
-            null,
-            (state, ex) => JsonSerializer.Serialize(state));
+        var query = new FundOutCommand(
+            PlayerCode: playerCode,
+            GameProviderCode: gameProviderCode,
+            Amount: source.Amount);
 
-        await service.ExecuteAsync(new(
-            playerCode,
-            gameProviderCode.ToUpper(),
-            model.Amount)).ConfigureAwait(false);
+        return service
+            .ExecuteAsync(
+            query,
+            cancellationToken: HttpContext.RequestAborted);
     }
 
     /// <summary>
@@ -115,19 +94,29 @@ public class PlayerController : ControllerBase
     ///         /op/player/balance/4ucmqplxb029/KY
     /// </remarks>
     [HttpGet("balance/{playerCode}/{gameProviderCode}")]
-    public ValueTask<decimal> GetBalanceAsync(
-        [FromServices] IGetService<PlayerBalanceQuery, decimal> service,
+    public async ValueTask<decimal> GetBalanceAsync(
+        [FromServices] IGetService<PlayerBalanceQuery, PlayerBalanceResult> service,
         string playerCode,
-        string gameProviderCode
-        ) => service.GetAsync(new(
-            playerCode,
-            gameProviderCode.ToUpper()));
+        string gameProviderCode)
+    {
+        var query = new PlayerBalanceQuery(
+            PlayerCode: playerCode,
+            GameProviderCode: gameProviderCode);
+
+        var result = await service
+            .GetAsync(
+            query: query,
+            cancellationToken: HttpContext.RequestAborted)
+            .ConfigureAwait(false);
+
+        return result.FreeBalance;
+    }
 
     /// <summary>
-    /// Gets the game url asynchronous.
+    /// Gets the game URL asynchronous.
     /// </summary>
     /// <param name="service">The service.</param>
-    /// <param name="model">The model.</param>
+    /// <param name="source">The source.</param>
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
@@ -146,45 +135,42 @@ public class PlayerController : ControllerBase
     [HttpPost("gameurl")]
     public ValueTask<Uri> GetGameUrlAsync(
         [FromServices] IGetService<GameUrlQuery, Uri> service,
-        [FromBody] GameProviderGameUrlViewModel model)
+        [FromBody] GameProviderGameUrlViewModel source)
     {
-        _logger.Log(LogLevel.Information, new EventId(1000, nameof(PlayerController)),
-            new
-            {
-                Request = model,
-                ReceiveTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).ToString("O")
-            },
-            null,
-            (state, ex) => JsonSerializer.Serialize(state));
+        var query = new GameUrlQuery(
+            PlayerCode: source.PlayerCode,
+            LoginRecordId: source.LoginRecordId,
+            PlatformType: source.IsMobile ? GameProvidersClientPlatformType.Mobile : GameProvidersClientPlatformType.Desktop,
+            GameId: source.GameId,
+            Language: source.Language,
+            IpAddress: source.IpAddress,
+            BackUrl: source.BackUrl);
+
         return service
-              .GetAsync(new(
-                  model.PlayerCode,
-                  model.LoginRecordId,
-                  model.IsMobile ? GameProvidersClientPlatformType.Mobile : GameProvidersClientPlatformType.Desktop,
-                  model.GameId,
-                  model.Language,
-                  model.IpAddress,
-                  model.BackUrl));
+            .GetAsync(
+            query: query,
+            cancellationToken: HttpContext.RequestAborted);
     }
 
+    /// <summary>
+    /// ses the M01 login asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="source">The source.</param>
+    /// <returns></returns>
     [HttpPost("gameurl/sm01")]
     public async ValueTask<SM01PlatformLoginResult> SM01LoginAsync(
         [FromServices] IGetService<GameSM01PlatformLoginQuery, GameSM01PlatformLoginInfo> service,
-        [FromBody] GameSM01LoginViewModel model)
+        [FromBody] GameSM01LoginViewModel source)
     {
-        _logger.Log(LogLevel.Information, new EventId(1000, nameof(PlayerController)),
-            new
-            {
-                Request = model,
-                ReceiveTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(+8)).ToString("O")
-            },
-            null,
-            (state, ex) => JsonSerializer.Serialize(state));
+        var query = new GameSM01PlatformLoginQuery(
+            PlayerCode: source.PlayerCode);
 
         var info = await service
-              .GetAsync(new(
-                  model.PlayerCode))
-              .ConfigureAwait(false);
+            .GetAsync(
+            query: query,
+            cancellationToken: HttpContext.RequestAborted)
+            .ConfigureAwait(false);
 
         return new SM01PlatformLoginResult(info.ApiUrl, info.MerchantId, info.CustomerName, info.Timestamp, info.Sign);
     }

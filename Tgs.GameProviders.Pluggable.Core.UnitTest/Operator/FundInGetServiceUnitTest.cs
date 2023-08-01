@@ -23,7 +23,7 @@ public class FundInGetServiceUnitTest
 
         var query = new FundInCommand(
             "4ucmqplxb029",
-            GameProviderType.Kaiyuan,
+            "ky",
             1);
 
         var player = new PlayerInfo(
@@ -39,14 +39,17 @@ public class FundInGetServiceUnitTest
             "CNY");
         _ = fakePlayer
             .GetAsync(
-                Arg.Is(query.PlayerCode))
+            Arg.Is(query.PlayerCode),
+            Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(player));
 
         var gameProviderId = Guid.NewGuid();
         _ = fakeGameProvider
             .GetGameProviderIdAsync(
-                Arg.Is(query.GameProviderCode))
+            Arg.Is(query.GameProviderCode),
+            Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(gameProviderId));
+
         var gameProvider = new GameProviderInfo(
             GameProviderId: gameProviderId,
             GameProviderCode: GameProviderType.Kaiyuan,
@@ -62,7 +65,8 @@ public class FundInGetServiceUnitTest
             Localization: null);
         _ = fakeGameProvider
             .GetAsync(
-                Arg.Is(gameProviderId))
+            Arg.Is(gameProviderId),
+            Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(gameProvider));
 
         var platformBalance = new PlatformBalanceInfo(
@@ -71,7 +75,7 @@ public class FundInGetServiceUnitTest
             OutstandingBalance: 90.0m);
         _ = fakePlayerGameBalance
             .GetBalanceAsync(
-            gameProviderCode: Arg.Is(query.GameProviderCode),
+            gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
             playerCode: Arg.Is(player.PlayerCode),
             currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
             .Returns(platformBalance);
@@ -90,21 +94,21 @@ public class FundInGetServiceUnitTest
         _ = fakeVerification
             .Received(1)
             .VerifyPlayerAsync(
-               player: Arg.Is(player),
-               gameProvider: Arg.Is(gameProvider),
-               cancellationToken: Arg.Any<CancellationToken>());
+            player: Arg.Is(player),
+            gameProvider: Arg.Is(gameProvider),
+            cancellationToken: Arg.Any<CancellationToken>());
 
         _ = fakeGameFundTransferClient
             .Received(1)
             .FundInAsync(
-                gameProviderId: Arg.Is(gameProviderId),
-                gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
-                brandCode: Arg.Is(player.BrandCode),
-                playerCode: Arg.Is(player.PlayerCode),
-                walletId: Arg.Is(player.DefaultWalletId),
-                currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
-                amount: Arg.Is(query.Amount),
-                cancellationToken: Arg.Any<CancellationToken>());
+            gameProviderId: Arg.Is(gameProviderId),
+            gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+            brandCode: Arg.Is(player.BrandCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            walletId: Arg.Is(player.DefaultWalletId),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+            amount: Arg.Is(query.Amount),
+            cancellationToken: Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -118,7 +122,7 @@ public class FundInGetServiceUnitTest
 
         var query = new FundInCommand(
             "4ucmqplxb029",
-            GameProviderType.SM01,
+            "sm01",
             123M);
 
         var player = new PlayerInfo(
@@ -134,13 +138,15 @@ public class FundInGetServiceUnitTest
             "CNY");
         _ = fakePlayer
             .GetAsync(
-                Arg.Is(query.PlayerCode))
+            Arg.Is(query.PlayerCode),
+            Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(player));
 
         var gameProviderId = Guid.NewGuid();
         _ = fakeGameProvider
             .GetGameProviderIdAsync(
-                Arg.Is(query.GameProviderCode))
+            Arg.Is(query.GameProviderCode),
+            Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(gameProviderId));
 
         var gameProvider = new GameProviderInfo(
@@ -158,7 +164,8 @@ public class FundInGetServiceUnitTest
             Localization: null);
         _ = fakeGameProvider
             .GetAsync(
-                Arg.Is(gameProviderId))
+            Arg.Is(gameProviderId),
+            Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(gameProvider));
 
         var platformBalance = new PlatformBalanceInfo(
@@ -167,7 +174,7 @@ public class FundInGetServiceUnitTest
             OutstandingBalance: 876.544m);
         _ = fakePlayerGameBalance
             .GetBalanceAsync(
-            gameProviderCode: Arg.Is(query.GameProviderCode),
+            gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
             playerCode: Arg.Is(player.PlayerCode),
             currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
             .Returns(platformBalance);
@@ -186,20 +193,20 @@ public class FundInGetServiceUnitTest
         _ = fakeVerification
             .Received(1)
             .VerifyPlayerAsync(
-               player: Arg.Is(player),
-               gameProvider: Arg.Is(gameProvider),
-               cancellationToken: Arg.Any<CancellationToken>());
+            player: Arg.Is(player),
+            gameProvider: Arg.Is(gameProvider),
+            cancellationToken: Arg.Any<CancellationToken>());
 
         _ = fakeGameFundTransferClient
             .Received(1)
             .FundInAsync(
-                gameProviderId: Arg.Is(gameProviderId),
-                gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
-                brandCode: Arg.Is(player.BrandCode),
-                playerCode: Arg.Is(player.PlayerCode),
-                walletId: Arg.Is(player.DefaultWalletId),
-                currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
-                amount: Arg.Is(123M),
-                cancellationToken: Arg.Any<CancellationToken>());
+            gameProviderId: Arg.Is(gameProviderId),
+            gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+            brandCode: Arg.Is(player.BrandCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            walletId: Arg.Is(player.DefaultWalletId),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+            amount: Arg.Is(123M),
+            cancellationToken: Arg.Any<CancellationToken>());
     }
 }

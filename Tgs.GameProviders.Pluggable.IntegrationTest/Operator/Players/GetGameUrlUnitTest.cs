@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -31,16 +32,18 @@ public class GetGameUrlUnitTest
                   var fakeGameUrlGetService = Substitute.For<IGetService<GameUrlQuery, Uri>>();
 
                   var query = new GameUrlQuery(
-                      playerCode,
-                      loginRecordId,
-                      platformType,
-                      gameId,
-                      language,
-                      ipAddress,
-                      backUrl);
+                      PlayerCode: playerCode,
+                      LoginRecordId: loginRecordId,
+                      PlatformType: platformType,
+                      GameId: gameId,
+                      Language: language,
+                      IpAddress: ipAddress,
+                      BackUrl: backUrl);
+
                   _ = fakeGameUrlGetService
                    .GetAsync(
-                      Arg.Is(query))
+                      query: Arg.Is(query),
+                      cancellationToken: Arg.Any<CancellationToken>())
                    .Returns(ValueTask.FromResult<Uri>(gameurl));
 
                   _ = services.AddSingleton(fakeGameUrlGetService);
@@ -51,14 +54,16 @@ public class GetGameUrlUnitTest
 
         var sut = new GameProvidersOperatorPluggableClient(httpClient);
 
-        var actual = await sut.GetGameUrlAsync(
+        var actual = await sut
+            .GetGameUrlAsync(
             playerCode,
             loginRecordId,
             isMobile,
             gameId,
             language,
             ipAddress,
-            backUrl).ConfigureAwait(false);
+            backUrl)
+            .ConfigureAwait(false);
 
         Assert.NotNull(actual);
         Assert.Equal(gameurl, actual);

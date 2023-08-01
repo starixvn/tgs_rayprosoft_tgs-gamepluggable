@@ -42,20 +42,20 @@ internal class FundOutCommandService : ICommandService<FundOutCommand>
 
         var player = await _player
             .GetAsync(
-                command.PlayerCode,
-                cancellationToken: cancellationToken)
+            playerCode: command.PlayerCode,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         var gameProviderId = await _gameProvider
             .GetGameProviderIdAsync(
-                command.GameProviderCode,
-                cancellationToken)
+            gameProviderCode: command.GameProviderCode,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         var gameProvider = await _gameProvider
             .GetAsync(
-                gameProviderId,
-                cancellationToken)
+            gameProviderId: gameProviderId,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         if (!gameProvider.TransferWallet)
@@ -65,18 +65,24 @@ internal class FundOutCommandService : ICommandService<FundOutCommand>
 
         await _verification
             .VerifyPlayerAsync(
-                player: player,
-                gameProvider: gameProvider,
-                cancellationToken: cancellationToken)
+            player: player,
+            gameProvider: gameProvider,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        _ = await _playerGameBalance.GetBalanceAsync(
-                gameProvider.GameProviderCode,
-                player.PlayerCode,
-                player.DefaultWalletCurrencyCode,
-                cancellationToken: cancellationToken).ConfigureAwait(false);
+        _ = await _playerGameBalance
+            .GetBalanceAsync(
+            gameProvider.GameProviderCode,
+            player.PlayerCode,
+            player.DefaultWalletCurrencyCode,
+            cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
-        var playerBalance = await _cashServiceClient.GetBalanceAsync(player.DefaultWalletId, cancellationToken).ConfigureAwait(false);
+        var playerBalance = await _cashServiceClient
+            .GetBalanceAsync(
+            walletId: player.DefaultWalletId,
+            cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
         if (playerBalance - command.Amount < 0)
         {
@@ -90,14 +96,14 @@ internal class FundOutCommandService : ICommandService<FundOutCommand>
 
         _ = await _gameFundTransferClient
             .FundOutAsync(
-                gameProviderId: gameProvider.GameProviderId,
-                gameProviderCode: gameProvider.GameProviderCode,
-                brandCode: player.BrandCode,
-                playerCode: player.PlayerCode,
-                walletId: player.DefaultWalletId,
-                currencyCode: player.DefaultWalletCurrencyCode,
-                amount: amount,
-                cancellationToken: cancellationToken)
+            gameProviderId: gameProvider.GameProviderId,
+            gameProviderCode: gameProvider.GameProviderCode,
+            brandCode: player.BrandCode,
+            playerCode: player.PlayerCode,
+            walletId: player.DefaultWalletId,
+            currencyCode: player.DefaultWalletCurrencyCode,
+            amount: amount,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
 }

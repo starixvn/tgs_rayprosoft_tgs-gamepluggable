@@ -37,7 +37,6 @@ internal class PlayerGameBalance : IPlayerGameBalance
                 Balance: 0.0m,
                 FreeBalance: 0.0m,
                 OutstandingBalance: 0.0m);
-
         }
 
         var result = await _gameCurrencyClient

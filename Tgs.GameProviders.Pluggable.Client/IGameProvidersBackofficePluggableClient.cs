@@ -25,6 +25,8 @@ public interface IGameProvidersBackofficePluggableClient
 
     ValueTask<decimal> GetBalanceAsync(string playerCode, string gameProviderCode, CancellationToken cancellationToken = default);
 
+    ValueTask<PlayerBalanceInfoViewModel> GetBalanceInfoAsync(string playerCode, string gameProviderCode, CancellationToken cancellationToken = default);
+
     Task KickPlayerAsync(string playerCode, CancellationToken cancellationToken = default);
 
     Task KickPlayerAsync(string playerCode, string gameProviderCode, CancellationToken cancellationToken = default);
