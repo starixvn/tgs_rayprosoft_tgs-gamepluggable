@@ -13,12 +13,12 @@ public interface IVerification
         string currencyCode,
         CancellationToken cancellationToken = default);
 
-    ValueTask VerifyPlayerAsync(
+    ValueTask VerifyPlayerBalanceAsync(
         PlayerInfo player,
         GameProviderInfo gameProvider,
         CancellationToken cancellationToken = default);
 
-    ValueTask VerifyPlayerBalanceAsync(
+    ValueTask VerifyPlayerFundAsync(
             PlayerInfo player,
         GameProviderInfo gameProvider,
         CancellationToken cancellationToken = default);

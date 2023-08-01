@@ -91,9 +91,9 @@ public class VerificationRepositoryVerifyPlayerUnitTest
         var repository = new VerificationRepository(
             fakeClinet);
 
-        _ = await Assert.ThrowsAsync<VerifyPlayerException>(
+        _ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
             () => repository
-             .VerifyPlayerAsync(
+             .VerifyPlayerFundAsync(
                 player: player,
                 gameProvider: gameProvider)
              .AsTask())
@@ -184,9 +184,9 @@ public class VerificationRepositoryVerifyPlayerUnitTest
         var repository = new VerificationRepository(
             fakeClinet);
 
-        _ = await Assert.ThrowsAsync<VerifyPlayerException>(
+        _ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
             () => repository
-             .VerifyPlayerAsync(
+             .VerifyPlayerFundAsync(
                 player: player,
                 gameProvider: gameProvider)
              .AsTask())
@@ -277,9 +277,9 @@ public class VerificationRepositoryVerifyPlayerUnitTest
         var repository = new VerificationRepository(
             fakeClinet);
 
-        _ = await Assert.ThrowsAsync<VerifyPlayerException>(
+        _ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
             () => repository
-             .VerifyPlayerAsync(
+             .VerifyPlayerFundAsync(
                 player: player,
                 gameProvider: gameProvider)
              .AsTask())
@@ -370,9 +370,9 @@ public class VerificationRepositoryVerifyPlayerUnitTest
         var repository = new VerificationRepository(
             fakeClinet);
 
-        _ = await Assert.ThrowsAsync<VerifyPlayerException>(
+        _ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
             () => repository
-             .VerifyPlayerAsync(
+             .VerifyPlayerFundAsync(
                 player: player,
                 gameProvider: gameProvider)
              .AsTask())
@@ -463,9 +463,9 @@ public class VerificationRepositoryVerifyPlayerUnitTest
         var repository = new VerificationRepository(
             fakeClinet);
 
-        _ = await Assert.ThrowsAsync<VerifyPlayerException>(
+        _ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
             () => repository
-             .VerifyPlayerAsync(
+             .VerifyPlayerFundAsync(
                 player: player,
                 gameProvider: gameProvider)
              .AsTask())
@@ -556,9 +556,9 @@ public class VerificationRepositoryVerifyPlayerUnitTest
         var repository = new VerificationRepository(
             fakeClinet);
 
-        _ = await Assert.ThrowsAsync<VerifyPlayerException>(
+        _ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
             () => repository
-             .VerifyPlayerAsync(
+             .VerifyPlayerFundAsync(
                 player: player,
                 gameProvider: gameProvider)
              .AsTask())
@@ -656,7 +656,7 @@ public class VerificationRepositoryVerifyPlayerUnitTest
             fakeClinet);
 
         await repository
-           .VerifyPlayerAsync(
+           .VerifyPlayerFundAsync(
                player,
                gameProvider)
            .ConfigureAwait(false);
@@ -752,9 +752,9 @@ public class VerificationRepositoryVerifyPlayerUnitTest
         var repository = new VerificationRepository(
             fakeClinet);
 
-        _ = await Assert.ThrowsAsync<VerifyPlayerException>(
+        _ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
             () => repository
-             .VerifyPlayerAsync(
+             .VerifyPlayerFundAsync(
                 player: player,
                 gameProvider: gameProvider)
              .AsTask())
@@ -845,9 +845,9 @@ public class VerificationRepositoryVerifyPlayerUnitTest
         var repository = new VerificationRepository(
             fakeClinet);
 
-        _ = await Assert.ThrowsAsync<VerifyPlayerException>(
+        _ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
             () => repository
-             .VerifyPlayerAsync(
+             .VerifyPlayerFundAsync(
                 player: player,
                 gameProvider: gameProvider)
              .AsTask())
@@ -944,9 +944,9 @@ public class VerificationRepositoryVerifyPlayerUnitTest
         var repository = new VerificationRepository(
             fakeClinet);
 
-        _ = await Assert.ThrowsAsync<VerifyPlayerException>(
+        _ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
             () => repository
-             .VerifyPlayerAsync(
+             .VerifyPlayerFundAsync(
                 player: player,
                 gameProvider: gameProvider)
              .AsTask())

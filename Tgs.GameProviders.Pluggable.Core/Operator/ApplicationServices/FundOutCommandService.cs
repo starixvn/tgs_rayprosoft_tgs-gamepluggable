@@ -64,7 +64,7 @@ internal class FundOutCommandService : ICommandService<FundOutCommand>
         }
 
         await _verification
-            .VerifyPlayerAsync(
+            .VerifyPlayerFundAsync(
             player: player,
             gameProvider: gameProvider,
             cancellationToken: cancellationToken)

@@ -101,7 +101,7 @@ public class FundOutGetServiceUnitTest
 
         _ = fakeVerification
             .Received(1)
-            .VerifyPlayerAsync(
+            .VerifyPlayerFundAsync(
             player: Arg.Is(player),
             gameProvider: Arg.Is(gameProvider),
             cancellationToken: Arg.Any<CancellationToken>());
@@ -203,7 +203,7 @@ public class FundOutGetServiceUnitTest
 
         _ = fakeVerification
             .Received(1)
-            .VerifyPlayerAsync(
+            .VerifyPlayerFundAsync(
                player: Arg.Is(player),
                gameProvider: Arg.Is(gameProvider),
                cancellationToken: Arg.Any<CancellationToken>());

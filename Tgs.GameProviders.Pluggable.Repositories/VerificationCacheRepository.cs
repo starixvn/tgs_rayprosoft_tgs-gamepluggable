@@ -42,25 +42,6 @@ internal class VerificationCacheRepository : IVerification
         }
     }
 
-    public async ValueTask VerifyPlayerAsync(
-        PlayerInfo player,
-        GameProviderInfo gameProvider,
-        CancellationToken cancellationToken = default)
-    {
-        var key = $"game:pluggable:verificationcache:player:{player.PlayerCode}:{gameProvider.GameProviderCode}";
-        if (!_memoryCache.TryGetValue(key, out _))
-        {
-            await _verification
-                .VerifyPlayerAsync(
-                player: player,
-                gameProvider: gameProvider,
-                cancellationToken: cancellationToken)
-                .ConfigureAwait(false);
-
-            _ = _memoryCache.Set(key, DateTime.UtcNow, _absoluteExpiration);
-        }
-    }
-
     public async ValueTask VerifyPlayerBalanceAsync(
         PlayerInfo player,
         GameProviderInfo gameProvider,
@@ -71,6 +52,25 @@ internal class VerificationCacheRepository : IVerification
         {
             await _verification
                 .VerifyPlayerBalanceAsync(
+                player: player,
+                gameProvider: gameProvider,
+                cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
+
+            _ = _memoryCache.Set(key, DateTime.UtcNow, _absoluteExpiration);
+        }
+    }
+
+    public async ValueTask VerifyPlayerFundAsync(
+            PlayerInfo player,
+        GameProviderInfo gameProvider,
+        CancellationToken cancellationToken = default)
+    {
+        var key = $"game:pluggable:verificationcache:player:fund:{player.PlayerCode}:{gameProvider.GameProviderCode}";
+        if (!_memoryCache.TryGetValue(key, out _))
+        {
+            await _verification
+                .VerifyPlayerFundAsync(
                 player: player,
                 gameProvider: gameProvider,
                 cancellationToken: cancellationToken)
