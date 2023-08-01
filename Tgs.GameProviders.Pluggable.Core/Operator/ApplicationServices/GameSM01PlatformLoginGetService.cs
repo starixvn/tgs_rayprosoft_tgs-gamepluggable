@@ -35,22 +35,22 @@ internal class GameSM01PlatformLoginGetService : IGetService<GameSM01PlatformLog
     {
         var player = await _player
             .GetAsync(
-                playerCode: query.PlayerCode,
-                cancellationToken: cancellationToken)
+            playerCode: query.PlayerCode,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         var gameProviderId = await _gameProvider
             .GetGameProviderIdAsync(
-                gameProviderCode: GameProviderType.SM01,
-                cancellationToken: cancellationToken)
+            gameProviderCode: GameProviderType.SM01,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         var games = await _gameCommandClient
             .GameQueryAsync(
-                gameProviderId: gameProviderId,
-                cancellationToken: cancellationToken)
+            gameProviderId: gameProviderId,
+            cancellationToken: cancellationToken)
             .ToArrayAsync(
-                cancellationToken: cancellationToken)
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false)
             ?? Enumerable.Empty<GameInfo>();
 
@@ -58,14 +58,16 @@ internal class GameSM01PlatformLoginGetService : IGetService<GameSM01PlatformLog
 
         await _verification
             .VerifyPlayerGameUrlAsync(
-                player: player,
-                game: game,
-                cancellationToken: cancellationToken)
+            player: player,
+            game: game,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         var info = await _gameUrl
-                .GetGamePlatformLoginBySM01Async(query.PlayerCode, cancellationToken)
-                .ConfigureAwait(false);
+            .GetGamePlatformLoginBySM01Async(
+            playerCode: player.PlayerCode,
+            cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
         return new GameSM01PlatformLoginInfo(info.ApiUrl, info.MerchantId, info.CustomerName, info.Timestamp, info.Sign);
     }

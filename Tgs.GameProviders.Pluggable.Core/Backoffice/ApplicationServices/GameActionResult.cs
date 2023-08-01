@@ -1,9 +1,9 @@
 ﻿using System;
 using Tgs.GameCommand.Common;
 
-namespace Tgs.GameProviders.Pluggable.Core.Models;
+namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
-public record GameActionInfo(
+public record GameActionResult(
     Guid Id,
     Guid RoundId,
     string PlayerCode,

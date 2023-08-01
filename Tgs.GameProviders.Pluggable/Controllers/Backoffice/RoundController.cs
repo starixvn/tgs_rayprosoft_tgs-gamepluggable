@@ -5,7 +5,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
-using Tgs.GameProviders.Pluggable.Core.Models;
 using Tgs.GameProviders.Pluggable.ViewModels;
 using Tgs.GameRounds.Common;
 using Tgs.ServiceUtility;
@@ -16,58 +15,71 @@ namespace Tgs.GameProviders.Pluggable.Controllers.Backoffice;
 [ApiController]
 public class RoundController : ControllerBase
 {
+    /// <summary>
+    /// Adds the company round asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="source">The source.</param>
+    /// <returns></returns>
     [HttpPut("addCompanyRound")]
     public ValueTask AddCompanyRoundAsync(
-        [FromServices] ICommandService<AddCompanyRoundCommand> commandService,
-        [FromBody] AddCompanyRoundViewModel viewModel)
-    => commandService.ExecuteAsync(new AddCompanyRoundCommand
+        [FromServices] ICommandService<AddCompanyRoundCommand> service,
+        [FromBody] AddCompanyRoundViewModel source)
+    => service.ExecuteAsync(new AddCompanyRoundCommand
     {
-        BrandId = viewModel.BrandId,
-        PlayerCode = viewModel.PlayerCode,
-        WalletId = viewModel.WalletId,
-        GameId = viewModel.GameId,
-        GameProviderId = viewModel.GameProviderId,
-        ExternalRoundId = viewModel.ExternalRoundId,
-        ExternalCreatedOn = viewModel.ExternalCreatedOn,
-        ExternalClosedOn = viewModel.ExternalClosedOn,
-        ClientRoundStatus = (short)viewModel.ClientRoundStatus,
-        CurrencyCode = viewModel.CurrencyCode,
-        BetAmount = viewModel.BetAmount,
-        ValidBetAmount = viewModel.ValidBetAmount,
-        SettleAmount = viewModel.SettleAmount,
-        Turnover = viewModel.Turnover,
-        Commission = viewModel.Commission,
-        CompanyWinLoss = viewModel.CompanyWinLoss,
-        OperatorId = viewModel.OperatorId,
-        Remark = viewModel.Remark,
+        BrandId = source.BrandId,
+        PlayerCode = source.PlayerCode,
+        WalletId = source.WalletId,
+        GameId = source.GameId,
+        GameProviderId = source.GameProviderId,
+        ExternalRoundId = source.ExternalRoundId,
+        ExternalCreatedOn = source.ExternalCreatedOn,
+        ExternalClosedOn = source.ExternalClosedOn,
+        ClientRoundStatus = (short)source.ClientRoundStatus,
+        CurrencyCode = source.CurrencyCode,
+        BetAmount = source.BetAmount,
+        ValidBetAmount = source.ValidBetAmount,
+        SettleAmount = source.SettleAmount,
+        Turnover = source.Turnover,
+        Commission = source.Commission,
+        CompanyWinLoss = source.CompanyWinLoss,
+        OperatorId = source.OperatorId,
+        Remark = source.Remark,
     }, HttpContext.RequestAborted);
 
+    /// <summary>
+    /// Adjusts the closed game round asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="roundId">The round identifier.</param>
+    /// <param name="source">The source.</param>
+    /// <returns></returns>
     [HttpPut("{roundId}/adjustclosedRound")]
     public ValueTask AdjustClosedGameRoundAsync(
-        [FromServices] ICommandService<AdjustClosedRoundCommand> commandService,
+        [FromServices] ICommandService<AdjustClosedRoundCommand> service,
         Guid roundId,
-        [FromBody] AdjustClosedRoundViewModel viewModel)
-        => commandService.ExecuteAsync(new AdjustClosedRoundCommand()
+        [FromBody] AdjustClosedRoundViewModel source)
+        => service.ExecuteAsync(new AdjustClosedRoundCommand()
         {
             RoundId = roundId,
-            BetAmount = viewModel.BetAmount,
-            ValidBetAmount = viewModel.ValidBetAmount,
-            SettleAmount = viewModel.SettleAmount,
-            Commission = viewModel.Commission,
-            Turnover = viewModel.Turnover,
-            WinLoss = viewModel.WinLoss,
-            RoundClientStatus = (GameRoundClientStatus)viewModel.ClientRoundStatus,
-            ExternalClosedOn = viewModel.ExternalClosedOn,
-            OperatorId = viewModel.OperatorId,
-            Remark = viewModel.Remark,
-            AdjustAmount = viewModel.AdjustAmount
+            BetAmount = source.BetAmount,
+            ValidBetAmount = source.ValidBetAmount,
+            SettleAmount = source.SettleAmount,
+            Commission = source.Commission,
+            Turnover = source.Turnover,
+            WinLoss = source.WinLoss,
+            RoundClientStatus = (GameRoundClientStatus)source.ClientRoundStatus,
+            ExternalClosedOn = source.ExternalClosedOn,
+            OperatorId = source.OperatorId,
+            Remark = source.Remark,
+            AdjustAmount = source.AdjustAmount
         },
         HttpContext.RequestAborted);
 
     /// <summary>
     /// Games the action query asynchronous.
     /// </summary>
-    /// <param name="queryService">The query service.</param>
+    /// <param name="service">The service.</param>
     /// <param name="roundId">The round identifier.</param>
     /// <returns></returns>
     /// <remarks>
@@ -77,41 +89,45 @@ public class RoundController : ControllerBase
     /// </remarks>
     [HttpGet("{roundId}/gameactionquery")]
     public IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(
-                [FromServices] IQueryService<Guid, GameActionInfo> queryService,
-                Guid roundId)
-        => queryService.QueryAsync(roundId)
+        [FromServices] IQueryService<GameActionQuery, GameActionResult> service,
+        Guid roundId)
+    {
+        var query = new GameActionQuery(
+            RoundId: roundId);
+
+        return service.QueryAsync(query)
             .Select(data => new GameActionViewModel(
-                data.Id,
-                data.RoundId,
-                data.PlayerCode,
-                data.ExternalTransactionId,
-                (GameActionViewModelType)data.Type,
-                data.Amount,
-                data.Turnover,
-                data.WinLoss,
-                data.UnsettledBets,
-                data.Balance,
-                data.BetType,
-                data.ExternalBetId,
-                data.ExternalGameActionGroupId,
-                data.ReferencedGameActionId,
-                data.GameActionBatchId,
-                data.RecordedOn,
-                data.SentOn,
-                data.IsClosingRound,
-                data.ClosingRoundExplicitRequest,
-                data.PlayerIp,
-                data.ExtraData,
-                data.JackpotContribution,
-                data.StoredOn
-                ));
+                Id: data.Id,
+                RoundId: data.RoundId,
+                PlayerCode: data.PlayerCode,
+                ExternalTransactionId: data.ExternalTransactionId,
+                Type: (GameActionViewModelType)data.Type,
+                Amount: data.Amount,
+                Turnover: data.Turnover,
+                WinLoss: data.WinLoss,
+                UnsettledBets: data.UnsettledBets,
+                Balance: data.Balance,
+                BetType: data.BetType,
+                ExternalBetId: data.ExternalBetId,
+                ExternalGameActionGroupId: data.ExternalGameActionGroupId,
+                ReferencedGameActionId: data.ReferencedGameActionId,
+                GameActionBatchId: data.GameActionBatchId,
+                RecordedOn: data.RecordedOn,
+                SentOn: data.SentOn,
+                IsClosingRound: data.IsClosingRound,
+                ClosingRoundExplicitRequest: data.ClosingRoundExplicitRequest,
+                PlayerIp: data.PlayerIp,
+                ExtraData: data.ExtraData,
+                JackpotContribution: data.JackpotContribution,
+                StoredOn: data.StoredOn));
+    }
 
     /// <summary>
-    /// Closeds the game round asynchronous.
+    /// Games the round closed asynchronous.
     /// </summary>
-    /// <param name="commandService">The command service.</param>
+    /// <param name="service">The service.</param>
     /// <param name="roundId">The round identifier.</param>
-    /// <param name="viewModel">The view model.</param>
+    /// <param name="source">The source.</param>
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
@@ -133,31 +149,31 @@ public class RoundController : ControllerBase
     /// </remarks>
     [HttpPut("{roundId}/gameroundclosed")]
     public ValueTask GameRoundClosedAsync(
-        [FromServices] ICommandService<GameRoundClosedCommand> commandService,
+        [FromServices] ICommandService<GameRoundClosedCommand> service,
         Guid roundId,
-        [FromBody] GameRoundClosedViewModel viewModel)
-        => commandService.ExecuteAsync(new()
+        [FromBody] GameRoundClosedViewModel source)
+        => service.ExecuteAsync(new()
         {
             RoundId = roundId,
-            BetAmount = viewModel.BetAmount,
-            ValidBetAmount = viewModel.ValidBetAmount,
-            SettleAmount = viewModel.SettleAmount,
-            Commission = viewModel.Commission,
-            Turnover = viewModel.Turnover,
-            WinLoss = viewModel.WinLoss,
-            RoundClientStatus = (GameRoundClientStatus)viewModel.ClientRoundStatus,
-            ExternalClosedOn = viewModel.ExternalClosedOn,
-            OperatorId = viewModel.OperatorId,
-            Remark = viewModel.Remark,
-            AdjustAmount = viewModel.AdjustAmount
+            BetAmount = source.BetAmount,
+            ValidBetAmount = source.ValidBetAmount,
+            SettleAmount = source.SettleAmount,
+            Commission = source.Commission,
+            Turnover = source.Turnover,
+            WinLoss = source.WinLoss,
+            RoundClientStatus = (GameRoundClientStatus)source.ClientRoundStatus,
+            ExternalClosedOn = source.ExternalClosedOn,
+            OperatorId = source.OperatorId,
+            Remark = source.Remark,
+            AdjustAmount = source.AdjustAmount
         });
 
     /// <summary>
-    ///
+    /// Games the round detail get asynchronous.
     /// </summary>
-    /// <param name="getService"></param>
-    /// <param name="roundId"></param>
-    /// <param name="language"></param>
+    /// <param name="service">The service.</param>
+    /// <param name="roundId">The round identifier.</param>
+    /// <param name="language">The language.</param>
     /// <returns></returns>
     /// <remarks>
     /// <b>Example</b><br />
@@ -166,10 +182,10 @@ public class RoundController : ControllerBase
     /// </remarks>
     [HttpGet("{roundId}/gamerounddetail")]
     public async ValueTask<JsonDocument> GameRoundDetailGetAsync(
-        [FromServices] IGetService<RoundDetailQuery, JsonDocument> getService,
+        [FromServices] IGetService<RoundDetailQuery, JsonDocument> service,
         Guid roundId,
         [FromQuery] string language)
-        => await getService.GetAsync(
+        => await service.GetAsync(
             new()
             {
                 RoundId = roundId,
@@ -180,7 +196,7 @@ public class RoundController : ControllerBase
     /// <summary>
     /// Games the round get asynchronous.
     /// </summary>
-    /// <param name="getService">The get service.</param>
+    /// <param name="service">The service.</param>
     /// <param name="roundId">The round identifier.</param>
     /// <returns></returns>
     /// <remarks>
@@ -190,12 +206,17 @@ public class RoundController : ControllerBase
     /// </remarks>
     [HttpGet("{roundId}")]
     public async ValueTask<GameRoundViewModel> GameRoundGetAsync(
-                [FromServices] IGetService<Guid, GameRoundInfo> getService,
-                Guid roundId)
+        [FromServices] IGetService<GameRoundQuery, GameRoundResult> service,
+        Guid roundId)
     {
-        var data = await getService.GetAsync(
-            roundId)
+        var query = new GameRoundQuery(
+            RoundId: roundId);
+        var data = await service
+            .GetAsync(
+            query: query,
+            cancellationToken: HttpContext.RequestAborted)
             .ConfigureAwait(false);
+
         return new GameRoundViewModel()
         {
             RoundId = data.RoundId,

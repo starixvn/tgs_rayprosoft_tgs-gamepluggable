@@ -30,21 +30,21 @@ internal class GameUrlGetService : IGetService<GameUrlQuery, Uri>
     {
         var player = await _player
             .GetAsync(
-                playerCode: query.PlayerCode,
-                cancellationToken: cancellationToken)
+            playerCode: query.PlayerCode,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         var game = await _game
             .GetAsync(
-                gameId: query.GameId,
-                cancellationToken: cancellationToken)
+            gameId: query.GameId,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         await _verification
             .VerifyPlayerGameUrlAsync(
-                player: player,
-                game: game,
-                cancellationToken: cancellationToken)
+            player: player,
+            game: game,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         return game.GameProviderCode switch
@@ -54,7 +54,7 @@ internal class GameUrlGetService : IGetService<GameUrlQuery, Uri>
                 .GetGameUrlByAsiaGamingAsync(
                     game.GameProviderCode,
                     (GameProvidersClientGameType)game.Type,
-                    query.GameId,
+                    game.GameId,
                     player.BrandCode,
                     player.PlayerCode,
                     player.DefaultWalletCurrencyCode,
@@ -71,7 +71,7 @@ internal class GameUrlGetService : IGetService<GameUrlQuery, Uri>
                 .GetGameUrlByBetConstructAsync(
                     game.GameProviderCode,
                     (GameProvidersClientGameType)game.Type,
-                    query.GameId,
+                    game.GameId,
                     player.BrandCode,
                     player.PlayerCode,
                     player.DefaultWalletCurrencyCode,
@@ -88,7 +88,7 @@ internal class GameUrlGetService : IGetService<GameUrlQuery, Uri>
                 .GetGameUrlAsync(
                     game.GameProviderCode,
                     (GameProvidersClientGameType)game.Type,
-                    query.GameId,
+                    game.GameId,
                     player.BrandCode,
                     player.PlayerCode,
                     player.DefaultWalletCurrencyCode,

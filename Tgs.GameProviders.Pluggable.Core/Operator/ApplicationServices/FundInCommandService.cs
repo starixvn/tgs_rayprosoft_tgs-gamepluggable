@@ -68,9 +68,9 @@ internal class FundInCommandService : ICommandService<FundInCommand>
 
         var gameProviderBalance = await _playerGameBalance
             .GetBalanceAsync(
-            gameProvider.GameProviderCode,
-            player.PlayerCode,
-            player.DefaultWalletCurrencyCode,
+            gameProviderCode: gameProvider.GameProviderCode,
+            playerCode: player.PlayerCode,
+            currencyCode: player.DefaultWalletCurrencyCode,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 

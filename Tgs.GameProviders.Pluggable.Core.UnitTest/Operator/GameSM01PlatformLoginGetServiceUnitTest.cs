@@ -25,7 +25,7 @@ public class GameSM01PlatformLoginGetServiceUnitTest
         var gameProviderId = Guid.Parse("ba2997d9-b856-4589-91ae-5060a952cc3c");
 
         var query = new GameSM01PlatformLoginQuery(
-             "4ucmqplxb029");
+             PlayerCode: "4ucmqplxb029");
 
         var player = new PlayerInfo(
             Guid.NewGuid(),
@@ -40,12 +40,14 @@ public class GameSM01PlatformLoginGetServiceUnitTest
             "CNY");
         _ = fakePlayer
             .GetAsync(
-                playerCode: Arg.Is(query.PlayerCode),
-                cancellationToken: Arg.Any<CancellationToken>())
+            playerCode: Arg.Is(query.PlayerCode),
+            cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(player));
 
         _ = fakeGameProvider
-            .GetGameProviderIdAsync(GameProviderType.SM01)
+            .GetGameProviderIdAsync(
+            Arg.Is(GameProviderType.SM01),
+            cancellationToken: Arg.Any<CancellationToken>())
             .Returns(gameProviderId);
 
         var games = new GameInfo[]
@@ -73,8 +75,8 @@ public class GameSM01PlatformLoginGetServiceUnitTest
 
         _ = fakeGameCommandClient
             .GameQueryAsync(
-                gameProviderId: Arg.Is(gameProviderId),
-                cancellationToken: Arg.Any<CancellationToken>())
+            gameProviderId: Arg.Is(gameProviderId),
+            cancellationToken: Arg.Any<CancellationToken>())
             .Returns(games.ToAsyncEnumerable());
 
         var loginInfo = new GameSM01PlatformLoginInfo(
@@ -86,8 +88,8 @@ public class GameSM01PlatformLoginGetServiceUnitTest
 
         _ = fakeGameUrl
             .GetGamePlatformLoginBySM01Async(
-                playerCode: Arg.Is(player.PlayerCode),
-                cancellationToken: Arg.Any<CancellationToken>())
+            playerCode: Arg.Is(player.PlayerCode),
+            cancellationToken: Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(loginInfo));
 
         var sut = new GameSM01PlatformLoginGetService(
@@ -108,8 +110,8 @@ public class GameSM01PlatformLoginGetServiceUnitTest
         _ = fakeVerification
             .Received(1)
             .VerifyPlayerGameUrlAsync(
-               player: Arg.Is(player),
-               game: Arg.Is(games.ElementAt(0)),
-               cancellationToken: Arg.Any<CancellationToken>());
+            player: Arg.Is(player),
+            game: Arg.Is(games.ElementAt(0)),
+            cancellationToken: Arg.Any<CancellationToken>());
     }
 }

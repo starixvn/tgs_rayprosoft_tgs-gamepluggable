@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -16,22 +17,27 @@ public class GetBalanceUnitTest
         var playerCode = "4ucmqplxb029";
         var gameProviderCode = "VR";
         var gameProviderId = Guid.NewGuid();
-        decimal gameProviderBalance = 0.88m;
 
         await using var web = new TestPluggableApplication(builder =>
         {
             _ = builder.ConfigureServices(services =>
             {
-                var fakePlayerBalanceGetService = Substitute.For<IGetService<PlayerBalanceQuery, decimal>>();
+                var fakePlayerBalanceGetService = Substitute.For<IGetService<PlayerBalanceQuery, PlayerBalanceResult>>();
 
                 var query = new PlayerBalanceQuery(
                     playerCode,
                     gameProviderCode);
 
+                var result = new PlayerBalanceResult(
+                    Balance: 100m,
+                    FreeBalance: 10m,
+                    OutstandingBalance: 90m);
+
                 _ = fakePlayerBalanceGetService
                     .GetAsync(
-                        Arg.Is(query))
-                    .Returns(ValueTask.FromResult(gameProviderBalance));
+                    Arg.Is(query),
+                    Arg.Any<CancellationToken>())
+                    .Returns(result);
 
                 _ = services.AddSingleton(fakePlayerBalanceGetService);
             });
@@ -47,6 +53,6 @@ public class GetBalanceUnitTest
                 gameProviderCode: gameProviderCode)
             .ConfigureAwait(false);
 
-        Assert.Equal(gameProviderBalance, actual);
+        Assert.Equal(10m, actual);
     }
 }

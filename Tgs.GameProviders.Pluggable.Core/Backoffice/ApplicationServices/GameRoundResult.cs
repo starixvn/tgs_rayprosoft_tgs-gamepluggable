@@ -1,9 +1,9 @@
 ﻿using System;
 using Tgs.GameRounds.Common;
 
-namespace Tgs.GameProviders.Pluggable.Core.Models;
+namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
-public record GameRoundInfo(
+public record GameRoundResult(
     Guid RoundId,
     string ExternalRoundId,
     Guid GameProviderId,

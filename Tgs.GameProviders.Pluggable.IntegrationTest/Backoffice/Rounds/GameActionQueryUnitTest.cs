@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Tgs.GameProviders.Pluggable.Client;
-using Tgs.GameProviders.Pluggable.Core.Models;
+using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTest.Backoffice.Rounds;
@@ -20,11 +21,13 @@ public class GameActionQueryUnitTest
         {
             _ = builder.ConfigureServices(services =>
               {
-                  var fakeGameActionQueryService = Substitute.For<IQueryService<Guid, GameActionInfo>>();
-
+                  var fakeGameActionQueryService = Substitute.For<IQueryService<GameActionQuery, GameActionResult>>();
+                  var query = new GameActionQuery(roundId);
                   _ = fakeGameActionQueryService
-                      .QueryAsync(roundId)
-                      .Returns(Array.Empty<GameActionInfo>().ToAsyncEnumerable());
+                      .QueryAsync(
+                      query: Arg.Is(query),
+                      cancellationToken: Arg.Any<CancellationToken>())
+                      .Returns(Array.Empty<GameActionResult>().ToAsyncEnumerable());
 
                   _ = services.AddSingleton(fakeGameActionQueryService);
               });

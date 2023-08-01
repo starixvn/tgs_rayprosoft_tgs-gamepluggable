@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Tgs.GameProviders.Pluggable.Core.Models;
 using Tgs.GameRounds.Client;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
-internal class GameRoundGetService : IGetService<Guid, GameRoundInfo>
+internal class GameRoundGetService : IGetService<GameRoundQuery, GameRoundResult>
 {
     private readonly IGameRoundsClient _client;
 
@@ -16,16 +15,16 @@ internal class GameRoundGetService : IGetService<Guid, GameRoundInfo>
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public async ValueTask<GameRoundInfo> GetAsync(Guid query, CancellationToken cancellationToken = default)
+    public async ValueTask<GameRoundResult> GetAsync(GameRoundQuery query, CancellationToken cancellationToken = default)
     {
         var data = await _client
             .GetGameRoundAsync(
-            roundId: query,
+            roundId: query.RoundId,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false)
             ?? throw new Exception($"Game Round does not exist.({query})");
 
-        return new GameRoundInfo(
+        return new GameRoundResult(
             RoundId: data.RoundId,
             ExternalRoundId: data.ExternalRoundId,
             GameProviderId: data.GameProviderId,
