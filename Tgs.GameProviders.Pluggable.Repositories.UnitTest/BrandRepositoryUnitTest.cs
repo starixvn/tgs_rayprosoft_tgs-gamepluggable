@@ -23,11 +23,9 @@ public class BrandRepositoryUnitTest
         var repository = new BrandRepository(
             fakeClient);
 
-        var actual = await repository
-           .GetGameProviderConfigurationIdAsync(
-                brandId: brandId,
-                gameProviderId: gameProviderId)
-           .ConfigureAwait(false);
+        var actual = await repository.GetGameProviderConfigurationIdAsync(
+            brandId: brandId,
+            gameProviderId: gameProviderId);
 
         Assert.Equal(gameProviderConfigurationId, actual);
     }

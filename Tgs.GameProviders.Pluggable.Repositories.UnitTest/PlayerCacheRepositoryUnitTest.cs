@@ -45,10 +45,7 @@ public class PlayerCacheRepositoryUnitTest
             fakeMemoryCache,
             absoluteExpirationRelativeToNow);
 
-        _ = await repository
-           .GetAsync(
-               playerCode)
-           .ConfigureAwait(false);
+        _ = await repository.GetAsync(playerCode);
 
         _ = fakeMemoryCache
             .Received(1)

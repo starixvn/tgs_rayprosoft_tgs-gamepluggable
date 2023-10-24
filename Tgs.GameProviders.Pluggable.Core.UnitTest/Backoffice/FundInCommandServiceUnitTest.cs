@@ -81,10 +81,7 @@ public class FundInCommandServiceUnitTest
             fakePlayer,
             fakePlayerGameBalance);
 
-        await service
-            .ExecuteAsync(
-                command)
-            .ConfigureAwait(false);
+        await service.ExecuteAsync(command);
 
         _ = fakeGameFundTransferClient
             .Received(0)
@@ -168,10 +165,7 @@ public class FundInCommandServiceUnitTest
             fakePlayer,
             fakePlayerGameBalance);
 
-        await service
-            .ExecuteAsync(
-                command)
-            .ConfigureAwait(false);
+        await service.ExecuteAsync(command);
 
         _ = fakeGameFundTransferClient
             .Received(0)
@@ -255,10 +249,7 @@ public class FundInCommandServiceUnitTest
             fakePlayer,
             fakePlayerGameBalance);
 
-        await service
-            .ExecuteAsync(
-                command)
-            .ConfigureAwait(false);
+        await service.ExecuteAsync(command);
 
         _ = fakeGameFundTransferClient
             .Received(1)
@@ -342,10 +333,7 @@ public class FundInCommandServiceUnitTest
             fakePlayer,
             fakePlayerGameBalance);
 
-        await service
-            .ExecuteAsync(
-                command)
-            .ConfigureAwait(false);
+        await service.ExecuteAsync(command);
 
         _ = fakeGameFundTransferClient
             .Received(1)
@@ -429,10 +417,7 @@ public class FundInCommandServiceUnitTest
             fakePlayer,
             fakePlayerGameBalance);
 
-        await service
-            .ExecuteAsync(
-                command)
-            .ConfigureAwait(false);
+        await service.ExecuteAsync(command);
 
         _ = fakeGameFundTransferClient
             .Received(0)
@@ -516,10 +501,7 @@ public class FundInCommandServiceUnitTest
             fakePlayer,
             fakePlayerGameBalance);
 
-        await service
-            .ExecuteAsync(
-                command)
-            .ConfigureAwait(false);
+        await service.ExecuteAsync(command);
 
         _ = fakeGameFundTransferClient
             .Received(0)
@@ -603,10 +585,7 @@ public class FundInCommandServiceUnitTest
             fakePlayer,
             fakePlayerGameBalance);
 
-        await service
-            .ExecuteAsync(
-                command)
-            .ConfigureAwait(false);
+        await service.ExecuteAsync(command);
 
         _ = fakeGameFundTransferClient
             .Received(1)

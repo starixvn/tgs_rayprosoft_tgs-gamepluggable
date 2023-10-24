@@ -41,11 +41,9 @@ public class GameProviderFundOutUnitTest
 
         var sut = new GameProvidersOperatorPluggableClient(httpClient);
 
-        await sut
-            .GameProviderFundOutAsync(
-                playerCode,
-                gameProviderCode,
-                amount)
-            .ConfigureAwait(false);
+        await sut.GameProviderFundOutAsync(
+            playerCode: playerCode,
+            gameProviderCode: gameProviderCode,
+            amount: amount);
     }
 }

@@ -53,10 +53,7 @@ public class GameCacheRepositoryUnitTest
             fakeMemoryCache,
             absoluteExpirationRelativeToNow);
 
-        _ = await repository
-           .GetAsync(
-               gameId)
-           .ConfigureAwait(false);
+        _ = await repository.GetAsync(gameId);
 
         _ = fakeMemoryCache
             .Received(1)

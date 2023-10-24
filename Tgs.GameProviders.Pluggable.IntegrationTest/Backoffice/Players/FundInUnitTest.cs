@@ -34,6 +34,6 @@ public class FundInUnitTest
 
         var sut = new GameProvidersBackofficePluggableClient(httpClient);
 
-        await sut.FundInAsync(playerCode, gameProviderCode).ConfigureAwait(false);
+        await sut.FundInAsync(playerCode, gameProviderCode);
     }
 }

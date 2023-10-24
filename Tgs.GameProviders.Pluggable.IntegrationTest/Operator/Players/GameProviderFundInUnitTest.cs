@@ -38,11 +38,9 @@ public class GameProviderFundInUnitTest
 
         var sut = new GameProvidersOperatorPluggableClient(httpClient);
 
-        await sut
-            .GameProviderFundInAsync(
-                playerCode,
-                gameProviderCode,
-                amount)
-            .ConfigureAwait(false);
+        await sut.GameProviderFundInAsync(
+            playerCode: playerCode,
+            gameProviderCode: gameProviderCode,
+            amount: amount);
     }
 }

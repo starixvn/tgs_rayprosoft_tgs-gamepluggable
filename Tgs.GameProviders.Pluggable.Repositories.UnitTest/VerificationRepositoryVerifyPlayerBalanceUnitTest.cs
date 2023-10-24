@@ -92,12 +92,10 @@ public class VerificationRepositoryVerifyPlayerBalanceUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerBalanceException>(
-            () => repository
-             .VerifyPlayerBalanceAsync(
+            () => repository.VerifyPlayerBalanceAsync(
                 player: player,
                 gameProvider: gameProvider)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -185,12 +183,10 @@ public class VerificationRepositoryVerifyPlayerBalanceUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerBalanceException>(
-            () => repository
-             .VerifyPlayerBalanceAsync(
+            () => repository.VerifyPlayerBalanceAsync(
                 player: player,
                 gameProvider: gameProvider)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -278,12 +274,10 @@ public class VerificationRepositoryVerifyPlayerBalanceUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerBalanceException>(
-            () => repository
-             .VerifyPlayerBalanceAsync(
+            () => repository.VerifyPlayerBalanceAsync(
                 player: player,
                 gameProvider: gameProvider)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -371,12 +365,10 @@ public class VerificationRepositoryVerifyPlayerBalanceUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerBalanceException>(
-            () => repository
-             .VerifyPlayerBalanceAsync(
+            () => repository.VerifyPlayerBalanceAsync(
                 player: player,
                 gameProvider: gameProvider)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -464,12 +456,10 @@ public class VerificationRepositoryVerifyPlayerBalanceUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerBalanceException>(
-            () => repository
-             .VerifyPlayerBalanceAsync(
+            () => repository.VerifyPlayerBalanceAsync(
                 player: player,
                 gameProvider: gameProvider)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -557,12 +547,10 @@ public class VerificationRepositoryVerifyPlayerBalanceUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerBalanceException>(
-            () => repository
-             .VerifyPlayerBalanceAsync(
+            () => repository.VerifyPlayerBalanceAsync(
                 player: player,
                 gameProvider: gameProvider)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -655,11 +643,9 @@ public class VerificationRepositoryVerifyPlayerBalanceUnitTest
         var repository = new VerificationRepository(
             fakeClinet);
 
-        await repository
-           .VerifyPlayerBalanceAsync(
-               player,
-               gameProvider)
-           .ConfigureAwait(false);
+        await repository.VerifyPlayerBalanceAsync(
+            player: player,
+            gameProvider: gameProvider);
     }
 
     [Fact]
@@ -752,11 +738,9 @@ public class VerificationRepositoryVerifyPlayerBalanceUnitTest
         var repository = new VerificationRepository(
             fakeClinet);
 
-        await repository
-           .VerifyPlayerBalanceAsync(
-               player,
-               gameProvider)
-           .ConfigureAwait(false);
+        await repository.VerifyPlayerBalanceAsync(
+            player: player,
+            gameProvider: gameProvider);
     }
 
     [Fact]
@@ -850,12 +834,10 @@ public class VerificationRepositoryVerifyPlayerBalanceUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerBalanceException>(
-            () => repository
-             .VerifyPlayerBalanceAsync(
+            () => repository.VerifyPlayerBalanceAsync(
                 player: player,
                 gameProvider: gameProvider)
-             .AsTask())
-             .ConfigureAwait(false);
+             .AsTask());
     }
 
     [Fact]
@@ -943,12 +925,10 @@ public class VerificationRepositoryVerifyPlayerBalanceUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerBalanceException>(
-            () => repository
-             .VerifyPlayerBalanceAsync(
+            () => repository.VerifyPlayerBalanceAsync(
                 player: player,
                 gameProvider: gameProvider)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -1042,11 +1022,9 @@ public class VerificationRepositoryVerifyPlayerBalanceUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerBalanceException>(
-            () => repository
-             .VerifyPlayerBalanceAsync(
+            () => repository.VerifyPlayerBalanceAsync(
                 player: player,
                 gameProvider: gameProvider)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 }

@@ -1,15 +1,28 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using OpenTelemetry;
 using Tgs.GameCommand.Client;
 using Tgs.GameCommand.Common;
+using Tgs.GameFundTransfer.Client;
 using Tgs.GameProviders.Pluggable.Core;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceRegisterExtensions
 {
+    public static async Task<WebApplication> InitialConnectionGameFundTransfer(this WebApplication app)
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var client = scope.ServiceProvider.GetRequiredService<IGameFundTransferClient>();
+            _ = await client.CheckingServiceAsync(
+                machineName: Environment.MachineName)
+                .ConfigureAwait(false);
+        }
+        return app;
+    }
+
     public static async Task<WebApplication> UseGameProviderRegister(this WebApplication app)
     {
         using (var scope = app.Services.CreateScope())
@@ -54,7 +67,6 @@ public static class ServiceRegisterExtensions
                 }
                 catch
                 {
-
                 }
             }
         }

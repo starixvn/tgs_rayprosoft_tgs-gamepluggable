@@ -42,9 +42,7 @@ public class GetGameSM01PlatformLoginInfoUnitTest
 
         var sut = new GameProvidersOperatorPluggableClient(httpClient);
 
-        var actual = await sut
-            .GetGameSM01PlatformLoginInfoAsync(playerCode)
-            .ConfigureAwait(false);
+        var actual = await sut.GetGameSM01PlatformLoginInfoAsync(playerCode);
 
         Assert.NotNull(actual);
         Assert.Equal(loginInfo.MerchantId, actual.MerchantId);

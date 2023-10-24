@@ -61,11 +61,9 @@ public class AddSystemRoundUnitTest
                     Remark = remark
                 };
 
-                await service
-                .ExecuteAsync(
+                await service.ExecuteAsync(
                     command: command,
-                    cancellationToken: Arg.Any<CancellationToken>())
-                .ConfigureAwait(false);
+                    cancellationToken: Arg.Any<CancellationToken>());
 
                 _ = services.AddSingleton(service);
             });
@@ -97,9 +95,6 @@ public class AddSystemRoundUnitTest
             Remark = remark
         };
 
-        await sut
-            .AddCompanyRoundAsync(
-                viewModel: model)
-            .ConfigureAwait(false);
+        await sut.AddCompanyRoundAsync(viewModel: model);
     }
 }

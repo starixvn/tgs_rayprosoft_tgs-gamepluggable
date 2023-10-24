@@ -31,12 +31,10 @@ public class PlayerGameBalanceUnitTest
             fakeGameProvidersClient,
             fakeGameCurrencyClient);
 
-        var actual = await repository
-           .GetBalanceAsync(
-            gameProviderCode,
-            playerCode,
-            currencyCode)
-           .ConfigureAwait(false);
+        var actual = await repository.GetBalanceAsync(
+            gameProviderCode: gameProviderCode,
+            playerCode: playerCode,
+            currencyCode: currencyCode);
 
         Assert.NotNull(actual);
         Assert.Equal(0m, actual.Balance);
@@ -94,12 +92,10 @@ public class PlayerGameBalanceUnitTest
             fakeGameProvidersClient,
             fakeGameCurrencyClient);
 
-        var actual = await repository
-           .GetBalanceAsync(
-            gameProviderCode,
-            playerCode,
-            currencyCode)
-           .ConfigureAwait(false);
+        var actual = await repository.GetBalanceAsync(
+            gameProviderCode: gameProviderCode,
+            playerCode: playerCode,
+            currencyCode: currencyCode);
 
         Assert.NotNull(actual);
         Assert.Equal(10m, actual.Balance);

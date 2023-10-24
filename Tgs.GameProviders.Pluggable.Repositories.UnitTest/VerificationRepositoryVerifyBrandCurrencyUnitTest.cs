@@ -34,13 +34,11 @@ public class VerificationRepositoryVerifyBrandCurrencyUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyBrandCurrencyException>(
-            () => repository
-             .VerifyBrandCurrencyAsync(
+            () => repository.VerifyBrandCurrencyAsync(
                 brandId: brandId,
                 gameProviderId: gameProviderId,
                 currencyCode: currencyCode)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -70,13 +68,11 @@ public class VerificationRepositoryVerifyBrandCurrencyUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyBrandCurrencyException>(
-            () => repository
-             .VerifyBrandCurrencyAsync(
+            () => repository.VerifyBrandCurrencyAsync(
                 brandId: brandId,
                 gameProviderId: gameProviderId,
                 currencyCode: currencyCode)
-             .AsTask())
-             .ConfigureAwait(false);
+             .AsTask());
     }
 
     [Fact]
@@ -106,13 +102,11 @@ public class VerificationRepositoryVerifyBrandCurrencyUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyBrandCurrencyException>(
-            () => repository
-             .VerifyBrandCurrencyAsync(
+            () => repository.VerifyBrandCurrencyAsync(
                 brandId: brandId,
                 gameProviderId: gameProviderId,
                 currencyCode: currencyCode)
-             .AsTask())
-             .ConfigureAwait(false);
+             .AsTask());
     }
 
     [Fact]
@@ -142,13 +136,11 @@ public class VerificationRepositoryVerifyBrandCurrencyUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyBrandCurrencyException>(
-            () => repository
-             .VerifyBrandCurrencyAsync(
+            () => repository.VerifyBrandCurrencyAsync(
                 brandId: brandId,
                 gameProviderId: gameProviderId,
                 currencyCode: currencyCode)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -189,11 +181,9 @@ public class VerificationRepositoryVerifyBrandCurrencyUnitTest
         var repository = new VerificationRepository(
             fakeClinet);
 
-        await repository
-           .VerifyBrandCurrencyAsync(
-               brandId: brandId,
-               gameProviderId: gameProviderId,
-               currencyCode: currencyCode)
-           .ConfigureAwait(false);
+        await repository.VerifyBrandCurrencyAsync(
+            brandId: brandId,
+            gameProviderId: gameProviderId,
+            currencyCode: currencyCode);
     }
 }

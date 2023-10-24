@@ -46,10 +46,7 @@ public class GameProviderCacheRepositoryUnitTest
             fakeGameProvider,
             fakeMemoryCache);
 
-        var actual = await repository
-           .GetAsync(
-               gameProviderId)
-           .ConfigureAwait(false);
+        var actual = await repository.GetAsync(gameProviderId);
 
         Assert.NotNull(actual);
 
@@ -90,10 +87,7 @@ public class GameProviderCacheRepositoryUnitTest
             fakeGameProvider,
             fakeMemoryCache);
 
-        var actual = await repository
-           .GetConfigurationAsync(
-               gameProviderConfigId)
-           .ConfigureAwait(false);
+        var actual = await repository.GetConfigurationAsync(gameProviderConfigId);
 
         Assert.NotNull(actual);
     }
@@ -124,10 +118,7 @@ public class GameProviderCacheRepositoryUnitTest
             fakeGameProvider,
             fakeMemoryCache);
 
-        var actual = await repository
-           .GetGameProviderIdAsync(
-               gameProviderCode)
-           .ConfigureAwait(false);
+        var actual = await repository.GetGameProviderIdAsync(gameProviderCode);
 
         Assert.Equal(gameProviderId, actual);
 

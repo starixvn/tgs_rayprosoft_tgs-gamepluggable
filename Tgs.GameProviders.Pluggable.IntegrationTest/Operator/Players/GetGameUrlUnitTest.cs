@@ -54,16 +54,14 @@ public class GetGameUrlUnitTest
 
         var sut = new GameProvidersOperatorPluggableClient(httpClient);
 
-        var actual = await sut
-            .GetGameUrlAsync(
-            playerCode,
-            loginRecordId,
-            isMobile,
-            gameId,
-            language,
-            ipAddress,
-            backUrl)
-            .ConfigureAwait(false);
+        var actual = await sut.GetGameUrlAsync(
+            playerCode: playerCode,
+            loginRecordId: loginRecordId,
+            isMobile: isMobile,
+            gameId: gameId,
+            language: language,
+            ipAddress: ipAddress,
+            backUrl: backUrl);
 
         Assert.NotNull(actual);
         Assert.Equal(gameurl, actual);

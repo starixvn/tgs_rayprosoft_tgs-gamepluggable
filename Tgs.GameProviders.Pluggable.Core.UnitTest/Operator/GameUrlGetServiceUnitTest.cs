@@ -92,7 +92,7 @@ public class GameUrlGetServiceUnitTest
             fakeVerification,
             fakePlayer);
 
-        var actual = await sut.GetAsync(query).ConfigureAwait(false);
+        var actual = await sut.GetAsync(query);
 
         Assert.NotNull(actual);
         Assert.Equal(gameUrl, actual);
@@ -187,7 +187,7 @@ public class GameUrlGetServiceUnitTest
             fakeVerification,
             fakePlayer);
 
-        var actual = await sut.GetAsync(query).ConfigureAwait(false);
+        var actual = await sut.GetAsync(query);
 
         Assert.NotNull(actual);
         Assert.Equal(gameUrl, actual);
@@ -283,7 +283,7 @@ public class GameUrlGetServiceUnitTest
             fakeVerification,
             fakePlayer);
 
-        var actual = await sut.GetAsync(query).ConfigureAwait(false);
+        var actual = await sut.GetAsync(query);
 
         Assert.NotNull(actual);
         Assert.Equal(gameUrl, actual);

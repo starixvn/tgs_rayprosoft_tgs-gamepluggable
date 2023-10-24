@@ -104,12 +104,10 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerGameUrlException>(
-            () => repository
-             .VerifyPlayerGameUrlAsync(
+            () => repository.VerifyPlayerGameUrlAsync(
                 player: player,
                 game: game)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -209,12 +207,10 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerGameUrlException>(
-            () => repository
-             .VerifyPlayerGameUrlAsync(
+            () => repository.VerifyPlayerGameUrlAsync(
                 player: player,
                 game: game)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -314,12 +310,10 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerGameUrlException>(
-            () => repository
-             .VerifyPlayerGameUrlAsync(
+            () => repository.VerifyPlayerGameUrlAsync(
                 player: player,
                 game: game)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -424,11 +418,9 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
         var repository = new VerificationRepository(
             fakeClinet);
 
-        await repository
-           .VerifyPlayerGameUrlAsync(
-               player: player,
-               game: game)
-           .ConfigureAwait(false);
+        await repository.VerifyPlayerGameUrlAsync(
+            player: player,
+            game: game);
     }
 
     [Fact]
@@ -528,12 +520,10 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerGameUrlException>(
-            () => repository
-             .VerifyPlayerGameUrlAsync(
+            () => repository.VerifyPlayerGameUrlAsync(
                 player: player,
                 game: game)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -633,12 +623,10 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerGameUrlException>(
-            () => repository
-             .VerifyPlayerGameUrlAsync(
+            () => repository.VerifyPlayerGameUrlAsync(
                 player: player,
                 game: game)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -738,12 +726,10 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerGameUrlException>(
-            () => repository
-             .VerifyPlayerGameUrlAsync(
+            () => repository.VerifyPlayerGameUrlAsync(
                 player: player,
                 game: game)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -843,12 +829,10 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerGameUrlException>(
-            () => repository
-             .VerifyPlayerGameUrlAsync(
+            () => repository.VerifyPlayerGameUrlAsync(
                 player: player,
                 game: game)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -948,12 +932,10 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerGameUrlException>(
-            () => repository
-             .VerifyPlayerGameUrlAsync(
+            () => repository.VerifyPlayerGameUrlAsync(
                 player: player,
                 game: game)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -1058,11 +1040,9 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
         var repository = new VerificationRepository(
             fakeClinet);
 
-        await repository
-           .VerifyPlayerGameUrlAsync(
-               player: player,
-               game: game)
-           .ConfigureAwait(false);
+        await repository.VerifyPlayerGameUrlAsync(
+            player: player,
+            game: game);
     }
 
     [Fact]
@@ -1168,12 +1148,10 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerGameUrlException>(
-            () => repository
-             .VerifyPlayerGameUrlAsync(
+            () => repository.VerifyPlayerGameUrlAsync(
                 player: player,
                 game: game)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -1273,12 +1251,10 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerGameUrlException>(
-            () => repository
-             .VerifyPlayerGameUrlAsync(
+            () => repository.VerifyPlayerGameUrlAsync(
                 player: player,
                 game: game)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 
     [Fact]
@@ -1384,11 +1360,9 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
             fakeClinet);
 
         _ = await Assert.ThrowsAsync<VerifyPlayerGameUrlException>(
-            () => repository
-             .VerifyPlayerGameUrlAsync(
+            () => repository.VerifyPlayerGameUrlAsync(
                 player: player,
                 game: game)
-             .AsTask())
-             .ConfigureAwait(false);
+            .AsTask());
     }
 }

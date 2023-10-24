@@ -98,6 +98,7 @@ builder.Services
             .AddEnvironmentVariableDetector())
         .AddSource("Tgs.*")
         .AddSource("TGS.*")
+        .AddSource("Valhalla.*")
         .AddAspNetCoreInstrumentation()
         .AddHttpClientInstrumentation()
         .AddGrpcClientInstrumentation()
@@ -139,5 +140,7 @@ _ = app.MapControllers();
 app.MapHealthChecks("/healthz");
 
 _ = app.UseGameProviderRegister();
+
+_ = app.InitialConnectionGameFundTransfer();
 
 app.Run();

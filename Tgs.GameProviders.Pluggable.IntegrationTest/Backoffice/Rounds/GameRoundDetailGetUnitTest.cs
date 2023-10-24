@@ -49,9 +49,10 @@ public class GameRoundDetailGetUnitTest
 
         var sut = new GameProvidersBackofficePluggableClient(httpClient);
 
-        var actual = await sut
-            .GameRoundDetailGetAsync(roundId, language)
-            .ConfigureAwait(false);
+        var actual = await sut.GameRoundDetailGetAsync(
+            roundId: roundId,
+            language: language);
+
         Assert.NotNull(actual);
     }
 }

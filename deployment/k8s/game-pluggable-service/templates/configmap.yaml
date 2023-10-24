@@ -16,7 +16,7 @@ data:
         "CashServiceClientBaseUrl": "http://cashservice-api/",
         "GamePlayerLogOutClientBaseUrl": "http://game-gameplayerlogout:9090/",
         "GameCommandClientBaseUrl": "http://game-gamecommand/",
-        "GameFundTransferClientBaseUrl": "http://game-gamefundtransfer:9090/",
+        "GameFundTransferClientBaseUrl": "dns:///game-gamefundtransfer:9090/",
         "GameCurrencyClientBaseUrl": "http://game-gamecurrency/",
         "GameRoundsClientBaseUrl": "http://game-gamerounds"
       }

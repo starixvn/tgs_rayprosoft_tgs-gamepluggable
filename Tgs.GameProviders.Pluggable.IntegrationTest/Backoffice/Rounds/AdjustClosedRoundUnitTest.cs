@@ -67,10 +67,8 @@ public class AdjustClosedRoundUnitTest
 
         var sut = new GameProvidersBackofficePluggableClient(httpClient);
 
-        await sut
-            .AdjustClosedRoundAsync(
-                roundId: roundId,
-                viewModel: model)
-            .ConfigureAwait(false);
+        await sut.AdjustClosedRoundAsync(
+            roundId: roundId,
+            viewModel: model);
     }
 }

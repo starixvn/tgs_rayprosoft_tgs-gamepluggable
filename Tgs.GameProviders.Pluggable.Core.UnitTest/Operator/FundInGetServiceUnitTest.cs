@@ -21,7 +21,7 @@ public class FundInGetServiceUnitTest
         var fakePlayer = Substitute.For<IPlayer>();
         var fakePlayerGameBalance = Substitute.For<IPlayerGameBalance>();
 
-        var query = new FundInCommand(
+        var command = new FundInCommand(
             "4ucmqplxb029",
             "ky",
             1);
@@ -39,14 +39,14 @@ public class FundInGetServiceUnitTest
             "CNY");
         _ = fakePlayer
             .GetAsync(
-            Arg.Is(query.PlayerCode),
+            Arg.Is(command.PlayerCode),
             Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(player));
 
         var gameProviderId = Guid.NewGuid();
         _ = fakeGameProvider
             .GetGameProviderIdAsync(
-            Arg.Is(query.GameProviderCode),
+            Arg.Is(command.GameProviderCode),
             Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(gameProviderId));
 
@@ -87,9 +87,7 @@ public class FundInGetServiceUnitTest
             fakePlayer,
             fakePlayerGameBalance);
 
-        await fakeService
-            .ExecuteAsync(query)
-            .ConfigureAwait(false);
+        await fakeService.ExecuteAsync(command);
 
         _ = fakeVerification
             .Received(1)
@@ -107,7 +105,7 @@ public class FundInGetServiceUnitTest
             playerCode: Arg.Is(player.PlayerCode),
             walletId: Arg.Is(player.DefaultWalletId),
             currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
-            amount: Arg.Is(query.Amount),
+            amount: Arg.Is(command.Amount),
             cancellationToken: Arg.Any<CancellationToken>());
     }
 
@@ -120,7 +118,7 @@ public class FundInGetServiceUnitTest
         var fakePlayer = Substitute.For<IPlayer>();
         var fakePlayerGameBalance = Substitute.For<IPlayerGameBalance>();
 
-        var query = new FundInCommand(
+        var command = new FundInCommand(
             "4ucmqplxb029",
             "sm01",
             123M);
@@ -138,14 +136,14 @@ public class FundInGetServiceUnitTest
             "CNY");
         _ = fakePlayer
             .GetAsync(
-            Arg.Is(query.PlayerCode),
+            Arg.Is(command.PlayerCode),
             Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(player));
 
         var gameProviderId = Guid.NewGuid();
         _ = fakeGameProvider
             .GetGameProviderIdAsync(
-            Arg.Is(query.GameProviderCode),
+            Arg.Is(command.GameProviderCode),
             Arg.Any<CancellationToken>())
             .Returns(ValueTask.FromResult(gameProviderId));
 
@@ -186,9 +184,7 @@ public class FundInGetServiceUnitTest
             fakePlayer,
             fakePlayerGameBalance);
 
-        await fakeService
-            .ExecuteAsync(query)
-            .ConfigureAwait(false);
+        await fakeService.ExecuteAsync(command);
 
         _ = fakeVerification
             .Received(1)

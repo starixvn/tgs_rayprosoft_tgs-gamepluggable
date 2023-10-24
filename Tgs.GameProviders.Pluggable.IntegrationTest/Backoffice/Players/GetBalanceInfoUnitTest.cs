@@ -44,7 +44,7 @@ public class GetBalanceInfoUnitTest
 
         var sut = new GameProvidersBackofficePluggableClient(httpClient);
 
-        var actual = await sut.GetBalanceInfoAsync(playerCode, gameProviderCode).ConfigureAwait(false);
+        var actual = await sut.GetBalanceInfoAsync(playerCode, gameProviderCode);
 
         Assert.NotNull(actual);
         Assert.Equal(100m, actual.Balance);

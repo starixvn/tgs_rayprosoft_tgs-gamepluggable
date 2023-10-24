@@ -99,7 +99,7 @@ public class ClosedGameRoundServiceUnitTest
             OperatorId = operatorId,
             Remark = remark,
             AdjustAmount = adjustAmount,
-        }).ConfigureAwait(false);
+        });
 
         _ = fakeGameRoundsClient
             .Received(1)

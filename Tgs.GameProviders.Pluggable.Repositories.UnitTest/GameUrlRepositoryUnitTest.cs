@@ -51,20 +51,18 @@ public class GameUrlRepositoryUnitTest
             fakeGameProvider,
             fakeGameProvidersClient);
 
-        var actual = await sut
-             .GetGameUrlAsync(
-                 gameProviderCode,
-                 gameType,
-                 gameId,
-                 brandCode,
-                 playerCode,
-                 currencyCode,
-                 loginRecordId,
-                 platformType,
-                 language,
-                 ipAddress,
-                 backUrl)
-             .ConfigureAwait(false);
+        var actual = await sut.GetGameUrlAsync(
+            gameProviderCode: gameProviderCode,
+            gameType: gameType,
+            gameId: gameId,
+            brandCode: brandCode,
+            playerCode: playerCode,
+            currencyCode: currencyCode,
+            loginRecordId: loginRecordId,
+            platformType: platformType,
+            language: language,
+            ipAddress: ipAddress,
+            backUrl: backUrl);
 
         Assert.NotNull(actual);
         Assert.Equal(gameUrl, actual);
@@ -119,21 +117,19 @@ public class GameUrlRepositoryUnitTest
             fakeGameProvider,
             fakeGameProvidersClient);
 
-        var actual = await sut
-             .GetGameUrlByAsiaGamingAsync(
-                 gameProviderCode,
-                 gameType,
-                 gameId,
-                 brandCode,
-                 playerCode,
-                 currencyCode,
-                 loginRecordId,
-                 platformType,
-                 language,
-                 ipAddress,
-                 backUrl,
-                 defaultWalletId)
-             .ConfigureAwait(false);
+        var actual = await sut.GetGameUrlByAsiaGamingAsync(
+            gameProviderCode: gameProviderCode,
+            gameType: gameType,
+            gameId: gameId,
+            brandCode: brandCode,
+            playerCode: playerCode,
+            currencyCode: currencyCode,
+            loginRecordId: loginRecordId,
+            platformType: platformType,
+            language: language,
+            ipAddress: ipAddress,
+            backUrl: backUrl,
+            defaultWalletId: defaultWalletId);
 
         Assert.NotNull(actual);
         Assert.Equal(gameUrl, actual);
@@ -208,22 +204,20 @@ public class GameUrlRepositoryUnitTest
             fakeGameProvider,
             fakeGameProvidersClient);
 
-        var actual = await sut
-             .GetGameUrlByBetConstructAsync(
-                 gameProviderCode,
-                 gameType,
-                 gameId,
-                 brandCode,
-                 playerCode,
-                 currencyCode,
-                 loginRecordId,
-                 platformType,
-                 language,
-                 ipAddress,
-                 backUrl,
-                 brandId,
-                 gameProviderId)
-             .ConfigureAwait(false);
+        var actual = await sut.GetGameUrlByBetConstructAsync(
+            gameProviderCode: gameProviderCode,
+            gameType: gameType,
+            gameId: gameId,
+            brandCode: brandCode,
+            playerCode: playerCode,
+            currencyCode: currencyCode,
+            loginRecordId: loginRecordId,
+            platformType: platformType,
+            language: language,
+            ipAddress: ipAddress,
+            backUrl: backUrl,
+            brandId: brandId,
+            gameProviderId: gameProviderId);
 
         Assert.NotNull(actual);
         Assert.Equal(gameUrl, actual);
@@ -298,22 +292,20 @@ public class GameUrlRepositoryUnitTest
             fakeGameProvider,
             fakeGameProvidersClient);
 
-        var actual = await sut
-             .GetGameUrlByBetConstructAsync(
-                 gameProviderCode,
-                 gameType,
-                 gameId,
-                 brandCode,
-                 playerCode,
-                 currencyCode,
-                 loginRecordId,
-                 platformType,
-                 language,
-                 ipAddress,
-                 backUrl,
-                 brandId,
-                 gameProviderId)
-             .ConfigureAwait(false);
+        var actual = await sut.GetGameUrlByBetConstructAsync(
+            gameProviderCode: gameProviderCode,
+            gameType: gameType,
+            gameId: gameId,
+            brandCode: brandCode,
+            playerCode: playerCode,
+            currencyCode: currencyCode,
+            loginRecordId: loginRecordId,
+            platformType: platformType,
+            language: language,
+            ipAddress: ipAddress,
+            backUrl: backUrl,
+            brandId: brandId,
+            gameProviderId: gameProviderId);
 
         Assert.NotNull(actual);
         Assert.Equal(gameUrl, actual);

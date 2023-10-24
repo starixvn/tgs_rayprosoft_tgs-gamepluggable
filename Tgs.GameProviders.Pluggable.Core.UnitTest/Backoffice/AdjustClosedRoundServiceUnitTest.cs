@@ -102,9 +102,7 @@ public class AdjustClosedRoundServiceUnitTest
             AdjustAmount = adjustAmount
         };
 
-        await sut
-            .ExecuteAsync(command)
-            .ConfigureAwait(false);
+        await sut.ExecuteAsync(command);
 
         _ = fakeGameRoundsClient
             .Received(1)

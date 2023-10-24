@@ -32,10 +32,7 @@ public class PlayerRepositoryUnitTest
         var repository = new PlayerRepository(
             fakeClinet);
 
-        var actual = await repository
-           .GetAsync(
-               playerCode)
-           .ConfigureAwait(false);
+        var actual = await repository.GetAsync(playerCode);
 
         Assert.NotNull(actual);
     }

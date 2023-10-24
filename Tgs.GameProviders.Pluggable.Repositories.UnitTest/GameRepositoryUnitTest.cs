@@ -41,10 +41,7 @@ public class GameRepositoryUnitTest
         var repository = new GameRepository(
             fakeClient);
 
-        var actual = await repository
-           .GetAsync(
-               gameId)
-           .ConfigureAwait(false);
+        var actual = await repository.GetAsync(gameId);
 
         Assert.NotNull(actual);
     }
