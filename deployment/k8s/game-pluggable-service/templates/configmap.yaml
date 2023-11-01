@@ -2,6 +2,8 @@
 kind: ConfigMap
 metadata:
   name: configmap-{{ include "game-pluggable-service.fullname" . }}
+  labels:
+    {{- include "game-gameplayerlogout.labels" . | nindent 4 }}
 data:
   appsettings.json: |
     {
