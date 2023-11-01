@@ -19,9 +19,9 @@ public class KickPlayerUnitTest
         {
             _ = builder.ConfigureServices(services =>
             {
-                var fakeService = Substitute.For<ICommandService<KickPlayerCommand>>();
+                var fakeService = Substitute.For<ICommandService<PlayerLogOutCommand>>();
 
-                var command = new KickPlayerCommand(
+                var command = new PlayerLogOutCommand(
                     playerCode);
 
                 _ = fakeService

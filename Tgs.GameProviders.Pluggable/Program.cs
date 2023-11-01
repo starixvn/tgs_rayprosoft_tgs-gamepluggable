@@ -73,11 +73,6 @@ builder.Services.AddGameProvidersPluggable(
     (options, sp) =>
     {
         var configuration = sp.GetRequiredService<IConfiguration>();
-        options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GamePlayerLogOutClientBaseUrl")!;
-    },
-    (options, sp) =>
-    {
-        var configuration = sp.GetRequiredService<IConfiguration>();
         options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameFundTransferClientBaseUrl")!;
     },
     (options, sp) =>
@@ -90,6 +85,20 @@ builder.Services.AddGameProvidersPluggable(
         var configuration = sp.GetRequiredService<IConfiguration>();
         options.BaseUrl = new(configuration.GetSection("Pluggable:GameRoundsClientBaseUrl")!.Value!);
     });
+
+builder.Services
+    .AddMessageQueue()
+    .AddNatsMessageQueue(natsConfig =>
+    {
+        _ = natsConfig
+        .ConfigQueueOptions((options, sp) =>
+        {
+            var configuration = sp.GetRequiredService<IConfiguration>();
+            options.Url = configuration.GetConnectionString("Nats")!;
+        });
+    })
+    .ClearAllExchanges()
+    .AddNatsGlobPatternExchange("*");
 
 builder.Services
     .AddOpenTelemetry()

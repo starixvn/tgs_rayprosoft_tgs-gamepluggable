@@ -4,6 +4,8 @@ metadata:
   name: {{ include "game-pluggable-service.fullname" . }}
   labels:
     {{- include "game-pluggable-service.labels" . | nindent 4 }}
+  annotations:
+    reloader.stakater.com/auto: "true"
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -19,12 +21,12 @@ spec:
       {{- end }}
       labels:
         {{- include "game-pluggable-service.selectorLabels" . | nindent 8 }}
-        tgs.kind: game
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "game-pluggable-service.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -35,11 +37,16 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: OTEL_SERVICE_NAME
-              value: Game-GameProvider-Pluggable({{ .Release.Namespace }})
+              value: Game-Pluggable-Service({{ .Release.Namespace }})
             - name: NODE_IP
               valueFrom:
                 fieldRef:
                   fieldPath: status.hostIP
+            - name: ConnectionStrings__Nats
+              valueFrom:
+                secretKeyRef:
+                  name: tgs-connections
+                  key: nats
           volumeMounts:
             - mountPath: /config/appsettings.json
               name: appsettings

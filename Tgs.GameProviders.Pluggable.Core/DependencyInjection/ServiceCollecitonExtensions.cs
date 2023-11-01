@@ -4,7 +4,6 @@ using Tgs.CashService.Client;
 using Tgs.GameCommand.Client;
 using Tgs.GameCurrency.Client;
 using Tgs.GameFundTransfer.Client;
-using Tgs.GamePlayerLogOut.Client;
 using Tgs.GameProviders.Client;
 using Tgs.GameRounds.Client;
 
@@ -17,7 +16,6 @@ public static class ServiceCollecitonExtensions
         Action<CashServiceClientOptions, IServiceProvider> cashServiceClientOptions,
         Action<GameProvidersClientOptions, IServiceProvider> gameProvidersClientOptions,
         Action<GameCommandClientOptions, IServiceProvider> gameCommandClientOptions,
-        Action<GamePlayerLogOutClientOptions, IServiceProvider> gamePlayerLogOutClientOptions,
         Action<GameFundTransferClientOptions, IServiceProvider> gameTransferClientOptions,
         Action<GameCurrencyClientOptions, IServiceProvider> gameCurrencyClientOptions,
         Action<GameRoundsClientOptions, IServiceProvider> gameRoundsConfigure)
@@ -28,8 +26,8 @@ public static class ServiceCollecitonExtensions
         .AddCashServiceClient(cashServiceClientOptions)
         .AddGameProvidersClient(gameProvidersClientOptions)
         .AddGameCommandClient(gameCommandClientOptions)
-        .AddGamePlayerLogOutClient(gamePlayerLogOutClientOptions)
         .AddGameFundTransferClient(gameTransferClientOptions)
         .AddGameCurrencyClient(gameCurrencyClientOptions)
-        .AddGameRoundsClient(gameRoundsConfigure);
+        .AddGameRoundsClient(gameRoundsConfigure)
+        .AddGamePlayerLogOutClient();
 }

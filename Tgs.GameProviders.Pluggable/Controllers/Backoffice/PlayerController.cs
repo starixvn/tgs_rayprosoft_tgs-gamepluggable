@@ -122,10 +122,10 @@ public class PlayerController : ControllerBase
     /// </remarks>
     [HttpDelete("kick/{playerCode}", Name = "Backoffice_Player_KickPlayer")]
     public ValueTask KickPlayerAsync(
-        [FromServices] ICommandService<KickPlayerCommand> service,
+        [FromServices] ICommandService<PlayerLogOutCommand> service,
         string playerCode)
     {
-        var command = new KickPlayerCommand(
+        var command = new PlayerLogOutCommand(
             PlayerCode: playerCode);
 
         return service
@@ -149,11 +149,11 @@ public class PlayerController : ControllerBase
     /// </remarks>
     [HttpDelete("kick/{playerCode}/{gameProviderCode}", Name = "Backoffice_Player_Game_KickPlayer")]
     public ValueTask KickPlayerAsync(
-        [FromServices] ICommandService<KickPlayerGameProviderCommand> service,
+        [FromServices] ICommandService<PlayerLogOutGameProviderCommand> service,
         string playerCode,
         string gameProviderCode)
     {
-        var command = new KickPlayerGameProviderCommand(
+        var command = new PlayerLogOutGameProviderCommand(
             PlayerCode: playerCode,
             GameProviderCode: gameProviderCode);
 

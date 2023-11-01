@@ -34,15 +34,21 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "game-pluggable-service.labels" -}}
+helm.sh/chart: {{ include "game-pluggable-service.chart" . }}
 {{ include "game-pluggable-service.selectorLabels" . }}
-tgs.kind: game
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
 Selector labels
 */}}
 {{- define "game-pluggable-service.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "game-pluggable-service.name" . }}
 app: {{ include "game-pluggable-service.name" . }}
+tgs.kind: game
 {{- end }}
 
 {{/*

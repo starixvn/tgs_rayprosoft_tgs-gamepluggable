@@ -1,5 +1,5 @@
 ﻿namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
-public record KickPlayerGameProviderCommand(
+public record PlayerLogOutGameProviderCommand(
     string PlayerCode,
     string GameProviderCode);

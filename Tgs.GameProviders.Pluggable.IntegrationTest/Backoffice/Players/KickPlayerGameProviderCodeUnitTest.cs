@@ -20,9 +20,9 @@ public class KickPlayerGameProviderCodeUnitTest
         {
             _ = builder.ConfigureServices(services =>
               {
-                  var fakeService = Substitute.For<ICommandService<KickPlayerGameProviderCommand>>();
+                  var fakeService = Substitute.For<ICommandService<PlayerLogOutGameProviderCommand>>();
 
-                  var command = new KickPlayerGameProviderCommand(
+                  var command = new PlayerLogOutGameProviderCommand(
                       playerCode,
                       gameProviderCode);
 
