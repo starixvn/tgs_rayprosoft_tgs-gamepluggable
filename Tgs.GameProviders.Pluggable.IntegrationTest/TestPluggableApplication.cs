@@ -22,14 +22,16 @@ internal class TestPluggableApplication : WebApplicationFactory<Program>
             .ConfigureAppConfiguration(c => c.Sources.Clear())
             .ConfigureServices(services =>
             {
-                _ = services.AddSingleton<IConfigureOptions<OtlpExporterOptions>>(
+                _ = services
+                .AddFakeNatsMessageQueue()
+                .AddSingleton<IConfigureOptions<OtlpExporterOptions>>(
                     sp => new ConfigureNamedOptions<OtlpExporterOptions>(
                         Options.DefaultName,
                         exporterOptions =>
                         {
                             exporterOptions.TimeoutMilliseconds = 0;
                         }));
-            }); ;
+            });
 
         _webHostConfigure?.Invoke(builder);
     }
