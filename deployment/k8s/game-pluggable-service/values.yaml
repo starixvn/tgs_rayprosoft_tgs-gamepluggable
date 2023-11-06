@@ -96,3 +96,9 @@ affinity:
           values:
           - game-pluggable-service
       topologyKey: kubernetes.io/hostname
+
+restart:
+  enabled: false
+  serviceAccount: game-pluggable-service-restarter
+  annotations: {}
+  schedule: 0 0 * * * 
