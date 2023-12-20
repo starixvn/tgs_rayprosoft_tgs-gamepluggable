@@ -4,20 +4,13 @@ using Tgs.GameProviders.Pluggable.Core;
 
 namespace Tgs.GameProviders.Pluggable.Repositories;
 
-internal class GameProviderRepository : IGameProvider
+internal class GameProviderRepository(
+    IGameCommandClient client) : IGameProvider
 {
-    private readonly IGameCommandClient _client;
-
-    public GameProviderRepository(
-        IGameCommandClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async ValueTask<GameProviderInfo> GetAsync(
         Guid gameProviderId,
         CancellationToken cancellationToken = default)
-        => await _client
+        => await client
         .GameProviderGetAsync(
             gameProviderId: gameProviderId,
             cancellationToken: cancellationToken)
@@ -27,7 +20,7 @@ internal class GameProviderRepository : IGameProvider
     public async ValueTask<GameProviderConfigInfo> GetConfigurationAsync(
         Guid gameProviderConfigId,
         CancellationToken cancellationToken = default)
-        => await _client
+        => await client
         .GameProviderConfigurationGetAsync(
             gameProviderConfigId: gameProviderConfigId,
             cancellationToken: cancellationToken)
@@ -37,7 +30,7 @@ internal class GameProviderRepository : IGameProvider
     public async ValueTask<Guid> GetGameProviderIdAsync(
         string gameProviderCode,
         CancellationToken cancellationToken = default)
-        => await _client
+        => await client
         .GameProviderGetGameProviderIdAsync(
             gameProviderCode: gameProviderCode,
             cancellationToken: cancellationToken)

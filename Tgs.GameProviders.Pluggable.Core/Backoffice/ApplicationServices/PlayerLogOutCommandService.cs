@@ -6,17 +6,10 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
-internal class PlayerLogOutCommandService : ICommandService<PlayerLogOutCommand>
+internal class PlayerLogOutCommandService(IGamePlayerLogOutClient client) : ICommandService<PlayerLogOutCommand>
 {
-    private readonly IGamePlayerLogOutClient _client;
-
-    public PlayerLogOutCommandService(IGamePlayerLogOutClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public ValueTask ExecuteAsync(PlayerLogOutCommand command, CancellationToken cancellationToken = default)
-        => _client.LogOutAsync(
+        => client.LogOutAsync(
             playerCode: command.PlayerCode,
             cancellationToken: cancellationToken);
 }

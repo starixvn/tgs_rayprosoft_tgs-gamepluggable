@@ -7,91 +7,75 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 
-internal class GameUrlGetService : IGetService<GameUrlQuery, Uri>
+internal class GameUrlGetService(
+    IGame game,
+    IGameUrl gameUrl,
+    IVerification verification,
+    IPlayer player) : IGetService<GameUrlQuery, Uri>
 {
-    private readonly IGame _game;
-    private readonly IGameUrl _gameUrl;
-    private readonly IPlayer _player;
-    private readonly IVerification _verification;
-
-    public GameUrlGetService(
-        IGame game,
-        IGameUrl gameUrl,
-        IVerification verification,
-        IPlayer player)
-    {
-        _game = game ?? throw new ArgumentNullException(nameof(game));
-        _gameUrl = gameUrl ?? throw new ArgumentNullException(nameof(gameUrl));
-        _verification = verification ?? throw new ArgumentNullException(nameof(verification));
-        _player = player ?? throw new ArgumentNullException(nameof(player));
-    }
-
     public async ValueTask<Uri> GetAsync(GameUrlQuery query, CancellationToken cancellationToken = default)
     {
-        var player = await _player
-            .GetAsync(
+        var playerInfo = await player.GetAsync(
             playerCode: query.PlayerCode,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var game = await _game
-            .GetAsync(
+        var gameInfo = await game.GetAsync(
             gameId: query.GameId,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        await _verification
-            .VerifyPlayerGameUrlAsync(
-            player: player,
-            game: game,
+        await verification.VerifyPlayerGameUrlAsync(
+            player: playerInfo,
+            game: gameInfo,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        return game.GameProviderCode switch
+        return gameInfo.GameProviderCode switch
         {
             var o when o == GameProviderType.AsiaGaming
-            => await _gameUrl
+            => await gameUrl
                 .GetGameUrlByAsiaGamingAsync(
-                    game.GameProviderCode,
-                    (GameProvidersClientGameType)game.Type,
-                    game.GameId,
-                    player.BrandCode,
-                    player.PlayerCode,
-                    player.DefaultWalletCurrencyCode,
+                    gameInfo.GameProviderCode,
+                    (GameProvidersClientGameType)gameInfo.Type,
+                    gameInfo.GameId,
+                    playerInfo.BrandCode,
+                    playerInfo.PlayerCode,
+                    playerInfo.DefaultWalletCurrencyCode,
                     query.LoginRecordId,
                     query.PlatformType,
                     query.Language,
                     query.IpAddress,
                     query.BackUrl,
-                    player.DefaultWalletId,
+                    playerInfo.DefaultWalletId,
                     cancellationToken)
                 .ConfigureAwait(false),
             var o when o == GameProviderType.BetConstruct
-            => await _gameUrl
+            => await gameUrl
                 .GetGameUrlByBetConstructAsync(
-                    game.GameProviderCode,
-                    (GameProvidersClientGameType)game.Type,
-                    game.GameId,
-                    player.BrandCode,
-                    player.PlayerCode,
-                    player.DefaultWalletCurrencyCode,
+                    gameInfo.GameProviderCode,
+                    (GameProvidersClientGameType)gameInfo.Type,
+                    gameInfo.GameId,
+                    playerInfo.BrandCode,
+                    playerInfo.PlayerCode,
+                    playerInfo.DefaultWalletCurrencyCode,
                     query.LoginRecordId,
                     query.PlatformType,
                     query.Language,
                     query.IpAddress,
                     query.BackUrl,
-                    player.BrandId,
-                    game.GameProviderId,
+                    playerInfo.BrandId,
+                    gameInfo.GameProviderId,
                     cancellationToken)
                 .ConfigureAwait(false),
-            _ => await _gameUrl
+            _ => await gameUrl
                 .GetGameUrlAsync(
-                    game.GameProviderCode,
-                    (GameProvidersClientGameType)game.Type,
-                    game.GameId,
-                    player.BrandCode,
-                    player.PlayerCode,
-                    player.DefaultWalletCurrencyCode,
+                    gameInfo.GameProviderCode,
+                    (GameProvidersClientGameType)gameInfo.Type,
+                    gameInfo.GameId,
+                    playerInfo.BrandCode,
+                    playerInfo.PlayerCode,
+                    playerInfo.DefaultWalletCurrencyCode,
                     query.LoginRecordId,
                     query.PlatformType,
                     query.Language,

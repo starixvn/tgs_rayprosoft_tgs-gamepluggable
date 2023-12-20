@@ -9,22 +9,13 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
-internal class GameRoundClosedService : ICommandService<GameRoundClosedCommand>
+internal class GameRoundClosedService(
+    ICashServiceClient cashServiceClient,
+    IGameRoundsClient gameRoundsClient) : ICommandService<GameRoundClosedCommand>
 {
-    private readonly ICashServiceClient _cashServiceClient;
-    private readonly IGameRoundsClient _gameRoundsClient;
-
-    public GameRoundClosedService(
-        ICashServiceClient cashServiceClient,
-        IGameRoundsClient gameRoundsClient)
-    {
-        _cashServiceClient = cashServiceClient ?? throw new ArgumentNullException(nameof(cashServiceClient));
-        _gameRoundsClient = gameRoundsClient ?? throw new ArgumentNullException(nameof(gameRoundsClient));
-    }
-
     public async ValueTask ExecuteAsync(GameRoundClosedCommand command, CancellationToken cancellationToken = default)
     {
-        var gameRoundModel = await _gameRoundsClient
+        var gameRoundModel = await gameRoundsClient
             .GetGameRoundAsync(
                 roundId: command.RoundId,
                 cancellationToken: cancellationToken)
@@ -49,7 +40,7 @@ internal class GameRoundClosedService : ICommandService<GameRoundClosedCommand>
             OperatorId = command.OperatorId,
             Remark = command.Remark
         };
-        await _gameRoundsClient
+        await gameRoundsClient
             .ManualCloseRoundAsync(
             roundId: command.RoundId,
             source: manualCloseRound,
@@ -58,7 +49,7 @@ internal class GameRoundClosedService : ICommandService<GameRoundClosedCommand>
 
         if (command.AdjustAmount.HasValue)
         {
-            _ = await _cashServiceClient
+            _ = await cashServiceClient
                 .UnsettledBetManualAsync(
                 walletId: gameRoundModel.WalletId,
                 amount: command.AdjustAmount.Value,

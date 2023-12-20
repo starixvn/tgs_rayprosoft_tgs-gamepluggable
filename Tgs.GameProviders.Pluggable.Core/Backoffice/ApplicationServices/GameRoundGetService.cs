@@ -6,18 +6,11 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
-internal class GameRoundGetService : IGetService<GameRoundQuery, GameRoundResult>
+internal class GameRoundGetService(IGameRoundsClient client) : IGetService<GameRoundQuery, GameRoundResult>
 {
-    private readonly IGameRoundsClient _client;
-
-    public GameRoundGetService(IGameRoundsClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async ValueTask<GameRoundResult> GetAsync(GameRoundQuery query, CancellationToken cancellationToken = default)
     {
-        var data = await _client
+        var data = await client
             .GetGameRoundAsync(
             roundId: query.RoundId,
             cancellationToken: cancellationToken)

@@ -2,14 +2,10 @@
 
 namespace Tgs.GameProviders.Pluggable.Core.Exceptions;
 
-public class VerifyPlayerBalanceException : Exception
+public class VerifyPlayerBalanceException(
+    string brandCode,
+    string playerCode,
+    string username,
+    string gameProviderCode) : Exception($"玩家點數驗證失敗.({brandCode}|{playerCode}|{username}|{gameProviderCode}|)")
 {
-    public VerifyPlayerBalanceException(
-        string brandCode,
-        string playerCode,
-        string username,
-        string gameProviderCode)
-        : base($"玩家點數驗證失敗.({brandCode}|{playerCode}|{username}|{gameProviderCode}|)")
-    {
-    }
 }

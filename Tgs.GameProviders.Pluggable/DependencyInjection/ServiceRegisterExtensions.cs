@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceRegisterExtensions
 {
-    public static async Task<WebApplication> InitialConnectionGameFundTransfer(this WebApplication app)
+    public static async Task<WebApplication> InitialConnectionGameFundTransferAsync(this WebApplication app)
     {
         using (var scope = app.Services.CreateScope())
         {
@@ -23,7 +23,7 @@ public static class ServiceRegisterExtensions
         return app;
     }
 
-    public static async Task<WebApplication> UseGameProviderRegister(this WebApplication app)
+    public static async Task<WebApplication> UseGameProviderRegisterAsync(this WebApplication app)
     {
         using (var scope = app.Services.CreateScope())
         {

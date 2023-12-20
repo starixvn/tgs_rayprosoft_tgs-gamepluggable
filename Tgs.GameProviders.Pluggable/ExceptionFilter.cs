@@ -4,14 +4,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Tgs.GameProviders.Pluggable;
 
-public class ExceptionFilter : IExceptionFilter
+public class ExceptionFilter(ILogger<ExceptionFilter> logger) : IExceptionFilter
 {
-    private readonly ILogger<ExceptionFilter> _logger;
-
-    public ExceptionFilter(ILogger<ExceptionFilter> logger)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    private readonly ILogger<ExceptionFilter> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     public void OnException(ExceptionContext context)
     {

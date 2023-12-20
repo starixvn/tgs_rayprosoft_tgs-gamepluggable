@@ -9,18 +9,11 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
-internal class GameActionQueryService : IQueryService<GameActionQuery, GameActionResult>
+internal class GameActionQueryService(IGameCommandClient client) : IQueryService<GameActionQuery, GameActionResult>
 {
-    private readonly IGameCommandClient _client;
-
-    public GameActionQueryService(IGameCommandClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async IAsyncEnumerable<GameActionResult> QueryAsync(GameActionQuery query, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var gameActions = await _client
+        var gameActions = await client
             .GameActionQueryAsync(
             roundId: query.RoundId,
             cancellationToken: cancellationToken)

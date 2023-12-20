@@ -5,29 +5,22 @@ using Tgs.GameProviders.Pluggable.Core.Exceptions;
 
 namespace Tgs.GameProviders.Pluggable.Repositories;
 
-internal class VerificationRepository : IVerification
+internal class VerificationRepository(IGameCommandClient client) : IVerification
 {
-    private readonly IGameCommandClient _client;
-
-    public VerificationRepository(IGameCommandClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async ValueTask VerifyBrandCurrencyAsync(
         Guid brandId,
         Guid gameProviderId,
         string currencyCode,
         CancellationToken cancellationToken = default)
     {
-        var brandCurrency = await _client
+        var brandCurrency = await client
             .BrandGetCurrencyAsync(
                 brandId: brandId,
                 currencyCode: currencyCode,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var gameProviderCurrency = await _client
+        var gameProviderCurrency = await client
             .GameProviderGetCurrencyCodeAsync(
                 gameProviderId: gameProviderId,
                 currencyCode: currencyCode,
@@ -45,31 +38,31 @@ internal class VerificationRepository : IVerification
         GameProviderInfo gameProvider,
         CancellationToken cancellationToken = default)
     {
-        var resellerStatus = await _client
+        var resellerStatus = await client
             .ResellerGetStatusAsync(
             resellerId: player.ResellerId,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var licenseeStatus = await _client
+        var licenseeStatus = await client
             .LicenseeGetStatusAsync(
             licenseeId: player.LicenseeId,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var brandStatus = await _client
+        var brandStatus = await client
             .BrandGetStatusAsync(
             brandId: player.BrandId,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var playerStatus = await _client
+        var playerStatus = await client
             .PlayerGetStatusAsync(
             playerCode: player.PlayerCode,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var gameProviderStatus = await _client
+        var gameProviderStatus = await client
             .GameProviderGetStatusAsync(
             gameProviderId: gameProvider.GameProviderId,
             cancellationToken: cancellationToken)
@@ -86,14 +79,14 @@ internal class VerificationRepository : IVerification
             throw new VerifyPlayerBalanceException(player.BrandCode, player.PlayerCode, player.Username, gameProvider.GameProviderCode);
         }
 
-        var brandCurrency = await _client
+        var brandCurrency = await client
             .BrandGetCurrencyAsync(
             brandId: player.BrandId,
             currencyCode: player.DefaultWalletCurrencyCode,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var gameProviderCurrency = await _client
+        var gameProviderCurrency = await client
             .GameProviderGetCurrencyCodeAsync(
             gameProviderId: gameProvider.GameProviderId,
             currencyCode: player.DefaultWalletCurrencyCode,
@@ -111,31 +104,31 @@ internal class VerificationRepository : IVerification
         GameProviderInfo gameProvider,
         CancellationToken cancellationToken = default)
     {
-        var resellerStatus = await _client
+        var resellerStatus = await client
             .ResellerGetStatusAsync(
             resellerId: player.ResellerId,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var licenseeStatus = await _client
+        var licenseeStatus = await client
             .LicenseeGetStatusAsync(
             licenseeId: player.LicenseeId,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var brandStatus = await _client
+        var brandStatus = await client
             .BrandGetStatusAsync(
             brandId: player.BrandId,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var playerStatus = await _client
+        var playerStatus = await client
             .PlayerGetStatusAsync(
             playerCode: player.PlayerCode,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var gameProviderStatus = await _client
+        var gameProviderStatus = await client
             .GameProviderGetStatusAsync(
             gameProviderId: gameProvider.GameProviderId,
             cancellationToken: cancellationToken)
@@ -151,14 +144,14 @@ internal class VerificationRepository : IVerification
             throw new VerifyPlayerFundException(player.BrandCode, player.PlayerCode, player.Username, gameProvider.GameProviderCode);
         }
 
-        var brandCurrency = await _client
+        var brandCurrency = await client
             .BrandGetCurrencyAsync(
             brandId: player.BrandId,
             currencyCode: player.DefaultWalletCurrencyCode,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var gameProviderCurrency = await _client
+        var gameProviderCurrency = await client
             .GameProviderGetCurrencyCodeAsync(
             gameProviderId: gameProvider.GameProviderId,
             currencyCode: player.DefaultWalletCurrencyCode,
@@ -176,37 +169,37 @@ internal class VerificationRepository : IVerification
         GameInfo game,
         CancellationToken cancellationToken = default)
     {
-        var resellerStatus = await _client
+        var resellerStatus = await client
             .ResellerGetStatusAsync(
                 resellerId: player.ResellerId,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var licenseeStatus = await _client
+        var licenseeStatus = await client
             .LicenseeGetStatusAsync(
                 licenseeId: player.LicenseeId,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var brandStatus = await _client
+        var brandStatus = await client
             .BrandGetStatusAsync(
                 brandId: player.BrandId,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var playerStatus = await _client
+        var playerStatus = await client
             .PlayerGetStatusAsync(
                 playerCode: player.PlayerCode,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var gameProviderStatus = await _client
+        var gameProviderStatus = await client
             .GameProviderGetStatusAsync(
                 gameProviderId: game.GameProviderId,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var gameStatus = await _client
+        var gameStatus = await client
             .GameGetStatusAsync(
                 gameid: game.GameId,
                 cancellationToken: cancellationToken)
@@ -223,14 +216,14 @@ internal class VerificationRepository : IVerification
             throw new VerifyPlayerGameUrlException(player.BrandCode, player.PlayerCode, player.Username, game.GameProviderCode, game.GameCode);
         }
 
-        var brandCurrency = await _client
+        var brandCurrency = await client
             .BrandGetCurrencyAsync(
                 brandId: player.BrandId,
                 currencyCode: player.DefaultWalletCurrencyCode,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var gameProviderCurrency = await _client
+        var gameProviderCurrency = await client
             .GameProviderGetCurrencyCodeAsync(
                 gameProviderId: game.GameProviderId,
                 currencyCode: player.DefaultWalletCurrencyCode,

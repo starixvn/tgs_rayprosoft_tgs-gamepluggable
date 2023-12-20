@@ -9,43 +9,28 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 
-internal class GameSM01PlatformLoginGetService : IGetService<GameSM01PlatformLoginQuery, GameSM01PlatformLoginInfo>
+internal class GameSM01PlatformLoginGetService(
+    IGameUrl gameUrl,
+    IVerification verification,
+    IGameProvider gameProvider,
+    IGameCommandClient gameCommandClient,
+    IPlayer player) : IGetService<GameSM01PlatformLoginQuery, GameSM01PlatformLoginInfo>
 {
-    private readonly IGameCommandClient _gameCommandClient;
-    private readonly IGameProvider _gameProvider;
-    private readonly IGameUrl _gameUrl;
-    private readonly IPlayer _player;
-    private readonly IVerification _verification;
-
-    public GameSM01PlatformLoginGetService(
-        IGameUrl gameUrl,
-        IVerification verification,
-        IGameProvider gameProvider,
-        IGameCommandClient gameCommandClient,
-        IPlayer player)
-    {
-        _gameUrl = gameUrl ?? throw new ArgumentNullException(nameof(gameUrl));
-        _verification = verification ?? throw new ArgumentNullException(nameof(verification));
-        _gameProvider = gameProvider ?? throw new ArgumentNullException(nameof(gameProvider));
-        _gameCommandClient = gameCommandClient ?? throw new ArgumentNullException(nameof(gameCommandClient));
-        _player = player ?? throw new ArgumentNullException(nameof(player));
-    }
-
     public async ValueTask<GameSM01PlatformLoginInfo> GetAsync(GameSM01PlatformLoginQuery query, CancellationToken cancellationToken = default)
     {
-        var player = await _player
+        var playerInfo = await player
             .GetAsync(
             playerCode: query.PlayerCode,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var gameProviderId = await _gameProvider
+        var gameProviderId = await gameProvider
             .GetGameProviderIdAsync(
             gameProviderCode: GameProviderType.SM01,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var games = await _gameCommandClient
+        var games = await gameCommandClient
             .GameQueryAsync(
             gameProviderId: gameProviderId,
             cancellationToken: cancellationToken)
@@ -56,16 +41,16 @@ internal class GameSM01PlatformLoginGetService : IGetService<GameSM01PlatformLog
 
         var game = games.ElementAt(0);
 
-        await _verification
+        await verification
             .VerifyPlayerGameUrlAsync(
-            player: player,
+            player: playerInfo,
             game: game,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var info = await _gameUrl
+        var info = await gameUrl
             .GetGamePlatformLoginBySM01Async(
-            playerCode: player.PlayerCode,
+            playerCode: playerInfo.PlayerCode,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 

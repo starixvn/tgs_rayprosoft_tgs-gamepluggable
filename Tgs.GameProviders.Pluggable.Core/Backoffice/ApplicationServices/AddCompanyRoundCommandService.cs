@@ -8,22 +8,13 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
-internal class AddCompanyRoundCommandService : ICommandService<AddCompanyRoundCommand>
+internal class AddCompanyRoundCommandService(
+    IGameRoundsClient gameRoundsClient,
+    IBrand brand) : ICommandService<AddCompanyRoundCommand>
 {
-    private readonly IBrand _brand;
-    private readonly IGameRoundsClient _gameRoundsClient;
-
-    public AddCompanyRoundCommandService(
-        IGameRoundsClient gameRoundsClient,
-        IBrand brand)
-    {
-        _gameRoundsClient = gameRoundsClient ?? throw new ArgumentNullException(nameof(gameRoundsClient));
-        _brand = brand ?? throw new ArgumentNullException(nameof(brand));
-    }
-
     public async ValueTask ExecuteAsync(AddCompanyRoundCommand command, CancellationToken cancellationToken = default)
     {
-        var gameProviderConfigurationId = await _brand
+        var gameProviderConfigurationId = await brand
             .GetGameProviderConfigurationIdAsync(
                 command.BrandId,
                 command.GameProviderId,
@@ -52,7 +43,7 @@ internal class AddCompanyRoundCommandService : ICommandService<AddCompanyRoundCo
             OperatorId = command.OperatorId,
             Remark = command.Remark
         };
-        await _gameRoundsClient
+        await gameRoundsClient
             .AddCompanyRoundAsync(
             source: addCompanyRound,
             cancellationToken: cancellationToken)

@@ -51,7 +51,7 @@ public class PlayerController : ControllerBase
     /// <remarks>
     /// <b>Example</b><br />
     ///
-    ///     Get
+    ///     GetAsync
     ///         /bo/balance/player/4ucmqplxb029/KY
     /// </remarks>
     [HttpGet("balance/{playerCode}/{gameProviderCode}", Name = "Backoffice_Player_GetBalance")]
@@ -83,7 +83,7 @@ public class PlayerController : ControllerBase
     /// <remarks>
     /// <b>Example</b><br />
     ///
-    ///     Get
+    ///     GetAsync
     ///         /bo/player/balance/info/4ucmqplxb029/KY
     /// </remarks>
     [HttpGet("balance/info/{playerCode}/{gameProviderCode}", Name = "Backoffice_Player_GetBalanceInfo")]

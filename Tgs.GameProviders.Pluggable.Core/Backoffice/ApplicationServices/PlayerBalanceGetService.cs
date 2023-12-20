@@ -6,52 +6,39 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
-internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, PlayerBalanceResult>
+internal class PlayerBalanceGetService(
+    IGameProvider gameProvider,
+    IPlayer player,
+    IVerification verification,
+    IPlayerGameBalance playerGameBalance) : IGetService<PlayerBalanceQuery, PlayerBalanceResult>
 {
-    private readonly IGameProvider _gameProvider;
-    private readonly IPlayer _player;
-    private readonly IPlayerGameBalance _playerGameBalance;
-    private readonly IVerification _verification;
-
-    public PlayerBalanceGetService(
-        IGameProvider gameProvider,
-        IPlayer player,
-        IVerification verification,
-        IPlayerGameBalance playerGameBalance)
-    {
-        _gameProvider = gameProvider ?? throw new ArgumentNullException(nameof(gameProvider));
-        _player = player ?? throw new ArgumentNullException(nameof(player));
-        _verification = verification ?? throw new ArgumentNullException(nameof(verification));
-        _playerGameBalance = playerGameBalance ?? throw new ArgumentNullException(nameof(playerGameBalance));
-    }
-
     public async ValueTask<PlayerBalanceResult> GetAsync(PlayerBalanceQuery query, CancellationToken cancellationToken = default)
     {
-        var player = await _player
+        var playerInfo = await player
             .GetAsync(
             playerCode: query.PlayerCode,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var gameProviderId = await _gameProvider
+        var gameProviderId = await gameProvider
             .GetGameProviderIdAsync(
             gameProviderCode: query.GameProviderCode,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        await _verification
+        await verification
             .VerifyBrandCurrencyAsync(
-            brandId: player.BrandId,
+            brandId: playerInfo.BrandId,
             gameProviderId: gameProviderId,
-            currencyCode: player.DefaultWalletCurrencyCode,
+            currencyCode: playerInfo.DefaultWalletCurrencyCode,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var result = await _playerGameBalance
+        var result = await playerGameBalance
             .GetBalanceAsync(
             gameProviderCode: query.GameProviderCode,
-            playerCode: player.PlayerCode,
-            currencyCode: player.DefaultWalletCurrencyCode,
+            playerCode: playerInfo.PlayerCode,
+            currencyCode: playerInfo.DefaultWalletCurrencyCode,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 

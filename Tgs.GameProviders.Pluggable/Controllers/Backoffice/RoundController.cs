@@ -85,7 +85,7 @@ public class RoundController : ControllerBase
     /// <remarks>
     /// <b>Example</b><br />
     ///
-    ///     Get /bo/round/e8a90f53-11e7-40ab-9ed3-08d99f799e5a/GameActionQuery
+    ///     GetAsync /bo/round/e8a90f53-11e7-40ab-9ed3-08d99f799e5a/GameActionQuery
     /// </remarks>
     [HttpGet("{roundId}/gameactionquery")]
     public IAsyncEnumerable<GameActionViewModel> GameActionQueryAsync(
@@ -178,7 +178,7 @@ public class RoundController : ControllerBase
     /// <remarks>
     /// <b>Example</b><br />
     ///
-    ///     Get /bo/round/3c6282df-d531-4482-088e-08d9a004e811/gamerounddetail?language=zh-CN
+    ///     GetAsync /bo/round/3c6282df-d531-4482-088e-08d9a004e811/gamerounddetail?language=zh-CN
     /// </remarks>
     [HttpGet("{roundId}/gamerounddetail")]
     public async ValueTask<JsonDocument> GameRoundDetailGetAsync(
@@ -202,7 +202,7 @@ public class RoundController : ControllerBase
     /// <remarks>
     /// <b>Example</b><br />
     ///
-    ///     Get /bo/round/e8a90f53-11e7-40ab-9ed3-08d99f799e5a
+    ///     GetAsync /bo/round/e8a90f53-11e7-40ab-9ed3-08d99f799e5a
     /// </remarks>
     [HttpGet("{roundId}")]
     public async ValueTask<GameRoundViewModel> GameRoundGetAsync(

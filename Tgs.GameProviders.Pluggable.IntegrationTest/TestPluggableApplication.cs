@@ -7,15 +7,8 @@ using OpenTelemetry.Exporter;
 
 namespace Tgs.GameProviders.Pluggable.IntegrationTest;
 
-internal class TestPluggableApplication : WebApplicationFactory<Program>
+internal class TestPluggableApplication(Action<IWebHostBuilder>? webHostConfigure = null) : WebApplicationFactory<Program>
 {
-    private readonly Action<IWebHostBuilder>? _webHostConfigure;
-
-    public TestPluggableApplication(Action<IWebHostBuilder>? webHostConfigure = null)
-    {
-        _webHostConfigure = webHostConfigure;
-    }
-
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         _ = builder
@@ -33,6 +26,6 @@ internal class TestPluggableApplication : WebApplicationFactory<Program>
                         }));
             });
 
-        _webHostConfigure?.Invoke(builder);
+        webHostConfigure?.Invoke(builder);
     }
 }

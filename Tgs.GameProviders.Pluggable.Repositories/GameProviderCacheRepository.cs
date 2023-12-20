@@ -4,59 +4,54 @@ using Tgs.GameProviders.Pluggable.Core;
 
 namespace Tgs.GameProviders.Pluggable.Repositories;
 
-internal class GameProviderCacheRepository : IGameProvider
+internal class GameProviderCacheRepository(
+    IGameProvider gameProvider,
+    IMemoryCache memoryCache) : IGameProvider
 {
-    private readonly IGameProvider _gameProvider;
-    private readonly IMemoryCache _memoryCache;
-
-    public GameProviderCacheRepository(
-        IGameProvider gameProvider,
-        IMemoryCache memoryCache
-        )
-    {
-        _gameProvider = gameProvider ?? throw new ArgumentNullException(nameof(gameProvider));
-        _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
-    }
-
     public async ValueTask<GameProviderInfo> GetAsync(
         Guid gameProviderId,
         CancellationToken cancellationToken = default)
     {
         var key = $"game:pluggable:gameprovidercache:get:{gameProviderId}";
-        if (!_memoryCache.TryGetValue(key, out GameProviderInfo? gameProvider))
+        if (!memoryCache.TryGetValue(key, out GameProviderInfo? gameProviderInfo))
         {
-            gameProvider = await _gameProvider
-                    .GetAsync(
-                        gameProviderId,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-            _ = _memoryCache.Set(key, gameProvider);
+            gameProviderInfo = await gameProvider.GetAsync(
+                gameProviderId: gameProviderId,
+                cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
+
+            if (gameProviderInfo is not null)
+            {
+                return memoryCache.Set(key, gameProviderInfo);
+            }
         }
-        return gameProvider!;
+        return gameProviderInfo ?? throw new ArgumentException($"game provider doesn't exist.{gameProviderId}");
     }
 
     public ValueTask<GameProviderConfigInfo> GetConfigurationAsync(
         Guid gameProviderConfigId,
         CancellationToken cancellationToken = default)
-        => _gameProvider
-            .GetConfigurationAsync(
-                gameProviderConfigId,
-                cancellationToken);
+        => gameProvider.GetConfigurationAsync(
+            gameProviderConfigId: gameProviderConfigId,
+            cancellationToken: cancellationToken);
 
     public async ValueTask<Guid> GetGameProviderIdAsync(
         string gameProviderCode,
         CancellationToken cancellationToken = default)
     {
         var key = $"game:pluggable:gameprovidercache:get:gameproviderid:{gameProviderCode}";
-        if (!_memoryCache.TryGetValue(key, out Guid gameProviderId))
+        if (!memoryCache.TryGetValue(key, out Guid? gameProviderId))
         {
-            gameProviderId = await _gameProvider
-                    .GetGameProviderIdAsync(
-                        gameProviderCode,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-            _ = _memoryCache.Set(key, gameProviderId);
+            gameProviderId = await gameProvider.GetGameProviderIdAsync(
+                gameProviderCode: gameProviderCode,
+                cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
+
+            if (gameProviderId.HasValue)
+            {
+                return memoryCache.Set(key, gameProviderId.Value);
+            }
         }
-        return gameProviderId;
+        return gameProviderId ?? throw new Exception($"game provider does not exist.({gameProviderCode})");
     }
 }

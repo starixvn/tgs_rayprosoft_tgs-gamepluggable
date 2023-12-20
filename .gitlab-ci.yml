@@ -80,7 +80,13 @@ push-docker-image:
     untracked: true   
     policy: pull
   script:
-    - dotnet build "Tgs.GameProviders.Pluggable/Tgs.GameProviders.Pluggable.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageName:$Tag" --no-restore
+    #- dotnet build "Tgs.GameProviders.Pluggable/Tgs.GameProviders.Pluggable.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageName:$Tag" --no-restore
+    - dotnet publish "Tgs.GameProviders.Pluggable" 
+       --os linux --arch x64
+       /t:PublishContainer
+       -c $BuildConfiguration
+       /p:ContainerRepository=$ImageName
+       /p:ContainerImageTag=$Tag
     - docker push $ImageName:$Tag
 
 push-k8s-template:

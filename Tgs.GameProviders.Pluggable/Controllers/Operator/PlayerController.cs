@@ -90,7 +90,7 @@ public class PlayerController : ControllerBase
     /// <remarks>
     /// <b>Example</b><br />
     ///
-    ///     Get
+    ///     GetAsync
     ///         /op/player/balance/4ucmqplxb029/KY
     /// </remarks>
     [HttpGet("balance/{playerCode}/{gameProviderCode}")]

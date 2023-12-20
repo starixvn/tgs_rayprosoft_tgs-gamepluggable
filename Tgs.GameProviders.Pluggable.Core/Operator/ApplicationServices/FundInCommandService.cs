@@ -7,28 +7,13 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Operator.ApplicationServices;
 
-internal class FundInCommandService : ICommandService<FundInCommand>
+internal class FundInCommandService(
+  IGameFundTransferClient gameFundTransferClient,
+  IGameProvider gameProvider,
+  IVerification verification,
+  IPlayer player,
+  IPlayerGameBalance playerGameBalance) : ICommandService<FundInCommand>
 {
-    private readonly IGameFundTransferClient _gameFundTransferClient;
-    private readonly IGameProvider _gameProvider;
-    private readonly IPlayer _player;
-    private readonly IPlayerGameBalance _playerGameBalance;
-    private readonly IVerification _verification;
-
-    public FundInCommandService(
-      IGameFundTransferClient gameFundTransferClient,
-      IGameProvider gameProvider,
-      IVerification verification,
-      IPlayer player,
-      IPlayerGameBalance playerGameBalance)
-    {
-        _gameFundTransferClient = gameFundTransferClient ?? throw new ArgumentNullException(nameof(gameFundTransferClient));
-        _gameProvider = gameProvider ?? throw new ArgumentNullException(nameof(gameProvider));
-        _verification = verification ?? throw new ArgumentNullException(nameof(verification));
-        _player = player ?? throw new ArgumentNullException(nameof(player));
-        _playerGameBalance = playerGameBalance ?? throw new ArgumentNullException(nameof(playerGameBalance));
-    }
-
     public async ValueTask ExecuteAsync(FundInCommand command, CancellationToken cancellationToken = default)
     {
         if (command.Amount == 0)
@@ -36,41 +21,41 @@ internal class FundInCommandService : ICommandService<FundInCommand>
             return;
         }
 
-        var player = await _player
+        var playerInfo = await player
             .GetAsync(
                 command.PlayerCode,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var gameProviderId = await _gameProvider
+        var gameProviderId = await gameProvider
             .GetGameProviderIdAsync(
                 command.GameProviderCode,
                 cancellationToken)
             .ConfigureAwait(false);
 
-        var gameProvider = await _gameProvider
+        var gameProviderInfo = await gameProvider
             .GetAsync(
                 gameProviderId,
                 cancellationToken)
             .ConfigureAwait(false);
 
-        if (!gameProvider.TransferWallet)
+        if (!gameProviderInfo.TransferWallet)
         {
-            throw new Exception($"This game provider does not provide multi-wallet functionality.({gameProvider.GameProviderCode})");
+            throw new Exception($"This game provider does not provide multi-wallet functionality.({gameProviderInfo.GameProviderCode})");
         }
 
-        await _verification
+        await verification
             .VerifyPlayerFundAsync(
-                player: player,
-                gameProvider: gameProvider,
+                player: playerInfo,
+                gameProvider: gameProviderInfo,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var gameProviderBalance = await _playerGameBalance
+        var gameProviderBalance = await playerGameBalance
             .GetBalanceAsync(
-            gameProviderCode: gameProvider.GameProviderCode,
-            playerCode: player.PlayerCode,
-            currencyCode: player.DefaultWalletCurrencyCode,
+            gameProviderCode: gameProviderInfo.GameProviderCode,
+            playerCode: playerInfo.PlayerCode,
+            currencyCode: playerInfo.DefaultWalletCurrencyCode,
             cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
@@ -83,17 +68,17 @@ internal class FundInCommandService : ICommandService<FundInCommand>
 
         var amount = command.Amount;
 
-        if (gameProvider.GameProviderCode == GameProviderType.SM01)
+        if (gameProviderInfo.GameProviderCode == GameProviderType.SM01)
             amount = Math.Floor(amount);
 
-        _ = await _gameFundTransferClient
+        _ = await gameFundTransferClient
             .FundInAsync(
-                gameProviderId: gameProvider.GameProviderId,
-                gameProviderCode: gameProvider.GameProviderCode,
-                brandCode: player.BrandCode,
-                playerCode: player.PlayerCode,
-                walletId: player.DefaultWalletId,
-                currencyCode: player.DefaultWalletCurrencyCode,
+                gameProviderId: gameProviderInfo.GameProviderId,
+                gameProviderCode: gameProviderInfo.GameProviderCode,
+                brandCode: playerInfo.BrandCode,
+                playerCode: playerInfo.PlayerCode,
+                walletId: playerInfo.DefaultWalletId,
+                currencyCode: playerInfo.DefaultWalletCurrencyCode,
                 amount: amount,
                 cancellationToken: cancellationToken)
             .ConfigureAwait(false);

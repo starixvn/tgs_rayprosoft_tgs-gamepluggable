@@ -349,7 +349,7 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
             Description: "KY",
             EndpointPath: null,
             RuleUrl: null,
-            AvailableCurrencies: new string[] { "PHP", "HKD", "CNY" },
+            AvailableCurrencies: ["PHP", "HKD", "CNY"],
             Localization: null,
             SubGameProviderCode: "KY");
 
@@ -456,7 +456,7 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
             Description: "KY",
             EndpointPath: null,
             RuleUrl: null,
-            AvailableCurrencies: new string[] { "PHP", "HKD" },
+            AvailableCurrencies: ["PHP", "HKD"],
             Localization: null,
             SubGameProviderCode: "KY");
 

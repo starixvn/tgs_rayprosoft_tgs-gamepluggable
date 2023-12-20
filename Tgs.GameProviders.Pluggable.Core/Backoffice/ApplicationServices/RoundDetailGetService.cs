@@ -10,25 +10,14 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
-internal class RoundDetailGetService : IGetService<RoundDetailQuery, JsonDocument>
+internal class RoundDetailGetService(
+    IGameRoundsClient gameRoundsClient,
+    IGameProvidersClient gameProvidersClient,
+    IGameProvider gameProvider) : IGetService<RoundDetailQuery, JsonDocument>
 {
-    private readonly IGameProvider _gameProvider;
-    private readonly IGameProvidersClient _gameProvidersClient;
-    private readonly IGameRoundsClient _gameRoundsClient;
-
-    public RoundDetailGetService(
-        IGameRoundsClient gameRoundsClient,
-        IGameProvidersClient gameProvidersClient,
-        IGameProvider gameProvider)
-    {
-        _gameRoundsClient = gameRoundsClient ?? throw new ArgumentNullException(nameof(gameRoundsClient));
-        _gameProvidersClient = gameProvidersClient ?? throw new ArgumentNullException(nameof(gameProvidersClient));
-        _gameProvider = gameProvider ?? throw new ArgumentNullException(nameof(gameProvider));
-    }
-
     public async ValueTask<JsonDocument> GetAsync(RoundDetailQuery query, CancellationToken cancellationToken = default)
     {
-        var data = await _gameRoundsClient
+        var data = await gameRoundsClient
             .GetGameRoundAsync(
             roundId: query.RoundId,
             cancellationToken: cancellationToken)
@@ -45,7 +34,7 @@ internal class RoundDetailGetService : IGetService<RoundDetailQuery, JsonDocumen
             }));
         }
 
-        var gameProviderModel = await _gameProvider
+        var gameProviderModel = await gameProvider
             .GetAsync(
             gameProviderId: data.GameProviderId,
             cancellationToken: cancellationToken)
@@ -53,7 +42,7 @@ internal class RoundDetailGetService : IGetService<RoundDetailQuery, JsonDocumen
 
         try
         {
-            var roundDetailResult = await _gameProvidersClient
+            var roundDetailResult = await gameProvidersClient
                 .RoundDetailAsync(
                 gameProviderCode: gameProviderModel!.GameProviderCode,
                 roundId: data.RoundId,

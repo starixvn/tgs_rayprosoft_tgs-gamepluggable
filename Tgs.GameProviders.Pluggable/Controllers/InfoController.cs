@@ -18,7 +18,7 @@ public class InfoController : ControllerBase
     /// <param name="_hostingEnvironment">The hosting environment.</param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<object> Get([FromServices] IWebHostEnvironment _hostingEnvironment)
+    public async Task<object> GetAsync([FromServices] IWebHostEnvironment _hostingEnvironment)
     {
         var hostName = Dns.GetHostName();
         var hostEntry = await Dns.GetHostEntryAsync(hostName);
