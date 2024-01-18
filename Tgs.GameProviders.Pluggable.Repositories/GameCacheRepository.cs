@@ -4,22 +4,14 @@ using Tgs.GameProviders.Pluggable.Core;
 
 namespace Tgs.GameProviders.Pluggable.Repositories;
 
-internal class GameCacheRepository : IGame
+internal class GameCacheRepository(
+    IGame game,
+    IMemoryCache memoryCache,
+    TimeSpan absoluteExpiration) : IGame
 {
-    private readonly TimeSpan _absoluteExpiration;
-    private readonly IGame _game;
-    private readonly IMemoryCache _memoryCache;
-
-    public GameCacheRepository(
-        IGame game,
-        IMemoryCache memoryCache,
-        TimeSpan absoluteExpiration
-        )
-    {
-        _game = game ?? throw new ArgumentNullException(nameof(game));
-        _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
-        _absoluteExpiration = absoluteExpiration;
-    }
+    private readonly TimeSpan _absoluteExpiration = absoluteExpiration;
+    private readonly IGame _game = game ?? throw new ArgumentNullException(nameof(game));
+    private readonly IMemoryCache _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
 
     public async ValueTask<GameInfo> GetAsync(int gameId, CancellationToken cancellationToken = default)
     {
