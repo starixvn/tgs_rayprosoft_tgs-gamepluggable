@@ -19,7 +19,7 @@
     <PackageReference Include="Tgs.GamePlayerLogOut.Client" Version="0.0.6" />
     <PackageReference Include="Tgs.GameProviders.Client" Version="0.0.77" />
     <PackageReference Include="Tgs.GameRecord.Handle.Client" Version="0.0.37" />
-    <PackageReference Include="Tgs.GameRounds.Client" Version="0.0.40" />
+    <PackageReference Include="Tgs.GameRounds.Client" Version="0.0.41" />
     <PackageReference Include="TGS.ServiceUtility" Version="0.2.0" />
   </ItemGroup>
 
