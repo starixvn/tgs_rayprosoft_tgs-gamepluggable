@@ -1,24 +1,26 @@
 ﻿using System;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Tgs.CashService.Client;
+using Tgs.GameRecord.Handle.Client;
+using Tgs.GameRecord.Handle.Common.Protos;
 using Tgs.GameRounds.Client;
 using Tgs.GameRounds.Common;
-using Tgs.GameRounds.Common.ViewModels;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
 internal class GameRoundClosedService(
     ICashServiceClient cashServiceClient,
-    IGameRoundsClient gameRoundsClient) : ICommandService<GameRoundClosedCommand>
+    IGameRoundsClient gameRoundsClient,
+    IGameRecordHandleClient gameRecordHandleClient) : ICommandService<GameRoundClosedCommand>
 {
     public async ValueTask ExecuteAsync(GameRoundClosedCommand command, CancellationToken cancellationToken = default)
     {
-        var gameRoundModel = await gameRoundsClient
-            .GetGameRoundAsync(
-                roundId: command.RoundId,
-                cancellationToken: cancellationToken)
+        var gameRoundModel = await gameRoundsClient.GetGameRoundAsync(
+            roundId: command.RoundId,
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false)
             ?? throw new Exception($"Game round number does not exist.({command.RoundId})");
 
@@ -27,25 +29,42 @@ internal class GameRoundClosedService(
             throw new Exception($"Game round number has been closed.({command.RoundId})");
         }
 
-        var manualCloseRound = new ManualCloseRoundViewModel
+        var wagerState = command.RoundClientStatus switch
         {
-            ClientStatus = command.RoundClientStatus,
-            ExternalClosedOn = command.ExternalClosedOn,
-            BetAmount = command.BetAmount,
-            SettleAmount = command.SettleAmount,
-            ValidBetAmount = command.ValidBetAmount,
-            Commission = command.Commission,
-            Turnover = command.Turnover,
-            CompanyWinLoss = command.WinLoss,
-            OperatorId = command.OperatorId,
-            Remark = command.Remark
+            GameRoundClientStatus.Win => WagerStates.Win,
+            GameRoundClientStatus.Loss => WagerStates.Lose,
+            GameRoundClientStatus.Void => WagerStates.Void,
+            GameRoundClientStatus.Draw => WagerStates.Draw,
+            _ => WagerStates.Running
         };
-        await gameRoundsClient
-            .ManualCloseRoundAsync(
-            roundId: command.RoundId,
-            source: manualCloseRound,
-            cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
+
+        JsonNode additionalData;
+        try
+        {
+            additionalData = JsonNode.Parse(gameRoundModel.AdditionalData)!;
+        }
+        catch
+        {
+            additionalData = JsonNode.Parse("{}")!;
+        }
+
+        await gameRecordHandleClient.MessageAsync(
+            gameProviderCode: gameRoundModel.GameProviderCode,
+            playerCode: gameRoundModel.PlayerCode,
+            wagerState: wagerState,
+            externalRoundId: gameRoundModel.ExternalRoundId,
+            externalWagerId: gameRoundModel.ExternalRoundId,
+            externalGameId: gameRoundModel.ExternalGameId,
+            externalCreatedOn: gameRoundModel.ExternalCreatedOn!.Value,
+            externalClosedOn: command.ExternalClosedOn,
+            bet: command.BetAmount,
+            validBet: command.ValidBetAmount,
+            settle: command.SettleAmount,
+            commission: command.Commission,
+            turnover: command.Turnover,
+            winLoss: -command.CompanyWinLoss,
+            additionalData: additionalData,
+            cancellationToken: cancellationToken);
 
         if (command.AdjustAmount.HasValue)
         {

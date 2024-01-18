@@ -36,23 +36,21 @@ public class AdjustClosedRoundUnitTest
         {
             _ = builder.ConfigureServices(services =>
             {
-                var fakeAdjustClosedRound = Substitute.For<ICommandService<AdjustClosedRoundCommand>>();
+                var fakeAdjustClosedRound = Substitute.For<ICommandService<GameRoundResettleCommand>>();
 
-                var command = new AdjustClosedRoundCommand
-                {
-                    RoundId = roundId,
-                    BetAmount = model.BetAmount,
-                    ValidBetAmount = model.ValidBetAmount,
-                    SettleAmount = model.SettleAmount,
-                    Commission = model.Commission,
-                    Turnover = model.Turnover,
-                    WinLoss = model.WinLoss,
-                    RoundClientStatus = (GameRoundClientStatus)model.ClientRoundStatus,
-                    ExternalClosedOn = model.ExternalClosedOn,
-                    OperatorId = model.OperatorId,
-                    Remark = model.Remark,
-                    AdjustAmount = model.AdjustAmount
-                };
+                var command = new GameRoundResettleCommand(
+                    RoundId: roundId,
+                    BetAmount: model.BetAmount,
+                    ValidBetAmount: model.ValidBetAmount,
+                    SettleAmount: model.SettleAmount,
+                    Commission: model.Commission,
+                    Turnover: model.Turnover,
+                    CompanyWinLoss: model.WinLoss,
+                    RoundClientStatus: (GameRoundClientStatus)model.ClientRoundStatus,
+                    ExternalClosedOn: model.ExternalClosedOn,
+                    OperatorId: model.OperatorId,
+                    Remark: model.Remark,
+                    AdjustAmount: model.AdjustAmount);
 
                 _ = fakeAdjustClosedRound
                 .ExecuteAsync(

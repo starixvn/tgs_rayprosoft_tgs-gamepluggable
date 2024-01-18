@@ -1,26 +1,26 @@
 ﻿using System;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
 using Tgs.CashService.Client;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
+using Tgs.GameRecord.Handle.Client;
+using Tgs.GameRecord.Handle.Common.Protos;
 using Tgs.GameRounds.Client;
 using Tgs.GameRounds.Common;
 using Tgs.GameRounds.Common.ViewModels;
 
 namespace Tgs.GameProviders.Pluggable.Core.UnitTest.Backoffice;
 
-public class AdjustClosedRoundServiceUnitTest
+public class GameRoundResettleCommandServiceUnitTest
 {
     [Fact]
     public async Task Can_Resettle_Closed_Game_Round()
     {
         var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
         var fakeGameRoundsClient = Substitute.For<IGameRoundsClient>();
-
-        var sut = new AdjustClosedRoundService(
-            fakeCashServiceClient,
-            fakeGameRoundsClient);
+        var fakeGameRecordHandleClient = Substitute.For<IGameRecordHandleClient>();
 
         var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
         var betAmount = 0.060000m;
@@ -28,14 +28,29 @@ public class AdjustClosedRoundServiceUnitTest
         var settleAmount = 0.00m;
         var commission = 0.0m;
         var turnover = 0.06m;
-        var winLoss = -0.06m;
+        var companyWinLoss = -0.06m;
         var roundClientStatus = GameRoundClientStatus.Loss;
         var externalClosedOn = DateTimeOffset.Parse("2021-06-03 13:57:05.000 +0800");
         var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
         var remark = "測試調整Closed Round";
         var adjustAmount = 100m;
 
-        var gameRound = new GameRoundViewModel
+        var command = new GameRoundResettleCommand(
+            RoundId: roundId,
+            BetAmount: betAmount,
+            ValidBetAmount: validBetAmount,
+            SettleAmount: settleAmount,
+            Commission: commission,
+            Turnover: turnover,
+            CompanyWinLoss: companyWinLoss,
+            RoundClientStatus: roundClientStatus,
+            ExternalClosedOn: externalClosedOn,
+            OperatorId: operatorId,
+            Remark: remark,
+            AdjustAmount: adjustAmount
+        );
+
+        var gameRoundModel = new GameRoundViewModel
         {
             RoundId = roundId,
             ExternalRoundId = "50-1636345294-40676339-2",
@@ -65,62 +80,53 @@ public class AdjustClosedRoundServiceUnitTest
             ReopenTurnoverAdjustment = null,
             ReopenedOn = null,
             EffectiveBettingPercentage = null,
-            AdditionalData = null
+            AdditionalData = "{}"
         };
 
         _ = fakeGameRoundsClient
             .GetGameRoundAsync(roundId)
-            .Returns(gameRound);
+            .Returns(gameRoundModel);
 
-        var adjustClosed = new AdjustClosedRoundViewModel
-        {
-            BetAmount = betAmount,
-            ValidBetAmount = validBetAmount,
-            SettleAmount = settleAmount,
-            Commission = commission,
-            Turnover = turnover,
-            CompanyWinLoss = winLoss,
-            ClientStatus = roundClientStatus,
-            ExternalClosedOn = externalClosedOn,
-            OperatorId = operatorId,
-            Remark = remark
-        };
-
-        var command = new AdjustClosedRoundCommand
-        {
-            RoundId = roundId,
-            BetAmount = betAmount,
-            ValidBetAmount = validBetAmount,
-            SettleAmount = settleAmount,
-            Commission = commission,
-            Turnover = turnover,
-            WinLoss = winLoss,
-            RoundClientStatus = roundClientStatus,
-            ExternalClosedOn = externalClosedOn,
-            OperatorId = operatorId,
-            Remark = remark,
-            AdjustAmount = adjustAmount
-        };
+        var sut = new GameRoundResettleCommandService(
+            fakeCashServiceClient,
+            fakeGameRoundsClient,
+            fakeGameRecordHandleClient);
 
         await sut.ExecuteAsync(command);
 
-        _ = fakeGameRoundsClient
-            .Received(1)
-            .AdjustClosedRoundAsync(roundId, adjustClosed);
+        var wagerState = command.RoundClientStatus switch
+        {
+            GameRoundClientStatus.Win => WagerStates.Win,
+            GameRoundClientStatus.Loss => WagerStates.Lose,
+            GameRoundClientStatus.Void => WagerStates.Void,
+            GameRoundClientStatus.Draw => WagerStates.Draw,
+            _ => WagerStates.Running
+        };
 
-        var walletId = Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9");
-
-        _ = fakeGameRoundsClient
+        await fakeGameRecordHandleClient
             .Received(1)
-            .AdjustClosedRoundAsync(
-            roundId: Arg.Is(roundId),
-            source: Arg.Is(adjustClosed),
+            .MessageAsync(
+            gameProviderCode: Arg.Is(gameRoundModel.GameProviderCode),
+            playerCode: Arg.Is(gameRoundModel.PlayerCode),
+            wagerState: Arg.Is(wagerState),
+            externalRoundId: Arg.Is(gameRoundModel.ExternalRoundId),
+            externalWagerId: Arg.Is(gameRoundModel.ExternalRoundId),
+            externalGameId: Arg.Is(gameRoundModel.ExternalGameId),
+            externalCreatedOn: Arg.Is(gameRoundModel.ExternalCreatedOn!.Value),
+            externalClosedOn: Arg.Is(command.ExternalClosedOn),
+            bet: Arg.Is(command.BetAmount),
+            validBet: Arg.Is(command.ValidBetAmount),
+            settle: Arg.Is(command.SettleAmount),
+            commission: Arg.Is(command.Commission),
+            turnover: Arg.Is(command.Turnover),
+            winLoss: Arg.Is(-command.CompanyWinLoss),
+            additionalData: Arg.Any<JsonNode>(),
             cancellationToken: Arg.Any<CancellationToken>());
 
         _ = fakeCashServiceClient
             .Received(1)
             .AdjustResettledBetManualAsync(
-            walletId: Arg.Is(walletId),
+            walletId: Arg.Is(gameRoundModel.WalletId),
             amount: Arg.Is(adjustAmount),
             description: Arg.Is(remark),
             externalId: Arg.Is(roundId.ToString()),

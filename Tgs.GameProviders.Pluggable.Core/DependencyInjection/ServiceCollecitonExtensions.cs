@@ -29,5 +29,6 @@ public static class ServiceCollecitonExtensions
         .AddGameFundTransferClient(gameTransferClientOptions)
         .AddGameCurrencyClient(gameCurrencyClientOptions)
         .AddGameRoundsClient(gameRoundsConfigure)
-        .AddGamePlayerLogOutClient();
+        .AddGamePlayerLogOutClient()
+        .AddGameRecordHandleClient();
 }

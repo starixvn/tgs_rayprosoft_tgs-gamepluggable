@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.Pluggable.ViewModels;
@@ -23,29 +24,29 @@ public class RoundController : ControllerBase
     /// <returns></returns>
     [HttpPut("addCompanyRound")]
     public ValueTask AddCompanyRoundAsync(
-        [FromServices] ICommandService<AddCompanyRoundCommand> service,
+        [FromServices] ICommandService<GameRoundAddCommand> service,
         [FromBody] AddCompanyRoundViewModel source)
-    => service.ExecuteAsync(new AddCompanyRoundCommand
-    {
-        BrandId = source.BrandId,
-        PlayerCode = source.PlayerCode,
-        WalletId = source.WalletId,
-        GameId = source.GameId,
-        GameProviderId = source.GameProviderId,
-        ExternalRoundId = source.ExternalRoundId,
-        ExternalCreatedOn = source.ExternalCreatedOn,
-        ExternalClosedOn = source.ExternalClosedOn,
-        ClientRoundStatus = (short)source.ClientRoundStatus,
-        CurrencyCode = source.CurrencyCode,
-        BetAmount = source.BetAmount,
-        ValidBetAmount = source.ValidBetAmount,
-        SettleAmount = source.SettleAmount,
-        Turnover = source.Turnover,
-        Commission = source.Commission,
-        CompanyWinLoss = source.CompanyWinLoss,
-        OperatorId = source.OperatorId,
-        Remark = source.Remark,
-    }, HttpContext.RequestAborted);
+    => service.ExecuteAsync(
+        command: new GameRoundAddCommand(
+            ExternalRoundId: source.ExternalRoundId,
+            GameProviderId: source.GameProviderId,
+            PlayerCode: source.PlayerCode,
+            GameId: source.GameId,
+            CurrencyCode: source.CurrencyCode,
+            WalletId: source.WalletId,
+            BrandId: source.BrandId,
+            ExternalCreatedOn: source.ExternalCreatedOn,
+            ExternalClosedOn: source.ExternalClosedOn,
+            BetAmount: source.BetAmount,
+            ValidBetAmount: source.ValidBetAmount,
+            SettleAmount: source.SettleAmount,
+            Turnover: source.Turnover,
+            Commission: source.Commission,
+            CompanyWinLoss: source.CompanyWinLoss,
+            ClientRoundStatus: (GameRoundClientStatus)source.ClientRoundStatus,
+            OperatorId: source.OperatorId,
+            Remark: source.Remark),
+        cancellationToken: HttpContext.RequestAborted);
 
     /// <summary>
     /// Adjusts the closed game round asynchronous.
@@ -56,25 +57,24 @@ public class RoundController : ControllerBase
     /// <returns></returns>
     [HttpPut("{roundId}/adjustclosedRound")]
     public ValueTask AdjustClosedGameRoundAsync(
-        [FromServices] ICommandService<AdjustClosedRoundCommand> service,
+        [FromServices] ICommandService<GameRoundResettleCommand> service,
         Guid roundId,
         [FromBody] AdjustClosedRoundViewModel source)
-        => service.ExecuteAsync(new AdjustClosedRoundCommand()
-        {
-            RoundId = roundId,
-            BetAmount = source.BetAmount,
-            ValidBetAmount = source.ValidBetAmount,
-            SettleAmount = source.SettleAmount,
-            Commission = source.Commission,
-            Turnover = source.Turnover,
-            WinLoss = source.WinLoss,
-            RoundClientStatus = (GameRoundClientStatus)source.ClientRoundStatus,
-            ExternalClosedOn = source.ExternalClosedOn,
-            OperatorId = source.OperatorId,
-            Remark = source.Remark,
-            AdjustAmount = source.AdjustAmount
-        },
-        HttpContext.RequestAborted);
+        => service.ExecuteAsync(
+            command: new GameRoundResettleCommand(
+                RoundId: roundId,
+                BetAmount: source.BetAmount,
+                ValidBetAmount: source.ValidBetAmount,
+                SettleAmount: source.SettleAmount,
+                Commission: source.Commission,
+                Turnover: source.Turnover,
+                CompanyWinLoss: source.WinLoss,
+                RoundClientStatus: (GameRoundClientStatus)source.ClientRoundStatus,
+                ExternalClosedOn: source.ExternalClosedOn,
+                OperatorId: source.OperatorId,
+                Remark: source.Remark,
+                AdjustAmount: source.AdjustAmount),
+            cancellationToken: HttpContext.RequestAborted);
 
     /// <summary>
     /// Games the action query asynchronous.
@@ -152,21 +152,21 @@ public class RoundController : ControllerBase
         [FromServices] ICommandService<GameRoundClosedCommand> service,
         Guid roundId,
         [FromBody] GameRoundClosedViewModel source)
-        => service.ExecuteAsync(new()
-        {
-            RoundId = roundId,
-            BetAmount = source.BetAmount,
-            ValidBetAmount = source.ValidBetAmount,
-            SettleAmount = source.SettleAmount,
-            Commission = source.Commission,
-            Turnover = source.Turnover,
-            WinLoss = source.WinLoss,
-            RoundClientStatus = (GameRoundClientStatus)source.ClientRoundStatus,
-            ExternalClosedOn = source.ExternalClosedOn,
-            OperatorId = source.OperatorId,
-            Remark = source.Remark,
-            AdjustAmount = source.AdjustAmount
-        });
+        => service.ExecuteAsync(
+            command: new GameRoundClosedCommand(
+                RoundId: roundId,
+                BetAmount: source.BetAmount,
+                ValidBetAmount: source.ValidBetAmount,
+                SettleAmount: source.SettleAmount,
+                Commission: source.Commission,
+                Turnover: source.Turnover,
+                CompanyWinLoss: source.WinLoss,
+                RoundClientStatus: (GameRoundClientStatus)source.ClientRoundStatus,
+                ExternalClosedOn: source.ExternalClosedOn,
+                OperatorId: source.OperatorId,
+                Remark: source.Remark,
+                AdjustAmount: source.AdjustAmount),
+            cancellationToken: HttpContext.RequestAborted);
 
     /// <summary>
     /// Games the round detail get asynchronous.

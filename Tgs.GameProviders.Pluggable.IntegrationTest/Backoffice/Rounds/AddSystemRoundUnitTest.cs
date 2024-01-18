@@ -37,29 +37,27 @@ public class AddSystemRoundUnitTest
         {
             _ = builder.ConfigureServices(async services =>
             {
-                var service = Substitute.For<ICommandService<AddCompanyRoundCommand>>();
+                var service = Substitute.For<ICommandService<GameRoundAddCommand>>();
 
-                var command = new AddCompanyRoundCommand
-                {
-                    BrandId = brandId,
-                    PlayerCode = playerCode,
-                    WalletId = walletId,
-                    GameId = 123,
-                    GameProviderId = gameProviderId,
-                    ExternalRoundId = "exRoundId",
-                    ClientRoundStatus = (short)clientRoundStatus,
-                    ExternalCreatedOn = externalCreatedOn,
-                    ExternalClosedOn = externalClosedOn,
-                    CurrencyCode = "CNY",
-                    BetAmount = betAmount,
-                    SettleAmount = settleAmount,
-                    ValidBetAmount = validBetAmount,
-                    Turnover = turnover,
-                    Commission = commission,
-                    CompanyWinLoss = winLoss,
-                    OperatorId = operatorId,
-                    Remark = remark
-                };
+                var command = new GameRoundAddCommand(
+                    ExternalRoundId: "exRoundId",
+                    GameProviderId: gameProviderId,
+                    PlayerCode: playerCode,
+                    GameId: 123,
+                    CurrencyCode: "CNY",
+                    WalletId: walletId,
+                    BrandId: brandId,
+                    ExternalCreatedOn: externalCreatedOn,
+                    ExternalClosedOn: externalClosedOn,
+                    BetAmount: betAmount,
+                    SettleAmount: settleAmount,
+                    ValidBetAmount: validBetAmount,
+                    Turnover: turnover,
+                    Commission: commission,
+                    CompanyWinLoss: winLoss,
+                    ClientRoundStatus: clientRoundStatus,
+                    OperatorId: operatorId,
+                    Remark: remark);
 
                 await service.ExecuteAsync(
                     command: command,

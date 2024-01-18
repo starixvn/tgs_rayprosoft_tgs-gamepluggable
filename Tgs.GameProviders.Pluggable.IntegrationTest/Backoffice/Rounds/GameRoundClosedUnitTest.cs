@@ -38,21 +38,19 @@ public class GameRoundClosedUnitTest
               {
                   var fakeGameRoundClosed = Substitute.For<ICommandService<GameRoundClosedCommand>>();
 
-                  var command = new GameRoundClosedCommand
-                  {
-                      RoundId = roundId,
-                      BetAmount = model.BetAmount,
-                      ValidBetAmount = model.ValidBetAmount,
-                      SettleAmount = model.SettleAmount,
-                      Commission = model.Commission,
-                      Turnover = model.Turnover,
-                      WinLoss = model.WinLoss,
-                      RoundClientStatus = (GameRoundClientStatus)(int)model.ClientRoundStatus,
-                      ExternalClosedOn = model.ExternalClosedOn,
-                      OperatorId = model.OperatorId,
-                      Remark = model.Remark,
-                      AdjustAmount = model.AdjustAmount
-                  };
+                  var command = new GameRoundClosedCommand(
+                      RoundId: roundId,
+                      BetAmount: model.BetAmount,
+                      ValidBetAmount: model.ValidBetAmount,
+                      SettleAmount: model.SettleAmount,
+                      Commission: model.Commission,
+                      Turnover: model.Turnover,
+                      CompanyWinLoss: model.WinLoss,
+                      RoundClientStatus: (GameRoundClientStatus)(int)model.ClientRoundStatus,
+                      ExternalClosedOn: model.ExternalClosedOn,
+                      OperatorId: model.OperatorId,
+                      Remark: model.Remark,
+                      AdjustAmount: model.AdjustAmount);
 
                   _ = fakeGameRoundClosed.ExecuteAsync(command).Returns(ValueTask.CompletedTask);
 

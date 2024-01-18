@@ -3,19 +3,16 @@ using Tgs.GameRounds.Common;
 
 namespace Tgs.GameProviders.Pluggable.Core.Backoffice.ApplicationServices;
 
-public record GameRoundClosedCommand
-{
-    public Guid RoundId { get; init; }
-    public decimal BetAmount { get; init; }
-    public decimal ValidBetAmount { get; init; }
-    public decimal SettleAmount { get; init; }
-    public decimal Commission { get; init; }
-    public decimal Turnover { get; init; }
-    public decimal WinLoss { get; init; }
-    public GameRoundClientStatus RoundClientStatus { get; init; }
-    public DateTimeOffset ExternalClosedOn { get; init; }
-    public Guid OperatorId { get; init; }
-    public string Remark { get; init; } = default!;
-
-    public decimal? AdjustAmount { get; init; }
-}
+public record GameRoundClosedCommand(
+    Guid RoundId,
+    decimal BetAmount,
+    decimal ValidBetAmount,
+    decimal SettleAmount,
+    decimal Commission,
+    decimal Turnover,
+    decimal CompanyWinLoss,
+    GameRoundClientStatus RoundClientStatus,
+    DateTimeOffset ExternalClosedOn,
+    Guid OperatorId,
+    string Remark,
+    decimal? AdjustAmount);
