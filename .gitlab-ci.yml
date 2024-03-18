@@ -142,7 +142,7 @@ deploy-dev:
         "autoscaling": $autoscaling,
         "restart": {
             "enabled": true,
-            "schedule": "45 0 * * *"
+            "schedule": "15 0 * * *"
         }
       }
       EOF
@@ -159,7 +159,7 @@ deploy-dev:
         "autoscaling": $autoscaling,
         "restart": {
             "enabled": true,
-            "schedule": "45 0 * * *"
+            "schedule": "15 0 * * *"
         }
       }
       EOF
@@ -197,7 +197,7 @@ deploy-staging:
         "autoscaling": $autoscaling,
         "restart": {
             "enabled": true,
-            "schedule": "45 0 * * *"
+            "schedule": "15 0 * * *"
         }
       }
       EOF
@@ -214,7 +214,7 @@ deploy-staging:
         "autoscaling": $autoscaling,
         "restart": {
             "enabled": true,
-            "schedule": "45 0 * * *"
+            "schedule": "15 0 * * *"
         }
       }
       EOF
@@ -252,7 +252,7 @@ deploy-prod:
         "autoscaling": $autoscaling,
         "restart": {
             "enabled": true,
-            "schedule": "45 0 * * *"
+            "schedule": "15 0 * * *"
         }
       }
       EOF
@@ -269,7 +269,7 @@ deploy-prod:
         "autoscaling": $autoscaling,
         "restart": {
             "enabled": true,
-            "schedule": "45 0 * * *"
+            "schedule": "15 0 * * *"
         }
       }
       EOF
