@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using Tgs.CashService.Client;
 using Tgs.GameCommand.Common;
 using Tgs.GameFundTransfer.Client;
@@ -219,5 +220,110 @@ public class FundOutGetServiceUnitTest
                 currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
                 amount: Arg.Is(123M),
                 cancellationToken: Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Timeout_Exception()
+    {
+        var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
+        var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
+        var fakeGameProvider = Substitute.For<IGameProvider>();
+        var fakeVerification = Substitute.For<IVerification>();
+        var fakePlayer = Substitute.For<IPlayer>();
+        var fakePlayerGameBalance = Substitute.For<IPlayerGameBalance>();
+
+        var command = new FundOutCommand(
+            PlayerCode: "4ucmqplxb029",
+            GameProviderCode: "ky",
+            Amount: 1);
+
+        var player = new PlayerInfo(
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "TGS",
+            Guid.NewGuid(),
+            "GPI",
+            "4ucmqplxb029",
+            "4ucmqplxb029",
+            Guid.NewGuid(),
+            "CNY");
+        _ = fakePlayer
+            .GetAsync(
+            playerCode: Arg.Is(command.PlayerCode),
+            cancellationToken: Arg.Any<CancellationToken>())
+            .Returns(ValueTask.FromResult(player));
+
+        var gameProviderId = Guid.NewGuid();
+        _ = fakeGameProvider
+            .GetGameProviderIdAsync(
+            gameProviderCode: Arg.Is(command.GameProviderCode),
+            cancellationToken: Arg.Any<CancellationToken>())
+            .Returns(ValueTask.FromResult(gameProviderId));
+
+        var gameProvider = new GameProviderInfo(
+            GameProviderId: gameProviderId,
+            GameProviderCode: GameProviderType.Kaiyuan,
+            UniqueId: 1,
+            Name: GameProviderType.Kaiyuan,
+            TransferWallet: true,
+            AutoCloseRound: true,
+            SupportTestPlayer: true,
+            AllowKickPlayer: true,
+            PlaceBetTimeout: 0,
+            SettleBetTimeout: 0,
+            Description: GameProviderType.Kaiyuan,
+            Localization: null);
+        _ = fakeGameProvider
+            .GetAsync(
+            gameProviderId: Arg.Is(gameProviderId),
+            cancellationToken: Arg.Any<CancellationToken>())
+            .Returns(ValueTask.FromResult(gameProvider));
+
+        var platformBalance = new PlatformBalanceInfo(
+            Balance: 1000m,
+            FreeBalance: 0m,
+            OutstandingBalance: 1000m);
+        _ = fakePlayerGameBalance
+            .GetBalanceAsync(
+            gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
+            .Returns(platformBalance);
+
+        _ = fakeCashServiceClient
+            .GetBalanceAsync(
+            walletId: Arg.Is(player.DefaultWalletId),
+            cancellationToken: Arg.Any<CancellationToken>())
+            .ThrowsAsync(new TimeoutException());
+
+        var fakeService = new FundOutCommandService(
+            fakeCashServiceClient,
+            fakeGameFundTransferClient,
+            fakeGameProvider,
+            fakeVerification,
+            fakePlayer,
+            fakePlayerGameBalance);
+
+        _ = await Assert.ThrowsAsync<TimeoutException>(() => fakeService.ExecuteAsync(command).AsTask());
+
+        _ = fakeVerification
+            .Received(1)
+            .VerifyPlayerFundAsync(
+            player: Arg.Is(player),
+            gameProvider: Arg.Is(gameProvider),
+            cancellationToken: Arg.Any<CancellationToken>());
+
+        _ = fakeGameFundTransferClient
+            .Received(0)
+            .FundOutAsync(
+            gameProviderId: Arg.Is(gameProviderId),
+            gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
+            brandCode: Arg.Is(player.BrandCode),
+            playerCode: Arg.Is(player.PlayerCode),
+            walletId: Arg.Is(player.DefaultWalletId),
+            currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+            amount: Arg.Is(command.Amount),
+            cancellationToken: Arg.Any<CancellationToken>());
     }
 }
