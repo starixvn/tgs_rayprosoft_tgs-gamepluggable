@@ -65,6 +65,10 @@ internal class FundOutCommandService(
             .GetBalanceAsync(
             walletId: playerInfo.DefaultWalletId,
             cancellationToken: cancellationToken)
+            .AsTask()
+            .WaitAsync(
+            timeout: TimeSpan.FromSeconds(3),
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         if (playerBalance - command.Amount < 0)
