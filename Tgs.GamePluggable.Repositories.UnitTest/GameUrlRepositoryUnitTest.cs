@@ -1,6 +1,5 @@
 ﻿using NSubstitute;
 using Tgs.CashService.Client;
-using Tgs.GameCommand.Common;
 using Tgs.GamePluggable.Core;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
@@ -12,9 +11,9 @@ public class GameUrlRepositoryUnitTest
 	[Fact]
 	public async Task Normal_Process_Game_Url()
 	{
-		var fakeBrand = Substitute.For<IBrand>();
+		var fakeBrand = Substitute.For<IBrandRepository>();
 		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-		var fakeGameProvider = Substitute.For<IGameProvider>();
+		var fakeGameProvider = Substitute.For<IGameProviderRepository>();
 		var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
 
 		var gameProviderCode = "KY";
@@ -71,9 +70,9 @@ public class GameUrlRepositoryUnitTest
 	[Fact]
 	public async Task Normal_Process_Get_GameUrl_By_AsiaGaming()
 	{
-		var fakeBrand = Substitute.For<IBrand>();
+		var fakeBrand = Substitute.For<IBrandRepository>();
 		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-		var fakeGameProvider = Substitute.For<IGameProvider>();
+		var fakeGameProvider = Substitute.For<IGameProviderRepository>();
 		var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
 
 		var gameProviderCode = "AG";
@@ -138,9 +137,9 @@ public class GameUrlRepositoryUnitTest
 	[Fact]
 	public async Task Normal_Process_Get_GameUrl_By_BetConstruct_Desktop()
 	{
-		var fakeBrand = Substitute.For<IBrand>();
+		var fakeBrand = Substitute.For<IBrandRepository>();
 		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-		var fakeGameProvider = Substitute.For<IGameProvider>();
+		var fakeGameProvider = Substitute.For<IGameProviderRepository>();
 		var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
 
 		var gameProviderCode = "BC";
@@ -164,11 +163,11 @@ public class GameUrlRepositoryUnitTest
 				Arg.Is(gameProviderId))
 			.Returns(gameProviderConfigurationId);
 
-		var gameProviderConfiguration = new GameProviderConfigInfo(
+		var gameProviderConfiguration = new Core.Models.GameProviderConfigInfo(
 			GameProviderId: gameProviderId,
 			GameProviderCode: GameProviderType.BetConstruct,
 			GameProviderConfigId: gameProviderConfigurationId,
-			Status: GameProviderConfigStatus.Active,
+			Status: Core.Enums.GameProviderConfigStatus.Active,
 			Name: $"{GameProviderType.BetConstruct} Configuration",
 			Description: $"{GameProviderType.BetConstruct} Configuration",
 			ClientId: $"{GameProviderType.BetConstruct}-GPI",
@@ -226,9 +225,9 @@ public class GameUrlRepositoryUnitTest
 	[Fact]
 	public async Task Normal_Process_Get_GameUrl_By_BetConstruct_Mobile()
 	{
-		var fakeBrand = Substitute.For<IBrand>();
+		var fakeBrand = Substitute.For<IBrandRepository>();
 		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-		var fakeGameProvider = Substitute.For<IGameProvider>();
+		var fakeGameProvider = Substitute.For<IGameProviderRepository>();
 		var fakeGameProvidersClient = Substitute.For<IGameProvidersClient>();
 
 		var gameProviderCode = "BC";
@@ -252,11 +251,11 @@ public class GameUrlRepositoryUnitTest
 				Arg.Is(gameProviderId))
 			.Returns(gameProviderConfigurationId);
 
-		var gameProviderConfiguration = new GameProviderConfigInfo(
+		var gameProviderConfiguration = new Core.Models.GameProviderConfigInfo(
 			GameProviderId: gameProviderId,
 			GameProviderCode: GameProviderType.BetConstruct,
 			GameProviderConfigId: gameProviderConfigurationId,
-			Status: GameProviderConfigStatus.Active,
+			Status: Core.Enums.GameProviderConfigStatus.Active,
 			Name: $"{GameProviderType.BetConstruct} Configuration",
 			Description: $"{GameProviderType.BetConstruct} Configuration",
 			ClientId: $"{GameProviderType.BetConstruct}-GPI",

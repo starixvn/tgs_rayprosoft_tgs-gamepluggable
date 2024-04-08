@@ -5,10 +5,12 @@ using System.Net.Mime;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NATS.Client.Core;
+using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -40,20 +42,23 @@ builder.Services
 		options.Filters.Add(new ProducesAttribute(MediaTypeNames.Application.Json));
 		options.Filters.Add(new ConsumesAttribute(MediaTypeNames.Application.Json));
 	})
-	.AddJsonOptions(options =>
-	{
-		options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-	});
+	.AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-	var xmlFileNames = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml");
-	foreach (var xmlFileName in xmlFileNames)
+	foreach (var xmlFileName in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml"))
+	{
 		c.IncludeXmlComments(xmlFileName);
+	}
 });
 
-builder.Services.AddGameProvidersPluggable(
+builder.Services.AddGamePluggable(
+	(sp, dbBuilder) =>
+	{
+		var config = sp.GetRequiredService<IConfiguration>();
+		_ = dbBuilder.UseNpgsql(config.GetConnectionString("Tgs"));
+	},
 	(options, sp) =>
 	{
 		var configuration = sp.GetRequiredService<IConfiguration>();
@@ -63,11 +68,6 @@ builder.Services.AddGameProvidersPluggable(
 	{
 		var configuration = sp.GetRequiredService<IConfiguration>();
 		options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameProvidersClientBaseUrl")!;
-	},
-	(options, sp) =>
-	{
-		var configuration = sp.GetRequiredService<IConfiguration>();
-		options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameCommandClientBaseUrl")!;
 	},
 	(options, sp) =>
 	{
@@ -103,14 +103,8 @@ builder.Services
 			.AddEnvironmentVariableDetector())
 		.AddSource("Tgs.*")
 		.AddSource("TGS.*")
-		.AddAspNetCoreInstrumentation(options => options.Filter =
-			httpContext => !httpContext.Request.Path.HasValue
-			|| !httpContext.Request.Path.StartsWithSegments("/swagger")
-			&& !httpContext.Request.Path.StartsWithSegments("/healthz")
-			&& !httpContext.Request.Path.StartsWithSegments("/profiler/")
-			&& !httpContext.Request.Path.StartsWithSegments("/hangfire")
-			&& !httpContext.Request.Path.StartsWithSegments("/metrics")
-			&& !filterInstrumentations.Any(ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
+		.AddSource("Valhalla.*")
+		.AddAspNetCoreInstrumentation()
 		.AddHttpClientInstrumentation()
 		.AddGrpcClientInstrumentation()
 		.AddGrpcCoreInstrumentation()
@@ -118,11 +112,19 @@ builder.Services
 		.AddOtlpExporter())
 	.WithMetrics(meterBuiler => meterBuiler
 	.SetResourceBuilder(ResourceBuilder.CreateDefault()
-		.AddEnvironmentVariableDetector())
-		.AddRuntimeInstrumentation()
-		.AddAspNetCoreInstrumentation()
-		.AddOtlpExporter())
+	.AddEnvironmentVariableDetector())
+	.AddRuntimeInstrumentation()
+	.AddAspNetCoreInstrumentation()
+	.AddOtlpExporter())
 	.Services
+	.Configure<AspNetCoreTraceInstrumentationOptions>(options => options.Filter =
+		httpContext => !httpContext.Request.Path.HasValue
+			|| !httpContext.Request.Path.StartsWithSegments("/swagger")
+			&& !httpContext.Request.Path.StartsWithSegments("/healthz")
+			&& !httpContext.Request.Path.StartsWithSegments("/profiler/")
+			&& !httpContext.Request.Path.StartsWithSegments("/hangfire")
+			&& !httpContext.Request.Path.StartsWithSegments("/metrics")
+			&& !filterInstrumentations.Any(ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
 	.AddInterceptionService()
 	.AddServiceUtiltiyInterceptors();
 
@@ -142,7 +144,5 @@ _ = app.MapControllers();
 app.MapHealthChecks("/healthz");
 
 _ = app.UseGameProviderRegisterAsync();
-
-_ = app.InitialConnectionGameFundTransferAsync();
 
 app.Run();

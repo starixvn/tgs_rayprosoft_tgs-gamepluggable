@@ -6,8 +6,8 @@ using Tgs.ServiceUtility;
 namespace Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 
 internal class PlayerBalanceGetService(
-	IGameProvider gameProvider,
-	IPlayer player,
+	IGameProviderRepository gameProvider,
+	IPlayerRepository player,
 	IVerification verification,
 	IPlayerGameBalance playerGameBalance) : IGetService<PlayerBalanceQuery, PlayerBalanceResult>
 {
@@ -21,7 +21,7 @@ internal class PlayerBalanceGetService(
 
 		var gameProviderId = await gameProvider
 			.GetGameProviderIdAsync(
-			gameProviderCode: query.GameProviderCode,
+			code: query.GameProviderCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
@@ -29,7 +29,7 @@ internal class PlayerBalanceGetService(
 			.VerifyBrandCurrencyAsync(
 			brandId: playerInfo.BrandId,
 			gameProviderId: gameProviderId,
-			currencyCode: playerInfo.DefaultWalletCurrencyCode,
+			currencyCode: playerInfo.CurrencyCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
@@ -37,7 +37,7 @@ internal class PlayerBalanceGetService(
 			.GetBalanceAsync(
 			gameProviderCode: query.GameProviderCode,
 			playerCode: playerInfo.PlayerCode,
-			currencyCode: playerInfo.DefaultWalletCurrencyCode,
+			currencyCode: playerInfo.CurrencyCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 

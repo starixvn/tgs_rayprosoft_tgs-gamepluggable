@@ -9,8 +9,8 @@ namespace Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 
 internal class FundInCommandService(
 	IGameFundTransferClient client,
-	IGameProvider gameProvider,
-	IPlayer player,
+	IGameProviderRepository gameProvider,
+	IPlayerRepository player,
 	IPlayerGameBalance playerGameBalance) : ICommandService<FundInCommand>
 {
 	public async ValueTask ExecuteAsync(FundInCommand command, CancellationToken cancellationToken = default)
@@ -42,7 +42,7 @@ internal class FundInCommandService(
 			.GetBalanceAsync(
 			gameProviderCode: gameProviderInfo.GameProviderCode,
 			playerCode: playerInfo.PlayerCode,
-			currencyCode: playerInfo.DefaultWalletCurrencyCode,
+			currencyCode: playerInfo.CurrencyCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
@@ -72,8 +72,8 @@ internal class FundInCommandService(
 				gameProviderCode: gameProviderInfo.GameProviderCode,
 				brandCode: playerInfo.BrandCode,
 				playerCode: playerInfo.PlayerCode,
-				walletId: playerInfo.DefaultWalletId,
-				currencyCode: playerInfo.DefaultWalletCurrencyCode,
+				walletId: playerInfo.WalletId,
+				currencyCode: playerInfo.CurrencyCode,
 				amount: amount,
 				cancellationToken: cancellationToken)
 			.ConfigureAwait(false);

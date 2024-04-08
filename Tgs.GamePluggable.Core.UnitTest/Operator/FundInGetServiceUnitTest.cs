@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
-using Tgs.GameCommand.Common;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GamePluggable.Core.Models;
 using Tgs.GamePluggable.Core.Operator.ApplicationServices;
@@ -16,9 +15,9 @@ public class FundInGetServiceUnitTest
 	public async Task Fund_In()
 	{
 		var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
-		var fakeGameProvider = Substitute.For<IGameProvider>();
+		var fakeGameProvider = Substitute.For<IGameProviderRepository>();
 		var fakeVerification = Substitute.For<IVerification>();
-		var fakePlayer = Substitute.For<IPlayer>();
+		var fakePlayer = Substitute.For<IPlayerRepository>();
 		var fakePlayerGameBalance = Substitute.For<IPlayerGameBalance>();
 
 		var command = new FundInCommand(
@@ -27,16 +26,12 @@ public class FundInGetServiceUnitTest
 			1);
 
 		var player = new PlayerInfo(
-			Guid.NewGuid(),
-			"TGS",
-			Guid.NewGuid(),
-			"TGS",
-			Guid.NewGuid(),
-			"GPI",
-			"4ucmqplxb029",
-			"4ucmqplxb029",
-			Guid.NewGuid(),
-			"CNY");
+			BrandId: Guid.NewGuid(),
+			BrandCode: "GPI",
+			PlayerCode: "4ucmqplxb029",
+			Username: "4ucmqplxb029",
+			WalletId: Guid.NewGuid(),
+			CurrencyCode: "CNY");
 		_ = fakePlayer
 			.GetAsync(
 			Arg.Is(command.PlayerCode),
@@ -53,16 +48,8 @@ public class FundInGetServiceUnitTest
 		var gameProvider = new GameProviderInfo(
 			GameProviderId: gameProviderId,
 			GameProviderCode: GameProviderType.Kaiyuan,
-			UniqueId: 1,
-			Name: GameProviderType.Kaiyuan,
 			TransferWallet: true,
-			AutoCloseRound: true,
-			SupportTestPlayer: true,
-			AllowKickPlayer: true,
-			PlaceBetTimeout: 0,
-			SettleBetTimeout: 0,
-			Description: GameProviderType.Kaiyuan,
-			Localization: null);
+			AllowKickPlayer: true);
 		_ = fakeGameProvider
 			.GetAsync(
 			Arg.Is(gameProviderId),
@@ -77,7 +64,7 @@ public class FundInGetServiceUnitTest
 			.GetBalanceAsync(
 			gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
 			playerCode: Arg.Is(player.PlayerCode),
-			currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
+			currencyCode: Arg.Is(player.CurrencyCode))
 			.Returns(platformBalance);
 
 		var fakeService = new FundInCommandService(
@@ -103,8 +90,8 @@ public class FundInGetServiceUnitTest
 			gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
 			brandCode: Arg.Is(player.BrandCode),
 			playerCode: Arg.Is(player.PlayerCode),
-			walletId: Arg.Is(player.DefaultWalletId),
-			currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+			walletId: Arg.Is(player.WalletId),
+			currencyCode: Arg.Is(player.CurrencyCode),
 			amount: Arg.Is(command.Amount),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
@@ -113,9 +100,9 @@ public class FundInGetServiceUnitTest
 	public async Task GameProvider_SM01_Fund_In_Amount_Only_Integer()
 	{
 		var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
-		var fakeGameProvider = Substitute.For<IGameProvider>();
+		var fakeGameProvider = Substitute.For<IGameProviderRepository>();
 		var fakeVerification = Substitute.For<IVerification>();
-		var fakePlayer = Substitute.For<IPlayer>();
+		var fakePlayer = Substitute.For<IPlayerRepository>();
 		var fakePlayerGameBalance = Substitute.For<IPlayerGameBalance>();
 
 		var command = new FundInCommand(
@@ -124,16 +111,12 @@ public class FundInGetServiceUnitTest
 			123M);
 
 		var player = new PlayerInfo(
-			Guid.NewGuid(),
-			"TGS",
-			Guid.NewGuid(),
-			"TGS",
-			Guid.NewGuid(),
-			"GPI",
-			"4ucmqplxb029",
-			"4ucmqplxb029",
-			Guid.NewGuid(),
-			"CNY");
+			BrandId: Guid.NewGuid(),
+			BrandCode: "GPI",
+			PlayerCode: "4ucmqplxb029",
+			Username: "4ucmqplxb029",
+			WalletId: Guid.NewGuid(),
+			CurrencyCode: "CNY");
 		_ = fakePlayer
 			.GetAsync(
 			Arg.Is(command.PlayerCode),
@@ -150,16 +133,8 @@ public class FundInGetServiceUnitTest
 		var gameProvider = new GameProviderInfo(
 			GameProviderId: gameProviderId,
 			GameProviderCode: GameProviderType.SM01,
-			UniqueId: 1,
-			Name: GameProviderType.SM01,
 			TransferWallet: true,
-			AutoCloseRound: true,
-			SupportTestPlayer: true,
-			AllowKickPlayer: true,
-			PlaceBetTimeout: 0,
-			SettleBetTimeout: 0,
-			Description: GameProviderType.SM01,
-			Localization: null);
+			AllowKickPlayer: true);
 		_ = fakeGameProvider
 			.GetAsync(
 			Arg.Is(gameProviderId),
@@ -174,7 +149,7 @@ public class FundInGetServiceUnitTest
 			.GetBalanceAsync(
 			gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
 			playerCode: Arg.Is(player.PlayerCode),
-			currencyCode: Arg.Is(player.DefaultWalletCurrencyCode))
+			currencyCode: Arg.Is(player.CurrencyCode))
 			.Returns(platformBalance);
 
 		var fakeService = new FundInCommandService(
@@ -200,8 +175,8 @@ public class FundInGetServiceUnitTest
 			gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
 			brandCode: Arg.Is(player.BrandCode),
 			playerCode: Arg.Is(player.PlayerCode),
-			walletId: Arg.Is(player.DefaultWalletId),
-			currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+			walletId: Arg.Is(player.WalletId),
+			currencyCode: Arg.Is(player.CurrencyCode),
 			amount: Arg.Is(123M),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}

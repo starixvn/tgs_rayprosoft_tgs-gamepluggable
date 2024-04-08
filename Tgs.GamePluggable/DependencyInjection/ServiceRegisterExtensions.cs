@@ -2,8 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Tgs.GameCommand.Client;
-using Tgs.GameCommand.Common;
+using Microsoft.Extensions.Logging;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GamePluggable.Core;
 
@@ -11,63 +10,68 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceRegisterExtensions
 {
-	public static async Task<WebApplication> InitialConnectionGameFundTransferAsync(this WebApplication app)
-	{
-		using (var scope = app.Services.CreateScope())
-		{
-			var client = scope.ServiceProvider.GetRequiredService<IGameFundTransferClient>();
-			_ = await client.CheckingServiceAsync(
-				machineName: Environment.MachineName)
-				.ConfigureAwait(false);
-		}
-
-		return app;
-	}
+	private static readonly ILogger _Logger = ApplicationLogging.CreateLogger("ServiceRegisterExtensions");
 
 	public static async Task<WebApplication> UseGameProviderRegisterAsync(this WebApplication app)
 	{
 		using (var scope = app.Services.CreateScope())
 		{
-			var client = scope.ServiceProvider.GetRequiredService<IGameCommandClient>();
-			var gameProvider = scope.ServiceProvider.GetRequiredService<IGameProvider>();
-			var game = scope.ServiceProvider.GetRequiredService<IGame>();
+			var gameProviderRepository = scope.ServiceProvider.GetRequiredService<IGameProviderRepository>();
+			var gameRepository = scope.ServiceProvider.GetRequiredService<IGameRepository>();
 
-			var gameProviderInfos = await client
-				.GameProviderQueryAsync()
+			var gameProviderCodes = await gameProviderRepository.QueryAsync()
 				.ToArrayAsync()
 				.ConfigureAwait(false)
-				?? Enumerable.Empty<GameProviderInfo>();
+				?? Enumerable.Empty<string>();
 
-			foreach (var gameProviderInfo in gameProviderInfos)
+			foreach (var gameProviderCode in gameProviderCodes)
 			{
-				_ = await gameProvider
-					.GetAsync(
-					gameProviderId: gameProviderInfo.GameProviderId)
-					.ConfigureAwait(false);
-				_ = await gameProvider
-					.GetGameProviderIdAsync(
-					gameProviderCode: gameProviderInfo.GameProviderCode)
-					.ConfigureAwait(false);
-
 				try
 				{
-					var gameInfos = await client
-						.GameQueryAsync(
-						gameProviderInfo.GameProviderCode)
-						.ToArrayAsync()
-						.ConfigureAwait(false)
-						?? Enumerable.Empty<GameInfo>();
+					var gameProviderId = await gameProviderRepository.GetGameProviderIdAsync(
+						code: gameProviderCode)
+						.ConfigureAwait(false);
 
-					foreach (var gameInfo in gameInfos)
+					_ = await gameProviderRepository
+						.GetAsync(
+						id: gameProviderId)
+						.ConfigureAwait(false);
+					try
 					{
-						_ = await game
-							.GetAsync(
-							gameInfo.GameId)
-							.ConfigureAwait(false);
+						var gameIds = await gameRepository.QueryAsync(
+							gameProviderId)
+							.ToArrayAsync()
+							.ConfigureAwait(false)
+							?? Enumerable.Empty<int>();
+
+						foreach (var gameId in gameIds)
+						{
+							try
+							{
+								_ = await gameRepository.GetAsync(
+									id: gameId)
+									.ConfigureAwait(false);
+							}
+							catch (Exception ex)
+							{
+								_Logger.LogError(ex, "LogOn:{logOn} Mesaage:An exception occurred while caching this game.({gameId})",
+									DateTime.Now.ToString("o"),
+									gameId);
+							}
+						}
+					}
+					catch (Exception ex)
+					{
+						_Logger.LogError(ex, "LogOn:{logOn} Mesaage:An exception occurred while caching this game query.({gameProviderId})",
+							DateTime.Now.ToString("o"),
+							gameProviderId);
 					}
 				}
-				catch
+				catch (Exception ex)
 				{
+					_Logger.LogError(ex, "LogOn:{logOn} Mesaage:An exception occurred while caching this game provider.({gameProviderCode})",
+						DateTime.Now.ToString("o"),
+						gameProviderCode);
 				}
 			}
 		}

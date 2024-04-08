@@ -3,8 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
-using Tgs.GameCommand.Client;
-using Tgs.GameCommand.Common;
+using Tgs.GamePluggable.Core.Models;
 using Tgs.GamePluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.Domains;
 
@@ -17,9 +16,9 @@ public class GameSM01PlatformLoginGetServiceUnitTest
 	{
 		var fakeGameUrl = Substitute.For<IGameUrl>();
 		var fakeVerification = Substitute.For<IVerification>();
-		var fakeGameProvider = Substitute.For<IGameProvider>();
-		var fakeGameCommandClient = Substitute.For<IGameCommandClient>();
-		var fakePlayer = Substitute.For<IPlayer>();
+		var fakeGameProvider = Substitute.For<IGameProviderRepository>();
+		var fakePlayer = Substitute.For<IPlayerRepository>();
+		var fakeGameRepository = Substitute.For<IGameRepository>();
 
 		var gameId = 5200001;
 		var gameProviderId = Guid.Parse("ba2997d9-b856-4589-91ae-5060a952cc3c");
@@ -28,16 +27,12 @@ public class GameSM01PlatformLoginGetServiceUnitTest
 			 PlayerCode: "4ucmqplxb029");
 
 		var player = new PlayerInfo(
-			Guid.NewGuid(),
-			"TGS",
-			Guid.NewGuid(),
-			"TGS",
-			Guid.NewGuid(),
-			"GPI",
-			"4ucmqplxb029",
-			"4ucmqplxb029",
-			Guid.NewGuid(),
-			"CNY");
+			BrandId: Guid.NewGuid(),
+			BrandCode: "GPI",
+			PlayerCode: "4ucmqplxb029",
+			Username: "4ucmqplxb029",
+			WalletId: Guid.NewGuid(),
+			CurrencyCode: "CNY");
 		_ = fakePlayer
 			.GetAsync(
 			playerCode: Arg.Is(query.PlayerCode),
@@ -50,34 +45,27 @@ public class GameSM01PlatformLoginGetServiceUnitTest
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(gameProviderId);
 
-		var games = new GameInfo[]
-		{
-			new(
-				GameId: gameId,
-				GameCode: "sm01",
-				GameProviderId: gameProviderId,
-				GameProviderCode: GameProviderType.SM01,
-				GameExternalId: "sm01",
-				Type: GameType.Sportsbook,
-				PlatformType: GamePlatformType.DesktopAndMobile,
-				Name: GameProviderType.SM01,
-				SubGame: false,
-				AvailableToBrand: false,
-				HasTurnoverOnTieBet: false,
-				Html5: true,
-				Description:  GameProviderType.SM01,
-				EndpointPath: string.Empty,
-				RuleUrl: string.Empty,
-				AvailableCurrencies: null,
-				Localization: null,
-				SubGameProviderCode:  GameProviderType.SM01)
-		};
-
-		_ = fakeGameCommandClient
-			.GameQueryAsync(
+		_ = fakeGameRepository.QueryAsync(
 			gameProviderId: Arg.Is(gameProviderId),
 			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(games.ToAsyncEnumerable());
+			.Returns(new[] { gameId }.ToAsyncEnumerable());
+
+		var game = new GameInfo(
+			GameId: gameId,
+			GameCode: "sm01",
+			GameProviderId: gameProviderId,
+			GameProviderCode: GameProviderType.SM01,
+			ExternalGameId: "sm01",
+			Type: Enums.GameType.Sportsbook,
+			PlatformType: Enums.GamePlatformType.DesktopAndMobile,
+			EndpointPath: string.Empty,
+			RuleUrl: string.Empty,
+			AvailableCurrencies: null);
+
+		_ = fakeGameRepository.GetAsync(
+			id: Arg.Is(gameId),
+			cancellationToken: Arg.Any<CancellationToken>())
+			.Returns(game);
 
 		var loginInfo = new GameSM01PlatformLoginInfo(
 			ApiUrl: "https://cn.ucfclive.com",
@@ -96,8 +84,8 @@ public class GameSM01PlatformLoginGetServiceUnitTest
 			fakeGameUrl,
 			fakeVerification,
 			fakeGameProvider,
-			fakeGameCommandClient,
-			fakePlayer);
+			fakePlayer,
+			fakeGameRepository);
 
 		var actual = await sut.GetAsync(query);
 
@@ -111,7 +99,7 @@ public class GameSM01PlatformLoginGetServiceUnitTest
 			.Received(1)
 			.VerifyPlayerGameUrlAsync(
 			player: Arg.Is(player),
-			game: Arg.Is(games.ElementAt(0)),
+			game: Arg.Is(game),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 }

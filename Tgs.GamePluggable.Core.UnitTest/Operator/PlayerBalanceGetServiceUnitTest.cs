@@ -2,8 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
-using Tgs.GameCommand.Common;
-using Tgs.GamePluggable.Core.Models;
 using Tgs.GamePluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.Domains;
 
@@ -14,8 +12,8 @@ public class PlayerBalanceGetServiceUnitTest
 	[Fact]
 	public async Task Player_Balance()
 	{
-		var fakePlayer = Substitute.For<IPlayer>();
-		var fakeGameProvider = Substitute.For<IGameProvider>();
+		var fakePlayer = Substitute.For<IPlayerRepository>();
+		var fakeGameProvider = Substitute.For<IGameProviderRepository>();
 		var fakeVerification = Substitute.For<IVerification>();
 		var fakePlayerGameBalance = Substitute.For<IPlayerGameBalance>();
 
@@ -23,17 +21,13 @@ public class PlayerBalanceGetServiceUnitTest
 			"4ucmqplxb029",
 			"KY");
 
-		var player = new PlayerInfo(
-			Guid.NewGuid(),
-			"TGS",
-			Guid.NewGuid(),
-			"TGS",
-			Guid.NewGuid(),
-			"GPI",
-			"4ucmqplxb029",
-			"4ucmqplxb029",
-			Guid.NewGuid(),
-			"CNY");
+		var player = new Models.PlayerInfo(
+			BrandId: Guid.NewGuid(),
+			BrandCode: "GPI",
+			PlayerCode: "4ucmqplxb029",
+			Username: "4ucmqplxb029",
+			WalletId: Guid.NewGuid(),
+			CurrencyCode: "CNY");
 		_ = fakePlayer
 			.GetAsync(
 			playerCode: Arg.Is(query.PlayerCode),
@@ -43,30 +37,22 @@ public class PlayerBalanceGetServiceUnitTest
 		var gameProviderId = Guid.NewGuid();
 		_ = fakeGameProvider
 			.GetGameProviderIdAsync(
-			gameProviderCode: Arg.Is(query.GameProviderCode),
+			code: Arg.Is(query.GameProviderCode),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(ValueTask.FromResult(gameProviderId));
 
-		var gameProvider = new GameProviderInfo(
+		var gameProvider = new Models.GameProviderInfo(
 			GameProviderId: gameProviderId,
 			GameProviderCode: GameProviderType.Kaiyuan,
-			UniqueId: 1,
-			Name: GameProviderType.Kaiyuan,
 			TransferWallet: true,
-			AutoCloseRound: true,
-			SupportTestPlayer: true,
-			AllowKickPlayer: true,
-			PlaceBetTimeout: 0,
-			SettleBetTimeout: 0,
-			Description: GameProviderType.Kaiyuan,
-			Localization: null);
+			AllowKickPlayer: true);
 		_ = fakeGameProvider
 			.GetAsync(
-			gameProviderId: Arg.Is(gameProviderId),
+			id: Arg.Is(gameProviderId),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(ValueTask.FromResult(gameProvider));
 
-		var platformBalance = new PlatformBalanceInfo(
+		var platformBalance = new Models.PlatformBalanceInfo(
 			Balance: 10000m,
 			FreeBalance: 1000m,
 			OutstandingBalance: 9000m);
@@ -74,7 +60,7 @@ public class PlayerBalanceGetServiceUnitTest
 			.GetBalanceAsync(
 			gameProviderCode: Arg.Is(query.GameProviderCode),
 			playerCode: Arg.Is(player.PlayerCode),
-			currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+			currencyCode: Arg.Is(player.CurrencyCode),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(platformBalance);
 

@@ -13,7 +13,7 @@ namespace Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 internal class RoundDetailGetService(
 	IGameRoundsClient gameRoundsClient,
 	IGameProvidersClient gameProvidersClient,
-	IGameProvider gameProvider) : IGetService<RoundDetailQuery, JsonDocument>
+	IGameProviderRepository gameProvider) : IGetService<RoundDetailQuery, JsonDocument>
 {
 	public async ValueTask<JsonDocument> GetAsync(RoundDetailQuery query, CancellationToken cancellationToken = default)
 	{
@@ -36,7 +36,7 @@ internal class RoundDetailGetService(
 
 		var gameProviderModel = await gameProvider
 			.GetAsync(
-			gameProviderId: data.GameProviderId,
+			id: data.GameProviderId,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 

@@ -8,20 +8,20 @@ using Tgs.ServiceUtility;
 namespace Tgs.GamePluggable.Core.Operator.ApplicationServices;
 
 internal class GameUrlGetService(
-	IGame game,
+	IGameRepository gameRepository,
 	IGameUrl gameUrl,
 	IVerification verification,
-	IPlayer player) : IGetService<GameUrlQuery, Uri>
+	IPlayerRepository playerRepository) : IGetService<GameUrlQuery, Uri>
 {
 	public async ValueTask<Uri> GetAsync(GameUrlQuery query, CancellationToken cancellationToken = default)
 	{
-		var playerInfo = await player.GetAsync(
+		var playerInfo = await playerRepository.GetAsync(
 			playerCode: query.PlayerCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		var gameInfo = await game.GetAsync(
-			gameId: query.GameId,
+		var gameInfo = await gameRepository.GetAsync(
+			id: query.GameId,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
@@ -41,13 +41,13 @@ internal class GameUrlGetService(
 					gameInfo.GameId,
 					playerInfo.BrandCode,
 					playerInfo.PlayerCode,
-					playerInfo.DefaultWalletCurrencyCode,
+					playerInfo.CurrencyCode,
 					query.LoginRecordId,
 					query.PlatformType,
 					query.Language,
 					query.IpAddress,
 					query.BackUrl,
-					playerInfo.DefaultWalletId,
+					playerInfo.WalletId,
 					cancellationToken)
 				.ConfigureAwait(false),
 			var o when o == GameProviderType.BetConstruct
@@ -58,7 +58,7 @@ internal class GameUrlGetService(
 					gameInfo.GameId,
 					playerInfo.BrandCode,
 					playerInfo.PlayerCode,
-					playerInfo.DefaultWalletCurrencyCode,
+					playerInfo.CurrencyCode,
 					query.LoginRecordId,
 					query.PlatformType,
 					query.Language,
@@ -75,7 +75,7 @@ internal class GameUrlGetService(
 					gameInfo.GameId,
 					playerInfo.BrandCode,
 					playerInfo.PlayerCode,
-					playerInfo.DefaultWalletCurrencyCode,
+					playerInfo.CurrencyCode,
 					query.LoginRecordId,
 					query.PlatformType,
 					query.Language,

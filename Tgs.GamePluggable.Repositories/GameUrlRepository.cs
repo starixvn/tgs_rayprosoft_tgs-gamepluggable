@@ -6,14 +6,12 @@ using Tgs.GameProviders.Client;
 namespace Tgs.GamePluggable.Repositories;
 
 internal class GameUrlRepository(
-	IBrand brand,
+	IBrandRepository brand,
 	ICashServiceClient cashServiceClient,
-	IGameProvider gameProvider,
+	IGameProviderRepository gameProvider,
 	IGameProvidersClient gameProvidersClient) : IGameUrl
 {
-	public async ValueTask<GameSM01PlatformLoginInfo> GetGamePlatformLoginBySM01Async(
-		string playerCode,
-		CancellationToken cancellationToken = default)
+	public async ValueTask<GameSM01PlatformLoginInfo> GetGamePlatformLoginBySM01Async(string playerCode, CancellationToken cancellationToken = default)
 	{
 		var result = await gameProvidersClient
 			.GamePlatformLoginBySM01Async(
@@ -24,19 +22,7 @@ internal class GameUrlRepository(
 		return new GameSM01PlatformLoginInfo(result!.ApiUrl, result.MerchantId, result.CustomerName, result.Timestamp, result.Sign);
 	}
 
-	public async ValueTask<Uri> GetGameUrlAsync(
-		string gameProviderCode,
-		GameProvidersClientGameType gameType,
-		int gameId,
-		string brandCode,
-		string playerCode,
-		string currencyCode,
-		Guid loginRecordId,
-		GameProvidersClientPlatformType platformType,
-		string language,
-		string ipAddress,
-		Uri? backUrl,
-		CancellationToken cancellationToken = default)
+	public async ValueTask<Uri> GetGameUrlAsync(string gameProviderCode, GameProvidersClientGameType gameType, int gameId, string brandCode, string playerCode, string currencyCode, Guid loginRecordId, GameProvidersClientPlatformType platformType, string language, string ipAddress, Uri? backUrl, CancellationToken cancellationToken = default)
 		=> await gameProvidersClient
 			.GameUrlAsync(
 				gameProviderCode,
@@ -54,20 +40,7 @@ internal class GameUrlRepository(
 		.ConfigureAwait(false)
 		?? throw new NullReferenceException();
 
-	public async ValueTask<Uri> GetGameUrlByAsiaGamingAsync(
-		string gameProviderCode,
-		GameProvidersClientGameType gameType,
-		int gameId,
-		string brandCode,
-		string playerCode,
-		string currencyCode,
-		Guid loginRecordId,
-		GameProvidersClientPlatformType platformType,
-		string language,
-		string ipAddress,
-		Uri? backUrl,
-		Guid defaultWalletId,
-		CancellationToken cancellationToken = default)
+	public async ValueTask<Uri> GetGameUrlByAsiaGamingAsync(string gameProviderCode, GameProvidersClientGameType gameType, int gameId, string brandCode, string playerCode, string currencyCode, Guid loginRecordId, GameProvidersClientPlatformType platformType, string language, string ipAddress, Uri? backUrl, Guid defaultWalletId, CancellationToken cancellationToken = default)
 	{
 		var playerBalance = await cashServiceClient
 				.GetBalanceAsync(
@@ -93,21 +66,7 @@ internal class GameUrlRepository(
 				?? throw new NullReferenceException();
 	}
 
-	public async ValueTask<Uri> GetGameUrlByBetConstructAsync(
-		string gameProviderCode,
-		GameProvidersClientGameType gameType,
-		int gameId,
-		string brandCode,
-		string playerCode,
-		string currencyCode,
-		Guid loginRecordId,
-		GameProvidersClientPlatformType platformType,
-		string language,
-		string ipAddress,
-		Uri? backUrl,
-		Guid brandId,
-		Guid gameProviderId,
-		CancellationToken cancellationToken = default)
+	public async ValueTask<Uri> GetGameUrlByBetConstructAsync(string gameProviderCode, GameProvidersClientGameType gameType, int gameId, string brandCode, string playerCode, string currencyCode, Guid loginRecordId, GameProvidersClientPlatformType platformType, string language, string ipAddress, Uri? backUrl, Guid brandId, Guid gameProviderId, CancellationToken cancellationToken = default)
 	{
 		var gameProviderConfigurationId = await brand
 			.GetGameProviderConfigurationIdAsync(

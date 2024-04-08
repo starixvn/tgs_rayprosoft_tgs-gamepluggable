@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using NSubstitute;
-using Tgs.GameCommand.Common;
 using Tgs.GamePluggable.Core;
+using Tgs.GamePluggable.Core.Models;
 
 namespace Tgs.GamePluggable.Repositories.UnitTest;
 
@@ -10,13 +10,13 @@ public class PlayerCacheRepositoryUnitTest
 	[Fact]
 	public async Task Get()
 	{
-		var fakePlayer = Substitute.For<IPlayer>();
+		var fakePlayer = Substitute.For<IPlayerRepository>();
 		var fakeMemoryCache = Substitute.For<IMemoryCache>();
 		var absoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
 
 		var playerCode = "4ucmqplxb029";
 
-		var key = $"game:pluggable:playercache:get:{playerCode}";
+		var key = string.Concat(typeof(PlayerCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "player", ":", "get", ":", playerCode);
 
 		_ = fakeMemoryCache
 			.TryGetValue(
@@ -25,16 +25,12 @@ public class PlayerCacheRepositoryUnitTest
 			 .Returns(false);
 
 		var player = new PlayerInfo(
-			Guid.NewGuid(),
-			"TGS",
-			Guid.NewGuid(),
-			"TGS",
-			Guid.NewGuid(),
-			"GPI",
-			"4ucmqplxb029",
-			"4ucmqplxb029",
-			Guid.NewGuid(),
-			"CNY");
+			BrandId: Guid.NewGuid(),
+			BrandCode: "GPI",
+			PlayerCode: "4ucmqplxb029",
+			Username: "4ucmqplxb029",
+			WalletId: Guid.NewGuid(),
+			CurrencyCode: "CNY");
 		_ = fakePlayer
 			.GetAsync(
 				playerCode: Arg.Is(playerCode))

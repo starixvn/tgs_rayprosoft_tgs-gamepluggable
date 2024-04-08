@@ -1,6 +1,6 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Tgs.CashService.Client;
-using Tgs.GameCommand.Client;
 using Tgs.GameCurrency.Client;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GameProviders.Client;
@@ -10,22 +10,22 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollecitonExtensions
 {
-	public static IServiceCollection AddGameProvidersPluggable(
+	public static IServiceCollection AddGamePluggable(
 		this IServiceCollection services,
+		Action<IServiceProvider, DbContextOptionsBuilder> dbContextOptions,
 		Action<CashServiceClientOptions, IServiceProvider> cashServiceClientOptions,
 		Action<GameProvidersClientOptions, IServiceProvider> gameProvidersClientOptions,
-		Action<GameCommandClientOptions, IServiceProvider> gameCommandClientOptions,
 		Action<GameFundTransferClientOptions, IServiceProvider> gameTransferClientOptions,
 		Action<GameCurrencyClientOptions, IServiceProvider> gameCurrencyClientOptions,
 		Action<GameRoundsClientOptions, IServiceProvider> gameRoundsConfigure)
 		=> services
 		.AddMemoryCache()
-		.AddGameProvidersPluggableCore(
+		.AddGamePluggableCore(
 			cashServiceClientOptions: cashServiceClientOptions,
 			gameProvidersClientOptions: gameProvidersClientOptions,
-			gameCommandClientOptions: gameCommandClientOptions,
 			gameTransferClientOptions: gameTransferClientOptions,
 			gameCurrencyClientOptions: gameCurrencyClientOptions,
 			gameRoundsConfigure: gameRoundsConfigure)
-		.AddGameProvidersPluggableRepositories();
+		.AddGamePluggableRepositories(
+			dbContextOptions: dbContextOptions);
 }

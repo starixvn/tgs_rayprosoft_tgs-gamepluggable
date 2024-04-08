@@ -59,7 +59,8 @@ internal class GameRoundResettleCommandService(
 			turnover: command.Turnover,
 			winLoss: -command.CompanyWinLoss,
 			additionalData: additionalData,
-			cancellationToken: cancellationToken);
+			cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
 
 		if (command.AdjustAmount.HasValue)
 		{

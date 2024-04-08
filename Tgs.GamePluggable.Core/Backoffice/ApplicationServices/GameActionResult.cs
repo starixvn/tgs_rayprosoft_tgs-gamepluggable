@@ -1,5 +1,4 @@
 ﻿using System;
-using Tgs.GameCommand.Common;
 
 namespace Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 
@@ -8,7 +7,7 @@ public record GameActionResult(
 	Guid RoundId,
 	string PlayerCode,
 	string ExternalTransactionId,
-	GameActionType Type,
+	Enums.GameActionType Type,
 	decimal Amount,
 	decimal Turnover,
 	decimal WinLoss,
@@ -26,5 +25,4 @@ public record GameActionResult(
 	string PlayerIp,
 	string? ExtraData,
 	string? JackpotContribution,
-	DateTimeOffset StoredOn
-	);
+	DateTimeOffset StoredOn);

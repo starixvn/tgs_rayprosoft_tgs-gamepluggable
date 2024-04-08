@@ -6,25 +6,25 @@ using Tgs.ServiceUtility;
 namespace Tgs.GamePluggable.Core.Operator.ApplicationServices;
 
 internal class PlayerBalanceGetService(
-	IPlayer player,
-	IGameProvider gameProvider,
+	IPlayerRepository playerRepository,
+	IGameProviderRepository gameProviderRepository,
 	IVerification verification,
 	IPlayerGameBalance playerGameBalance) : IGetService<PlayerBalanceQuery, PlayerBalanceResult>
 {
 	public async ValueTask<PlayerBalanceResult> GetAsync(PlayerBalanceQuery query, CancellationToken cancellationToken = default)
 	{
-		var playerInfo = await player.GetAsync(
+		var playerInfo = await playerRepository.GetAsync(
 			playerCode: query.PlayerCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		var gameProviderId = await gameProvider.GetGameProviderIdAsync(
-			gameProviderCode: query.GameProviderCode,
+		var gameProviderId = await gameProviderRepository.GetGameProviderIdAsync(
+			code: query.GameProviderCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		var gameProviderInfo = await gameProvider.GetAsync(
-			gameProviderId: gameProviderId,
+		var gameProviderInfo = await gameProviderRepository.GetAsync(
+			id: gameProviderId,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
@@ -37,7 +37,7 @@ internal class PlayerBalanceGetService(
 		var result = await playerGameBalance.GetBalanceAsync(
 			gameProviderCode: gameProviderInfo.GameProviderCode,
 			playerCode: playerInfo.PlayerCode,
-			currencyCode: playerInfo.DefaultWalletCurrencyCode,
+			currencyCode: playerInfo.CurrencyCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 

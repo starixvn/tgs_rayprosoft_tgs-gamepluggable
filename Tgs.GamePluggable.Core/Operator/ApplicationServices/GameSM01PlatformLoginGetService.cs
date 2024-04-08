@@ -1,8 +1,6 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Tgs.GameCommand.Client;
-using Tgs.GameCommand.Common;
 using Tgs.GameProviders.Domains;
 using Tgs.ServiceUtility;
 
@@ -11,34 +9,38 @@ namespace Tgs.GamePluggable.Core.Operator.ApplicationServices;
 internal class GameSM01PlatformLoginGetService(
 	IGameUrl gameUrl,
 	IVerification verification,
-	IGameProvider gameProvider,
-	IGameCommandClient gameCommandClient,
-	IPlayer player) : IGetService<GameSM01PlatformLoginQuery, GameSM01PlatformLoginInfo>
+	IGameProviderRepository gameProviderRepository,
+	IPlayerRepository playerRepository,
+	IGameRepository gameRepository) : IGetService<GameSM01PlatformLoginQuery, GameSM01PlatformLoginInfo>
 {
 	public async ValueTask<GameSM01PlatformLoginInfo> GetAsync(GameSM01PlatformLoginQuery query, CancellationToken cancellationToken = default)
 	{
-		var playerInfo = await player
+		var playerInfo = await playerRepository
 			.GetAsync(
 			playerCode: query.PlayerCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		var gameProviderId = await gameProvider
+		var gameProviderId = await gameProviderRepository
 			.GetGameProviderIdAsync(
-			gameProviderCode: GameProviderType.SM01,
+			code: GameProviderType.SM01,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		var games = await gameCommandClient
-			.GameQueryAsync(
+		var gameIds = await gameRepository.QueryAsync(
 			gameProviderId: gameProviderId,
 			cancellationToken: cancellationToken)
 			.ToArrayAsync(
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false)
-			?? Enumerable.Empty<GameInfo>();
+			?? Enumerable.Empty<int>();
 
-		var game = games.ElementAt(0);
+		var gameId = gameIds.ElementAt(0);
+
+		var game = await gameRepository.GetAsync(
+			gameId,
+			cancellationToken)
+			.ConfigureAwait(false);
 
 		await verification
 			.VerifyPlayerGameUrlAsync(

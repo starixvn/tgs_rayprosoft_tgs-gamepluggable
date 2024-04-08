@@ -19,6 +19,7 @@ internal class GameProvidersOperatorPluggableClient(HttpClient httpClient) : IGa
 			new JsonStringEnumConverter()
 		}
 	};
+
 	public async ValueTask GameProviderFundInAsync(string playerCode, string gameProviderCode, decimal amount, CancellationToken cancellationToken = default)
 	{
 		var request = new

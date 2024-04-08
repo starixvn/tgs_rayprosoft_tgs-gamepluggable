@@ -11,9 +11,9 @@ namespace Tgs.GamePluggable.Core.Operator.ApplicationServices;
 internal class FundOutCommandService(
 	ICashServiceClient cashServiceClient,
 	IGameFundTransferClient gameFundTransferClient,
-	IGameProvider gameProvider,
+	IGameProviderRepository gameProvider,
 	IVerification verification,
-	IPlayer player,
+	IPlayerRepository player,
 	IPlayerGameBalance playerGameBalance) : ICommandService<FundOutCommand>
 {
 	public async ValueTask ExecuteAsync(FundOutCommand command, CancellationToken cancellationToken = default)
@@ -31,13 +31,13 @@ internal class FundOutCommandService(
 
 		var gameProviderId = await gameProvider
 			.GetGameProviderIdAsync(
-			gameProviderCode: command.GameProviderCode,
+			code: command.GameProviderCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
 		var gameProviderInfo = await gameProvider
 			.GetAsync(
-			gameProviderId: gameProviderId,
+			id: gameProviderId,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
@@ -46,24 +46,21 @@ internal class FundOutCommandService(
 			throw new Exception($"This game provider does not provide multi-wallet functionality.({gameProviderInfo.GameProviderCode})");
 		}
 
-		await verification
-			.VerifyPlayerFundAsync(
+		await verification.VerifyPlayerFundAsync(
 			player: playerInfo,
 			gameProvider: gameProviderInfo,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		_ = await playerGameBalance
-			.GetBalanceAsync(
+		_ = await playerGameBalance.GetBalanceAsync(
 			gameProviderInfo.GameProviderCode,
 			playerInfo.PlayerCode,
-			playerInfo.DefaultWalletCurrencyCode,
+			playerInfo.CurrencyCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		var playerBalance = await cashServiceClient
-			.GetBalanceAsync(
-			walletId: playerInfo.DefaultWalletId,
+		var playerBalance = await cashServiceClient.GetBalanceAsync(
+			walletId: playerInfo.WalletId,
 			cancellationToken: cancellationToken)
 			.AsTask()
 			.WaitAsync(
@@ -87,8 +84,8 @@ internal class FundOutCommandService(
 			gameProviderCode: gameProviderInfo.GameProviderCode,
 			brandCode: playerInfo.BrandCode,
 			playerCode: playerInfo.PlayerCode,
-			walletId: playerInfo.DefaultWalletId,
-			currencyCode: playerInfo.DefaultWalletCurrencyCode,
+			walletId: playerInfo.WalletId,
+			currencyCode: playerInfo.CurrencyCode,
 			amount: amount,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);

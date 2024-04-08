@@ -15,7 +15,6 @@ data:
       "Pluggable": {
         "GameProvidersClientBaseUrl": "http://game-gameproviders/",
         "CashServiceClientBaseUrl": "http://cashservice-api/",
-        "GameCommandClientBaseUrl": "http://game-gamecommand/",
         "GameFundTransferClientBaseUrl": "dns:///game-gamefundtransfer:9090/",
         "GameCurrencyClientBaseUrl": "http://game-gamecurrency/",
         "GameRoundsClientBaseUrl": "http://game-gamerounds"

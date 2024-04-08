@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
-using Tgs.GameCommand.Common;
 using Tgs.GamePluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
@@ -14,10 +13,10 @@ public class GameUrlGetServiceUnitTest
 	[Fact]
 	public async Task Game_Url()
 	{
-		var fakeGame = Substitute.For<IGame>();
+		var fakeGame = Substitute.For<IGameRepository>();
 		var fakeGameUrl = Substitute.For<IGameUrl>();
 		var fakeVerification = Substitute.For<IVerification>();
-		var fakePlayer = Substitute.For<IPlayer>();
+		var fakePlayer = Substitute.For<IPlayerRepository>();
 
 		var query = new GameUrlQuery(
 			 PlayerCode: "4ucmqplxb029",
@@ -28,45 +27,33 @@ public class GameUrlGetServiceUnitTest
 			 IpAddress: "127.0.0.1",
 			 BackUrl: new("https://dev-t1.rpgp.cc/"));
 
-		var player = new PlayerInfo(
-			Guid.NewGuid(),
-			"TGS",
-			Guid.NewGuid(),
-			"TGS",
-			Guid.NewGuid(),
-			"GPI",
-			"4ucmqplxb029",
-			"4ucmqplxb029",
-			Guid.NewGuid(),
-			"CNY");
+		var player = new Models.PlayerInfo(
+			BrandId: Guid.NewGuid(),
+			BrandCode: "GPI",
+			PlayerCode: "4ucmqplxb029",
+			Username: "4ucmqplxb029",
+			WalletId: Guid.NewGuid(),
+			CurrencyCode: "CNY");
 		_ = fakePlayer
 			.GetAsync(
 				playerCode: Arg.Is(query.PlayerCode),
 				cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(ValueTask.FromResult(player));
 
-		var game = new GameInfo(
+		var game = new Models.GameInfo(
 			GameId: 1,
 			GameCode: "lobby",
 			GameProviderId: Guid.NewGuid(),
 			GameProviderCode: GameProviderType.Kaiyuan,
-			GameExternalId: "lobby",
-			Type: GameType.CardGameLobby,
-			PlatformType: GamePlatformType.DesktopAndMobile,
-			Name: GameProviderType.Kaiyuan,
-			SubGame: true,
-			AvailableToBrand: true,
-			HasTurnoverOnTieBet: true,
-			Html5: true,
-			Description: GameProviderType.Kaiyuan,
+			ExternalGameId: "lobby",
+			Type: Enums.GameType.CardGameLobby,
+			PlatformType: Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: null,
 			RuleUrl: null,
-			AvailableCurrencies: null,
-			Localization: null,
-			SubGameProviderCode: GameProviderType.Kaiyuan);
+			AvailableCurrencies: null);
 		_ = fakeGame
 			.GetAsync(
-			gameId: Arg.Is(query.GameId),
+			id: Arg.Is(query.GameId),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(ValueTask.FromResult(game));
 
@@ -78,7 +65,7 @@ public class GameUrlGetServiceUnitTest
 			gameId: Arg.Is(game.GameId),
 			brandCode: Arg.Is(player.BrandCode),
 			playerCode: Arg.Is(player.PlayerCode),
-			currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+			currencyCode: Arg.Is(player.CurrencyCode),
 			loginRecordId: Arg.Is(query.LoginRecordId),
 			platformType: Arg.Is(query.PlatformType),
 			language: Arg.Is(query.Language),
@@ -108,10 +95,10 @@ public class GameUrlGetServiceUnitTest
 	[Fact]
 	public async Task Get_AsiaGaming_Game_Url()
 	{
-		var fakeGame = Substitute.For<IGame>();
+		var fakeGame = Substitute.For<IGameRepository>();
 		var fakeGameUrl = Substitute.For<IGameUrl>();
 		var fakeVerification = Substitute.For<IVerification>();
-		var fakePlayer = Substitute.For<IPlayer>();
+		var fakePlayer = Substitute.For<IPlayerRepository>();
 
 		var query = new GameUrlQuery(
 			 PlayerCode: "4ucmqplxb029",
@@ -122,45 +109,33 @@ public class GameUrlGetServiceUnitTest
 			 IpAddress: "127.0.0.1",
 			 BackUrl: new("https://dev-t1.rpgp.cc/"));
 
-		var player = new PlayerInfo(
-			Guid.NewGuid(),
-			"TGS",
-			Guid.NewGuid(),
-			"TGS",
-			Guid.NewGuid(),
-			"GPI",
-			"4ucmqplxb029",
-			"4ucmqplxb029",
-			Guid.NewGuid(),
-			"CNY");
+		var player = new Models.PlayerInfo(
+			BrandId: Guid.NewGuid(),
+			BrandCode: "GPI",
+			PlayerCode: "4ucmqplxb029",
+			Username: "4ucmqplxb029",
+			WalletId: Guid.NewGuid(),
+			CurrencyCode: "CNY");
 		_ = fakePlayer
 			.GetAsync(
 			playerCode: Arg.Is(query.PlayerCode),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(ValueTask.FromResult(player));
 
-		var game = new GameInfo(
+		var game = new Models.GameInfo(
 			GameId: 1,
 			GameCode: "lobby",
 			GameProviderId: Guid.NewGuid(),
 			GameProviderCode: GameProviderType.AsiaGaming,
-			GameExternalId: "lobby",
-			Type: GameType.LotteryLobby,
-			PlatformType: GamePlatformType.DesktopAndMobile,
-			Name: GameProviderType.Kaiyuan,
-			SubGame: true,
-			AvailableToBrand: true,
-			HasTurnoverOnTieBet: true,
-			Html5: true,
-			Description: GameProviderType.AsiaGaming,
+			ExternalGameId: "lobby",
+			Type: Enums.GameType.LotteryLobby,
+			PlatformType: Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: null,
 			RuleUrl: null,
-			AvailableCurrencies: null,
-			Localization: null,
-			SubGameProviderCode: GameProviderType.AsiaGaming);
+			AvailableCurrencies: null);
 		_ = fakeGame
 			.GetAsync(
-			gameId: Arg.Is(query.GameId),
+			id: Arg.Is(query.GameId),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(ValueTask.FromResult(game));
 
@@ -172,13 +147,13 @@ public class GameUrlGetServiceUnitTest
 			gameId: Arg.Is(game.GameId),
 			brandCode: Arg.Is(player.BrandCode),
 			playerCode: Arg.Is(player.PlayerCode),
-			currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+			currencyCode: Arg.Is(player.CurrencyCode),
 			loginRecordId: Arg.Is(query.LoginRecordId),
 			platformType: Arg.Is(query.PlatformType),
 			language: Arg.Is(query.Language),
 			ipAddress: Arg.Is(query.IpAddress),
 			backUrl: Arg.Is(query.BackUrl),
-			defaultWalletId: Arg.Is(player.DefaultWalletId))
+			defaultWalletId: Arg.Is(player.WalletId))
 			.Returns(ValueTask.FromResult(gameUrl));
 
 		var sut = new GameUrlGetService(
@@ -203,10 +178,10 @@ public class GameUrlGetServiceUnitTest
 	[Fact]
 	public async Task Get_BetConstruct_Game_Url()
 	{
-		var fakeGame = Substitute.For<IGame>();
+		var fakeGame = Substitute.For<IGameRepository>();
 		var fakeGameUrl = Substitute.For<IGameUrl>();
 		var fakeVerification = Substitute.For<IVerification>();
-		var fakePlayer = Substitute.For<IPlayer>();
+		var fakePlayer = Substitute.For<IPlayerRepository>();
 
 		var query = new GameUrlQuery(
 			 "4ucmqplxb029",
@@ -217,45 +192,33 @@ public class GameUrlGetServiceUnitTest
 			 "127.0.0.1",
 			 new("https://dev-t1.rpgp.cc/"));
 
-		var player = new PlayerInfo(
-			ResellerId: Guid.NewGuid(),
-			ResellerCode: "TGS",
-			LicenseeId: Guid.NewGuid(),
-			LicenseeCode: "TGS",
+		var player = new Models.PlayerInfo(
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
 			Username: "4ucmqplxb029",
-			DefaultWalletId: Guid.NewGuid(),
-			DefaultWalletCurrencyCode: "CNY");
+			WalletId: Guid.NewGuid(),
+			CurrencyCode: "CNY");
 		_ = fakePlayer
 			.GetAsync(
 			playerCode: Arg.Is(query.PlayerCode),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(ValueTask.FromResult(player));
 
-		var game = new GameInfo(
+		var game = new Models.GameInfo(
 			GameId: 1,
 			GameCode: "lobby",
 			GameProviderId: Guid.NewGuid(),
 			GameProviderCode: GameProviderType.BetConstruct,
-			GameExternalId: "lobby",
-			Type: GameType.Sportsbook,
-			PlatformType: GamePlatformType.DesktopAndMobile,
-			Name: GameProviderType.Kaiyuan,
-			SubGame: true,
-			AvailableToBrand: true,
-			HasTurnoverOnTieBet: true,
-			Html5: true,
-			Description: GameProviderType.BetConstruct,
+			ExternalGameId: "lobby",
+			Type: Enums.GameType.Sportsbook,
+			PlatformType: Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: null,
 			RuleUrl: null,
-			AvailableCurrencies: null,
-			Localization: null,
-			SubGameProviderCode: GameProviderType.BetConstruct);
+			AvailableCurrencies: null);
 		_ = fakeGame
 			.GetAsync(
-			gameId: Arg.Is(query.GameId),
+			id: Arg.Is(query.GameId),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(ValueTask.FromResult(game));
 
@@ -267,7 +230,7 @@ public class GameUrlGetServiceUnitTest
 			gameId: Arg.Is(game.GameId),
 			brandCode: Arg.Is(player.BrandCode),
 			playerCode: Arg.Is(player.PlayerCode),
-			currencyCode: Arg.Is(player.DefaultWalletCurrencyCode),
+			currencyCode: Arg.Is(player.CurrencyCode),
 			loginRecordId: Arg.Is(query.LoginRecordId),
 			platformType: Arg.Is(query.PlatformType),
 			language: Arg.Is(query.Language),

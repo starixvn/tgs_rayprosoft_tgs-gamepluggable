@@ -1,6 +1,5 @@
 ﻿using NSubstitute;
-using Tgs.GameCommand.Client;
-using Tgs.GameCommand.Common;
+using Tgs.GamePluggable.Core;
 using Tgs.GamePluggable.Core.Exceptions;
 
 namespace Tgs.GamePluggable.Repositories.UnitTest;
@@ -8,33 +7,36 @@ namespace Tgs.GamePluggable.Repositories.UnitTest;
 public class VerificationRepositoryVerifyBrandCurrencyUnitTest
 {
 	[Fact]
-	public async Task Brand_Currency_Is_Empty()
+	public async Task Brand_Currency_Is_False()
 	{
+		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+		var fakeBrandRepository = Substitute.For<IBrandRepository>();
+		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+
 		var brandId = Guid.NewGuid();
 		var gameProviderId = Guid.NewGuid();
-		string currencyCode = "CNY";
+		var currencyCode = "CNY";
 
-		var fakeClinet = Substitute.For<IGameCommandClient>();
+		_ = fakeBrandRepository.GetCurrencyExistAsync(
+			brandId: Arg.Is(brandId),
+			currencyCode: Arg.Is(currencyCode),
+			cancellationToken: Arg.Any<CancellationToken>())
+			.Returns(false);
 
-		_ = fakeClinet
-			.BrandGetCurrencyAsync(
-				brandId: Arg.Is(brandId),
-				currencyCode: Arg.Is(currencyCode),
-				cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(string.Empty);
+		_ = fakeGameProviderRepository
+			.GetCurrencyExistAsync(
+			id: Arg.Is(gameProviderId),
+			currencyCode: Arg.Is(currencyCode),
+			cancellationToken: Arg.Any<CancellationToken>())
+			.Returns(true);
 
-		_ = fakeClinet
-			.GameProviderGetCurrencyCodeAsync(
-				gameProviderId: Arg.Is(gameProviderId),
-				currencyCode: Arg.Is(currencyCode),
-				cancellationToken: Arg.Any<CancellationToken>())
-			.Returns("CNY");
-
-		var repository = new VerificationRepository(
-			fakeClinet);
+		var sut = new VerificationRepository(
+			fakePlayerRepository,
+			fakeBrandRepository,
+			fakeGameProviderRepository);
 
 		_ = await Assert.ThrowsAsync<VerifyBrandCurrencyException>(
-			() => repository.VerifyBrandCurrencyAsync(
+			() => sut.VerifyBrandCurrencyAsync(
 				brandId: brandId,
 				gameProviderId: gameProviderId,
 				currencyCode: currencyCode)
@@ -42,146 +44,72 @@ public class VerificationRepositoryVerifyBrandCurrencyUnitTest
 	}
 
 	[Fact]
-	public async Task Brand_Currency_Is_Null()
+	public async Task GameProvider_Currency_Is_False()
 	{
+		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+		var fakeBrandRepository = Substitute.For<IBrandRepository>();
+		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+
 		var brandId = Guid.NewGuid();
 		var gameProviderId = Guid.NewGuid();
-		string currencyCode = "CNY";
+		var currencyCode = "CNY";
 
-		var fakeClinet = Substitute.For<IGameCommandClient>();
+		_ = fakeBrandRepository.GetCurrencyExistAsync(
+			brandId: Arg.Is(brandId),
+			currencyCode: Arg.Is(currencyCode),
+			cancellationToken: Arg.Any<CancellationToken>())
+			.Returns(true);
 
-		_ = fakeClinet
-			.BrandGetCurrencyAsync(
-				brandId: Arg.Is(brandId),
-				currencyCode: Arg.Is(currencyCode),
-				cancellationToken: Arg.Any<CancellationToken>())
-			.Returns((string?)null);
+		_ = fakeGameProviderRepository
+			.GetCurrencyExistAsync(
+			id: Arg.Is(gameProviderId),
+			currencyCode: Arg.Is(currencyCode),
+			cancellationToken: Arg.Any<CancellationToken>())
+			.Returns(false);
 
-		_ = fakeClinet
-			.GameProviderGetCurrencyCodeAsync(
-				gameProviderId: Arg.Is(gameProviderId),
-				currencyCode: Arg.Is(currencyCode),
-				cancellationToken: Arg.Any<CancellationToken>())
-			.Returns("CNY");
-
-		var repository = new VerificationRepository(
-			fakeClinet);
+		var sut = new VerificationRepository(
+			fakePlayerRepository,
+			fakeBrandRepository,
+			fakeGameProviderRepository);
 
 		_ = await Assert.ThrowsAsync<VerifyBrandCurrencyException>(
-			() => repository.VerifyBrandCurrencyAsync(
+			() => sut.VerifyBrandCurrencyAsync(
 				brandId: brandId,
 				gameProviderId: gameProviderId,
 				currencyCode: currencyCode)
 			 .AsTask());
-	}
-
-	[Fact]
-	public async Task GameProvider_Currency_Is_Empty()
-	{
-		var brandId = Guid.NewGuid();
-		var gameProviderId = Guid.NewGuid();
-		string currencyCode = "CNY";
-
-		var fakeClinet = Substitute.For<IGameCommandClient>();
-
-		_ = fakeClinet
-			.BrandGetCurrencyAsync(
-				brandId: Arg.Is(brandId),
-				currencyCode: Arg.Is(currencyCode),
-				cancellationToken: Arg.Any<CancellationToken>())
-			.Returns("CNY");
-
-		_ = fakeClinet
-			.GameProviderGetCurrencyCodeAsync(
-				gameProviderId: Arg.Is(gameProviderId),
-				currencyCode: Arg.Is(currencyCode),
-				cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(string.Empty);
-
-		var repository = new VerificationRepository(
-			fakeClinet);
-
-		_ = await Assert.ThrowsAsync<VerifyBrandCurrencyException>(
-			() => repository.VerifyBrandCurrencyAsync(
-				brandId: brandId,
-				gameProviderId: gameProviderId,
-				currencyCode: currencyCode)
-			 .AsTask());
-	}
-
-	[Fact]
-	public async Task GameProvider_Currency_Is_Null()
-	{
-		var brandId = Guid.NewGuid();
-		var gameProviderId = Guid.NewGuid();
-		string currencyCode = "CNY";
-
-		var fakeClinet = Substitute.For<IGameCommandClient>();
-
-		_ = fakeClinet
-			.BrandGetCurrencyAsync(
-				brandId: Arg.Is(brandId),
-				currencyCode: Arg.Is(currencyCode),
-				cancellationToken: Arg.Any<CancellationToken>())
-			.Returns("CNY");
-
-		_ = fakeClinet
-			.GameProviderGetCurrencyCodeAsync(
-				gameProviderId: Arg.Is(gameProviderId),
-				currencyCode: Arg.Is(currencyCode),
-				cancellationToken: Arg.Any<CancellationToken>())
-			.Returns((string?)null);
-
-		var repository = new VerificationRepository(
-			fakeClinet);
-
-		_ = await Assert.ThrowsAsync<VerifyBrandCurrencyException>(
-			() => repository.VerifyBrandCurrencyAsync(
-				brandId: brandId,
-				gameProviderId: gameProviderId,
-				currencyCode: currencyCode)
-			.AsTask());
 	}
 
 	[Fact]
 	public async Task Normal_Process()
 	{
+		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+		var fakeBrandRepository = Substitute.For<IBrandRepository>();
+		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+
 		var brandId = Guid.NewGuid();
 		var gameProviderId = Guid.NewGuid();
-		string currencyCode = "CNY";
+		var currencyCode = "CNY";
 
-		var fakeClinet = Substitute.For<IGameCommandClient>();
+		_ = fakeBrandRepository.GetCurrencyExistAsync(
+			brandId: Arg.Is(brandId),
+			currencyCode: Arg.Is(currencyCode),
+			cancellationToken: Arg.Any<CancellationToken>())
+			.Returns(true);
 
-		_ = fakeClinet
-			.BrandGetStatusAsync(
-				brandId: Arg.Is(brandId),
-				cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(BrandStatus.Active);
+		_ = fakeGameProviderRepository
+			.GetCurrencyExistAsync(
+			id: Arg.Is(gameProviderId),
+			currencyCode: Arg.Is(currencyCode),
+			cancellationToken: Arg.Any<CancellationToken>())
+			.Returns(true);
 
-		_ = fakeClinet
-			.GameProviderGetStatusAsync(
-				gameProviderId: Arg.Is(gameProviderId),
-				cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(GameProviderStatus.Active);
+		var sut = new VerificationRepository(
+			fakePlayerRepository,
+			fakeBrandRepository,
+			fakeGameProviderRepository);
 
-		_ = fakeClinet
-			.BrandGetCurrencyAsync(
-				brandId: Arg.Is(brandId),
-				currencyCode: Arg.Is(currencyCode),
-				cancellationToken: Arg.Any<CancellationToken>())
-			.Returns("CNY");
-
-		_ = fakeClinet
-			.GameProviderGetCurrencyCodeAsync(
-				gameProviderId: Arg.Is(gameProviderId),
-				currencyCode: Arg.Is(currencyCode),
-				cancellationToken: Arg.Any<CancellationToken>())
-			.Returns("CNY");
-
-		var repository = new VerificationRepository(
-			fakeClinet);
-
-		await repository.VerifyBrandCurrencyAsync(
+		await sut.VerifyBrandCurrencyAsync(
 			brandId: brandId,
 			gameProviderId: gameProviderId,
 			currencyCode: currencyCode);

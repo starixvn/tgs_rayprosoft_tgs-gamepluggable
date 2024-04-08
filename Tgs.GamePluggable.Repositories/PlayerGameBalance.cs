@@ -9,11 +9,7 @@ internal class PlayerGameBalance(
 	IGameProvidersClient gameProvidersClient,
 	IGameCurrencyClient gameCurrencyClient) : IPlayerGameBalance
 {
-	public async ValueTask<PlatformBalanceInfo> GetBalanceAsync(
-		string gameProviderCode,
-		string playerCode,
-		string currencyCode,
-		CancellationToken cancellationToken = default)
+	public async ValueTask<PlatformBalanceInfo> GetBalanceAsync(string gameProviderCode, string playerCode, string currencyCode, CancellationToken cancellationToken = default)
 	{
 		var response = await gameProvidersClient
 			.PlayerBalanceAsync(

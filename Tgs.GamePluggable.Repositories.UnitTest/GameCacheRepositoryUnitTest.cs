@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using NSubstitute;
-using Tgs.GameCommand.Common;
 using Tgs.GamePluggable.Core;
 using Tgs.GameProviders.Domains;
 
@@ -11,41 +10,33 @@ public class GameCacheRepositoryUnitTest
 	[Fact]
 	public async Task Get()
 	{
-		var fakeGame = Substitute.For<IGame>();
+		var fakeGame = Substitute.For<IGameRepository>();
 		var fakeMemoryCache = Substitute.For<IMemoryCache>();
 		var absoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
 
 		var gameId = 1;
 
-		var key = $"game:pluggable:gamecache:get:{gameId}";
+		var key = string.Concat(typeof(GameCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "game", ":", "get", ":", gameId);
 
 		_ = fakeMemoryCache
 			.TryGetValue(
 				key: Arg.Is(key),
 				value: out _)
 			 .Returns(false);
-		var game = new GameInfo(
+		var game = new Core.Models.GameInfo(
 			GameId: 1,
 			GameCode: "lobby",
 			GameProviderId: Guid.NewGuid(),
 			GameProviderCode: GameProviderType.Kaiyuan,
-			GameExternalId: "lobby",
-			Type: GameType.CardGameLobby,
-			PlatformType: GamePlatformType.DesktopAndMobile,
-			Name: GameProviderType.Kaiyuan,
-			SubGame: true,
-			AvailableToBrand: true,
-			HasTurnoverOnTieBet: true,
-			Html5: true,
-			Description: GameProviderType.Kaiyuan,
+			ExternalGameId: "lobby",
+			Type: Core.Enums.GameType.CardGameLobby,
+			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: null,
 			RuleUrl: null,
-			AvailableCurrencies: null,
-			Localization: null,
-			SubGameProviderCode: GameProviderType.Kaiyuan);
+			AvailableCurrencies: null);
 		_ = fakeGame
 			.GetAsync(
-				gameId: Arg.Is(gameId))
+				id: Arg.Is(gameId))
 			.Returns(game);
 
 		var repository = new GameCacheRepository(

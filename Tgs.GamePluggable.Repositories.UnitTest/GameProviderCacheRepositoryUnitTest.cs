@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using NSubstitute;
-using Tgs.GameCommand.Common;
 using Tgs.GamePluggable.Core;
 using Tgs.GameProviders.Domains;
 
@@ -11,12 +10,12 @@ public class GameProviderCacheRepositoryUnitTest
 	[Fact]
 	public async Task Get()
 	{
-		var fakeGameProvider = Substitute.For<IGameProvider>();
+		var fakeGameProvider = Substitute.For<IGameProviderRepository>();
 		var fakeMemoryCache = Substitute.For<IMemoryCache>();
 
 		var gameProviderId = Guid.NewGuid();
 
-		var key = $"game:pluggable:gameprovidercache:get:{gameProviderId}";
+		var key = string.Concat(typeof(GameProviderCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "gameprovider", ":", "get", ":", gameProviderId);
 
 		_ = fakeMemoryCache
 			.TryGetValue(
@@ -24,22 +23,14 @@ public class GameProviderCacheRepositoryUnitTest
 				value: out _)
 			 .Returns(false);
 
-		var gameProvider = new GameProviderInfo(
+		var gameProvider = new Core.Models.GameProviderInfo(
 			GameProviderId: gameProviderId,
 			GameProviderCode: GameProviderType.Kaiyuan,
-			UniqueId: 1,
-			Name: GameProviderType.Kaiyuan,
 			TransferWallet: true,
-			AutoCloseRound: true,
-			SupportTestPlayer: true,
-			AllowKickPlayer: true,
-			PlaceBetTimeout: 0,
-			SettleBetTimeout: 0,
-			Description: GameProviderType.Kaiyuan,
-			Localization: null);
+			AllowKickPlayer: true);
 		_ = fakeGameProvider
 			.GetAsync(
-				gameProviderId: Arg.Is(gameProviderId))
+				id: Arg.Is(gameProviderId))
 			.Returns(gameProvider);
 
 		var repository = new GameProviderCacheRepository(
@@ -60,16 +51,16 @@ public class GameProviderCacheRepositoryUnitTest
 	[Fact]
 	public async Task GetConfiguration()
 	{
-		var fakeGameProvider = Substitute.For<IGameProvider>();
+		var fakeGameProvider = Substitute.For<IGameProviderRepository>();
 		var fakeMemoryCache = Substitute.For<IMemoryCache>();
 
 		var gameProviderConfigId = Guid.NewGuid();
 
-		var gameProviderConfiguration = new GameProviderConfigInfo(
+		var gameProviderConfiguration = new Core.Models.GameProviderConfigInfo(
 			GameProviderId: Guid.NewGuid(),
 			GameProviderCode: GameProviderType.BetConstruct,
 			GameProviderConfigId: gameProviderConfigId,
-			Status: GameProviderConfigStatus.Active,
+			Status: Core.Enums.GameProviderConfigStatus.Active,
 			Name: $"{GameProviderType.BetConstruct} Configuration",
 			Description: $"{GameProviderType.BetConstruct} Configuration",
 			ClientId: $"{GameProviderType.BetConstruct}-GPI",
@@ -95,12 +86,11 @@ public class GameProviderCacheRepositoryUnitTest
 	[Fact]
 	public async Task GetGameProviderId()
 	{
-		var fakeGameProvider = Substitute.For<IGameProvider>();
+		var fakeGameProvider = Substitute.For<IGameProviderRepository>();
 		var fakeMemoryCache = Substitute.For<IMemoryCache>();
-
 		var gameProviderCode = "KY";
 
-		var key = $"game:pluggable:gameprovidercache:get:gameproviderid:{gameProviderCode}";
+		var key = string.Concat(typeof(GameProviderCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "gameprovider", ":", "get", ":", "id", ":", gameProviderCode);
 
 		_ = fakeMemoryCache
 			.TryGetValue(
@@ -111,7 +101,7 @@ public class GameProviderCacheRepositoryUnitTest
 		var gameProviderId = Guid.NewGuid();
 		_ = fakeGameProvider
 			.GetGameProviderIdAsync(
-				gameProviderCode: Arg.Is(gameProviderCode))
+				code: Arg.Is(gameProviderCode))
 			.Returns(gameProviderId);
 
 		var repository = new GameProviderCacheRepository(

@@ -1,28 +1,30 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using Tgs.GameCommand.Common;
 using Tgs.GamePluggable.Core;
+using Tgs.GamePluggable.Core.Models;
 
 namespace Tgs.GamePluggable.Repositories;
 
 internal class PlayerCacheRepository(
-	IPlayer player,
+	IPlayerRepository repository,
 	IMemoryCache memoryCache,
-	TimeSpan absoluteExpiration) : IPlayer
+	TimeSpan absoluteExpiration) : IPlayerRepository
 {
-	public async ValueTask<PlayerInfo> GetAsync(
-		string playerCode,
-		CancellationToken cancellationToken = default)
+	public async ValueTask<PlayerInfo> GetAsync(string playerCode, CancellationToken cancellationToken = default)
 	{
-		var key = $"game:pluggable:playercache:get:{playerCode}";
+		var key = string.Concat(typeof(PlayerCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "player", ":", "get", ":", playerCode);
+
 		if (!memoryCache.TryGetValue(key, out PlayerInfo? playerInfo))
 		{
-			playerInfo = await player.GetAsync(
+			playerInfo = await repository.GetAsync(
 				playerCode: playerCode,
 				cancellationToken: cancellationToken)
 				.ConfigureAwait(false);
-			_ = memoryCache.Set(key, playerInfo, absoluteExpiration);
+			return memoryCache.Set(key, playerInfo, absoluteExpiration);
 		}
 
 		return playerInfo!;
 	}
+
+	public ValueTask<bool> GetStatusAsync(string playerCode, CancellationToken cancellationToken = default)
+	=> repository.GetStatusAsync(playerCode: playerCode, cancellationToken: cancellationToken);
 }

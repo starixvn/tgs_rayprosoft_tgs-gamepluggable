@@ -1,0 +1,109 @@
+﻿{
+  "CodeGenerationMode": 4,
+  "ContextClassName": "TgsContext",
+  "ContextNamespace": "Entities",
+  "DefaultDacpacSchema": null,
+  "FilterSchemas": true,
+  "IncludeConnectionString": false,
+  "ModelNamespace": "Entities",
+  "OutputContextPath": "Entities\/Tgs",
+  "OutputPath": "Entities\/Tgs\/Models",
+  "PreserveCasingWithRegex": true,
+  "ProjectRootNamespace": "Tgs.GamePluggable",
+  "Schemas": [
+    {
+      "Name": "dbo"
+    }
+  ],
+  "SelectedHandlebarsLanguage": 0,
+  "SelectedToBeGenerated": 0,
+  "T4TemplatePath": null,
+  "Tables": [
+    {
+      "Name": "dbo.brand_currencies",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.brand_game_providers",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.brand_games",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.brand_languages",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.brands",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.game_provider_configurations",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.game_provider_currencies",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.game_provider_languages",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.game_providers",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.games",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.licensees",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.player_ip_records",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.player_login_records",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.players",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.resellers",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.sub_game_providers",
+      "ObjectType": 0
+    }
+  ],
+  "UiHint": ".tgs",
+  "UncountableWords": null,
+  "UseBoolPropertiesWithoutDefaultSql": true,
+  "UseDatabaseNames": false,
+  "UseDateOnlyTimeOnly": false,
+  "UseDbContextSplitting": true,
+  "UseDecimalDataAnnotationForSprocResult": true,
+  "UseFluentApiOnly": true,
+  "UseHandleBars": false,
+  "UseHierarchyId": false,
+  "UseInflector": true,
+  "UseLegacyPluralizer": false,
+  "UseManyToManyEntity": true,
+  "UseNoDefaultConstructor": true,
+  "UseNoNavigations": false,
+  "UseNoObjectFilter": false,
+  "UseNodaTime": false,
+  "UseNullableReferences": true,
+  "UseSchemaFolders": false,
+  "UseSchemaNamespaces": false,
+  "UseSpatial": false,
+  "UseT4": false
+}

@@ -9,8 +9,8 @@ using Tgs.ServiceUtility;
 namespace Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 
 internal class GameRoundAddCommandService(
-	IGame game,
-	IGameProvider gameProvider,
+	IGameRepository game,
+	IGameProviderRepository gameProvider,
 	IGameRecordHandleClient gameRecordHandleClient) : ICommandService<GameRoundAddCommand>
 {
 	public async ValueTask ExecuteAsync(GameRoundAddCommand command, CancellationToken cancellationToken = default)
@@ -25,12 +25,12 @@ internal class GameRoundAddCommandService(
 		};
 
 		var gameProviderInfo = await gameProvider.GetAsync(
-			gameProviderId: command.GameProviderId,
+			id: command.GameProviderId,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
 		var gameInfo = await game.GetAsync(
-			gameId: command.GameId,
+			id: command.GameId,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
@@ -40,7 +40,7 @@ internal class GameRoundAddCommandService(
 			wagerState: wagerState,
 			externalRoundId: command.ExternalRoundId,
 			externalWagerId: command.ExternalRoundId,
-			externalGameId: gameInfo.GameExternalId,
+			externalGameId: gameInfo.ExternalGameId,
 			externalCreatedOn: command.ExternalCreatedOn,
 			externalClosedOn: command.ExternalClosedOn,
 			bet: command.BetAmount,

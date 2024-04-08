@@ -1,236 +1,101 @@
-﻿using Tgs.GameCommand.Client;
-using Tgs.GameCommand.Common;
+﻿using Microsoft.EntityFrameworkCore;
 using Tgs.GamePluggable.Core;
 using Tgs.GamePluggable.Core.Exceptions;
 
 namespace Tgs.GamePluggable.Repositories;
 
-internal class VerificationRepository(IGameCommandClient client) : IVerification
+internal class VerificationRepository(
+	IPlayerRepository playerRepository,
+	IBrandRepository brandRepository,
+	IGameProviderRepository gameProviderRepository) : IVerification
 {
-	public async ValueTask VerifyBrandCurrencyAsync(
-		Guid brandId,
-		Guid gameProviderId,
-		string currencyCode,
-		CancellationToken cancellationToken = default)
+	public async ValueTask VerifyBrandCurrencyAsync(Guid brandId, Guid gameProviderId, string currencyCode, CancellationToken cancellationToken = default)
 	{
-		var brandCurrency = await client
-			.BrandGetCurrencyAsync(
-				brandId: brandId,
-				currencyCode: currencyCode,
-				cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
+		if (!await brandRepository.GetCurrencyExistAsync(brandId, currencyCode, cancellationToken).ConfigureAwait(false))
+		{
+			throw new VerifyBrandCurrencyException(brandId, gameProviderId, currencyCode);
+		}
 
-		var gameProviderCurrency = await client
-			.GameProviderGetCurrencyCodeAsync(
-				gameProviderId: gameProviderId,
-				currencyCode: currencyCode,
-				cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		if (string.IsNullOrWhiteSpace(brandCurrency) || string.IsNullOrWhiteSpace(gameProviderCurrency))
+		if (!await gameProviderRepository.GetCurrencyExistAsync(gameProviderId, currencyCode, cancellationToken).ConfigureAwait(false))
 		{
 			throw new VerifyBrandCurrencyException(brandId, gameProviderId, currencyCode);
 		}
 	}
 
-	public async ValueTask VerifyPlayerBalanceAsync(
-		PlayerInfo player,
-		GameProviderInfo gameProvider,
-		CancellationToken cancellationToken = default)
+	public async ValueTask VerifyPlayerBalanceAsync(Core.Models.PlayerInfo player, Core.Models.GameProviderInfo gameProvider, CancellationToken cancellationToken = default)
 	{
-		var resellerStatus = await client
-			.ResellerGetStatusAsync(
-			resellerId: player.ResellerId,
-			cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		var licenseeStatus = await client
-			.LicenseeGetStatusAsync(
-			licenseeId: player.LicenseeId,
-			cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		var brandStatus = await client
-			.BrandGetStatusAsync(
-			brandId: player.BrandId,
-			cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		var playerStatus = await client
-			.PlayerGetStatusAsync(
-			playerCode: player.PlayerCode,
-			cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		var gameProviderStatus = await client
-			.GameProviderGetStatusAsync(
-			gameProviderId: gameProvider.GameProviderId,
-			cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		if (resellerStatus != ResellerStatus.Active ||
-			licenseeStatus != LicenseeStatus.Active ||
-			brandStatus != BrandStatus.Active ||
-			playerStatus != PlayerStatus.Enabled &&
-			playerStatus != PlayerStatus.Disabled ||
-			gameProviderStatus != GameProviderStatus.Active
-			)
+		if (!gameProvider.TransferWallet)
 		{
 			throw new VerifyPlayerBalanceException(player.BrandCode, player.PlayerCode, player.Username, gameProvider.GameProviderCode);
 		}
 
-		var brandCurrency = await client
-			.BrandGetCurrencyAsync(
-			brandId: player.BrandId,
-			currencyCode: player.DefaultWalletCurrencyCode,
-			cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
+		if (!await playerRepository.GetStatusAsync(playerCode: player.PlayerCode, cancellationToken: cancellationToken).ConfigureAwait(false))
+		{
+			throw new VerifyPlayerBalanceException(player.BrandCode, player.PlayerCode, player.Username, gameProvider.GameProviderCode);
+		}
 
-		var gameProviderCurrency = await client
-			.GameProviderGetCurrencyCodeAsync(
-			gameProviderId: gameProvider.GameProviderId,
-			currencyCode: player.DefaultWalletCurrencyCode,
-			cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
+		if (!await brandRepository.GetGameProviderStatusAsync(player.BrandId, gameProvider.GameProviderId, cancellationToken).ConfigureAwait(false))
+		{
+			throw new VerifyPlayerBalanceException(player.BrandCode, player.PlayerCode, player.Username, gameProvider.GameProviderCode);
+		}
 
-		if (string.IsNullOrWhiteSpace(brandCurrency) || string.IsNullOrWhiteSpace(gameProviderCurrency))
+		if (!await brandRepository.GetCurrencyExistAsync(player.BrandId, player.CurrencyCode, cancellationToken).ConfigureAwait(false))
+		{
+			throw new VerifyPlayerBalanceException(player.BrandCode, player.PlayerCode, player.Username, gameProvider.GameProviderCode);
+		}
+
+		if (!await gameProviderRepository.GetCurrencyExistAsync(gameProvider.GameProviderId, player.CurrencyCode, cancellationToken).ConfigureAwait(false))
 		{
 			throw new VerifyPlayerBalanceException(player.BrandCode, player.PlayerCode, player.Username, gameProvider.GameProviderCode);
 		}
 	}
 
-	public async ValueTask VerifyPlayerFundAsync(
-			PlayerInfo player,
-		GameProviderInfo gameProvider,
-		CancellationToken cancellationToken = default)
+	public async ValueTask VerifyPlayerFundAsync(Core.Models.PlayerInfo player, Core.Models.GameProviderInfo gameProvider, CancellationToken cancellationToken = default)
 	{
-		var resellerStatus = await client
-			.ResellerGetStatusAsync(
-			resellerId: player.ResellerId,
-			cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		var licenseeStatus = await client
-			.LicenseeGetStatusAsync(
-			licenseeId: player.LicenseeId,
-			cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		var brandStatus = await client
-			.BrandGetStatusAsync(
-			brandId: player.BrandId,
-			cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		var playerStatus = await client
-			.PlayerGetStatusAsync(
-			playerCode: player.PlayerCode,
-			cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		var gameProviderStatus = await client
-			.GameProviderGetStatusAsync(
-			gameProviderId: gameProvider.GameProviderId,
-			cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		if (resellerStatus != ResellerStatus.Active ||
-			licenseeStatus != LicenseeStatus.Active ||
-			brandStatus != BrandStatus.Active ||
-			playerStatus != PlayerStatus.Enabled ||
-			gameProviderStatus != GameProviderStatus.Active
-			)
+		if (!gameProvider.TransferWallet)
 		{
 			throw new VerifyPlayerFundException(player.BrandCode, player.PlayerCode, player.Username, gameProvider.GameProviderCode);
 		}
 
-		var brandCurrency = await client
-			.BrandGetCurrencyAsync(
-			brandId: player.BrandId,
-			currencyCode: player.DefaultWalletCurrencyCode,
-			cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
+		if (!await playerRepository.GetStatusAsync(playerCode: player.PlayerCode, cancellationToken: cancellationToken).ConfigureAwait(false))
+		{
+			throw new VerifyPlayerFundException(player.BrandCode, player.PlayerCode, player.Username, gameProvider.GameProviderCode);
+		}
 
-		var gameProviderCurrency = await client
-			.GameProviderGetCurrencyCodeAsync(
-			gameProviderId: gameProvider.GameProviderId,
-			currencyCode: player.DefaultWalletCurrencyCode,
-			cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
+		if (!await brandRepository.GetGameProviderStatusAsync(player.BrandId, gameProvider.GameProviderId, cancellationToken).ConfigureAwait(false))
+		{
+			throw new VerifyPlayerFundException(player.BrandCode, player.PlayerCode, player.Username, gameProvider.GameProviderCode);
+		}
 
-		if (string.IsNullOrWhiteSpace(brandCurrency) || string.IsNullOrWhiteSpace(gameProviderCurrency))
+		if (!await brandRepository.GetCurrencyExistAsync(player.BrandId, player.CurrencyCode, cancellationToken).ConfigureAwait(false))
+		{
+			throw new VerifyPlayerFundException(player.BrandCode, player.PlayerCode, player.Username, gameProvider.GameProviderCode);
+		}
+
+		if (!await gameProviderRepository.GetCurrencyExistAsync(gameProvider.GameProviderId, player.CurrencyCode, cancellationToken).ConfigureAwait(false))
 		{
 			throw new VerifyPlayerFundException(player.BrandCode, player.PlayerCode, player.Username, gameProvider.GameProviderCode);
 		}
 	}
 
-	public async ValueTask VerifyPlayerGameUrlAsync(
-		PlayerInfo player,
-		GameInfo game,
-		CancellationToken cancellationToken = default)
+	public async ValueTask VerifyPlayerGameUrlAsync(Core.Models.PlayerInfo player, Core.Models.GameInfo game, CancellationToken cancellationToken = default)
 	{
-		var resellerStatus = await client
-			.ResellerGetStatusAsync(
-				resellerId: player.ResellerId,
-				cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		var licenseeStatus = await client
-			.LicenseeGetStatusAsync(
-				licenseeId: player.LicenseeId,
-				cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		var brandStatus = await client
-			.BrandGetStatusAsync(
-				brandId: player.BrandId,
-				cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		var playerStatus = await client
-			.PlayerGetStatusAsync(
-				playerCode: player.PlayerCode,
-				cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		var gameProviderStatus = await client
-			.GameProviderGetStatusAsync(
-				gameProviderId: game.GameProviderId,
-				cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		var gameStatus = await client
-			.GameGetStatusAsync(
-				gameid: game.GameId,
-				cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
-
-		if (resellerStatus != ResellerStatus.Active ||
-			licenseeStatus != LicenseeStatus.Active ||
-			brandStatus != BrandStatus.Active ||
-			playerStatus != PlayerStatus.Enabled ||
-			gameProviderStatus != GameProviderStatus.Active ||
-			gameStatus != GameStatus.Active
-			)
+		if (!await playerRepository.GetStatusAsync(playerCode: player.PlayerCode, cancellationToken: cancellationToken).ConfigureAwait(false))
 		{
 			throw new VerifyPlayerGameUrlException(player.BrandCode, player.PlayerCode, player.Username, game.GameProviderCode, game.GameCode);
 		}
 
-		var brandCurrency = await client
-			.BrandGetCurrencyAsync(
-				brandId: player.BrandId,
-				currencyCode: player.DefaultWalletCurrencyCode,
-				cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
+		if (!await brandRepository.GetGameStatusAsync(player.BrandId, game.GameId, cancellationToken).ConfigureAwait(false))
+		{
+			throw new VerifyPlayerGameUrlException(player.BrandCode, player.PlayerCode, player.Username, game.GameProviderCode, game.GameCode);
+		}
 
-		var gameProviderCurrency = await client
-			.GameProviderGetCurrencyCodeAsync(
-				gameProviderId: game.GameProviderId,
-				currencyCode: player.DefaultWalletCurrencyCode,
-				cancellationToken: cancellationToken)
-			.ConfigureAwait(false);
+		if (!await brandRepository.GetCurrencyExistAsync(player.BrandId, player.CurrencyCode, cancellationToken).ConfigureAwait(false))
+		{
+			throw new VerifyPlayerGameUrlException(player.BrandCode, player.PlayerCode, player.Username, game.GameProviderCode, game.GameCode);
+		}
 
-		if (string.IsNullOrWhiteSpace(brandCurrency) || string.IsNullOrWhiteSpace(gameProviderCurrency))
+		if (!await gameProviderRepository.GetCurrencyExistAsync(game.GameProviderId, player.CurrencyCode, cancellationToken).ConfigureAwait(false))
 		{
 			throw new VerifyPlayerGameUrlException(player.BrandCode, player.PlayerCode, player.Username, game.GameProviderCode, game.GameCode);
 		}
@@ -239,7 +104,7 @@ internal class VerificationRepository(IGameCommandClient client) : IVerification
 
 		if (availableCurrencies.Any())
 		{
-			if (!availableCurrencies.Contains(brandCurrency))
+			if (!availableCurrencies.Contains(player.CurrencyCode))
 			{
 				throw new VerifyPlayerGameUrlException(player.BrandCode, player.PlayerCode, player.Username, game.GameProviderCode, game.GameCode);
 			}
