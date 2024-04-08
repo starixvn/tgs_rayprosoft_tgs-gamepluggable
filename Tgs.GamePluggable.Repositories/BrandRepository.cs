@@ -63,8 +63,8 @@ internal class BrandRepository(
 			})
 		.Join(
 			context.BrandGameProviders,
-			conform => conform.GameProviderId,
-			brandGameProvider => brandGameProvider.GameProviderId,
+			conform => new { conform.BrandId, conform.GameProviderId },
+			brandGameProvider => new { brandGameProvider.BrandId, brandGameProvider.GameProviderId },
 			(conform, brandGameProvider) => new
 			{
 				conform.GameProviderId,
