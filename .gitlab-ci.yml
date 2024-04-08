@@ -2,7 +2,7 @@ variables:
   ImageName: pgtgs/game-pluggable-service
   TgsSettingKey: game-pluggable-service
   HelmTemplateFolderName: game-pluggable-service
-  BuildCacheKey: Tgs.GameProviders.Pluggable.$CI_PIPELINE_ID
+  BuildCacheKey: Tgs.GamePluggable.$CI_PIPELINE_ID
 
 default:
   before_script:
@@ -80,8 +80,8 @@ push-docker-image:
     untracked: true   
     policy: pull
   script:
-    #- dotnet build "Tgs.GameProviders.Pluggable/Tgs.GameProviders.Pluggable.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageName:$Tag" --no-restore
-    - dotnet publish "Tgs.GameProviders.Pluggable" 
+    #- dotnet build "Tgs.GamePluggable/Tgs.GamePluggable.csproj" -c $BuildConfiguration -t:ContainerBuild -p:DockerfileTag="$ImageName:$Tag" --no-restore
+    - dotnet publish "Tgs.GamePluggable" 
        --os linux --arch x64
        /t:PublishContainer
        -c $BuildConfiguration
@@ -129,7 +129,6 @@ deploy-dev:
     - export resources=$(kubectl get cm resources-setting -o jsonpath={.data.$TgsSettingKey})
     - export dedicated=$(kubectl get cm tgs-settings -o jsonpath={.data.dedicated_game})
     - export node_selector=$(kubectl get cm tgs-settings -o jsonpath={.data.node-selector_game})
-    - export autoscaling=$(kubectl get cm autoscaling-setting -o jsonpath={.data.$TgsSettingKey})
     - |
       cat << EOF | yq e -P | helm template artifacts/k8s/$HelmTemplateFolderName \
         -n $namespace \
@@ -139,7 +138,7 @@ deploy-dev:
         "nodeSelector": $node_selector,
         "tolerations": [$dedicated],
         "resources": $resources,
-        "autoscaling": $autoscaling,
+        "replicaCount": 1,
         "restart": {
             "enabled": true,
             "schedule": "15 0 * * *"
@@ -156,7 +155,7 @@ deploy-dev:
         "nodeSelector": $node_selector,
         "tolerations": [$dedicated],
         "resources": $resources,
-        "autoscaling": $autoscaling,
+        "replicaCount": 1,
         "restart": {
             "enabled": true,
             "schedule": "15 0 * * *"
@@ -184,7 +183,6 @@ deploy-staging:
     - export resources=$(kubectl get cm resources-setting -o jsonpath={.data.$TgsSettingKey})
     - export dedicated=$(kubectl get cm tgs-settings -o jsonpath={.data.dedicated_game})
     - export node_selector=$(kubectl get cm tgs-settings -o jsonpath={.data.node-selector_game})
-    - export autoscaling=$(kubectl get cm autoscaling-setting -o jsonpath={.data.$TgsSettingKey})
     - |
       cat << EOF | yq e -P | helm template artifacts/k8s/$HelmTemplateFolderName \
         -n $namespace \
@@ -194,7 +192,7 @@ deploy-staging:
         "nodeSelector": $node_selector,
         "tolerations": [$dedicated],
         "resources": $resources,
-        "autoscaling": $autoscaling,
+        "replicaCount": 1,
         "restart": {
             "enabled": true,
             "schedule": "15 0 * * *"
@@ -211,7 +209,7 @@ deploy-staging:
         "nodeSelector": $node_selector,
         "tolerations": [$dedicated],
         "resources": $resources,
-        "autoscaling": $autoscaling,
+        "replicaCount": 1,
         "restart": {
             "enabled": true,
             "schedule": "15 0 * * *"
@@ -239,7 +237,6 @@ deploy-prod:
     - export resources=$(kubectl get cm resources-setting -o jsonpath={.data.$TgsSettingKey})
     - export dedicated=$(kubectl get cm tgs-settings -o jsonpath={.data.dedicated_game})
     - export node_selector=$(kubectl get cm tgs-settings -o jsonpath={.data.node-selector_game})
-    - export autoscaling=$(kubectl get cm autoscaling-setting -o jsonpath={.data.$TgsSettingKey})
     - |
       cat << EOF | yq e -P | helm template artifacts/k8s/$HelmTemplateFolderName \
         -n $namespace \
@@ -249,7 +246,7 @@ deploy-prod:
         "nodeSelector": $node_selector,
         "tolerations": [$dedicated],
         "resources": $resources,
-        "autoscaling": $autoscaling,
+        "replicaCount": 2,
         "restart": {
             "enabled": true,
             "schedule": "15 0 * * *"
@@ -266,7 +263,7 @@ deploy-prod:
         "nodeSelector": $node_selector,
         "tolerations": [$dedicated],
         "resources": $resources,
-        "autoscaling": $autoscaling,
+        "replicaCount": 2,
         "restart": {
             "enabled": true,
             "schedule": "15 0 * * *"

@@ -1,0 +1,165 @@
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
+using Tgs.GamePluggable.ViewModels.Backoffice;
+using Tgs.GameProviders.Pluggable.ViewModels;
+using Tgs.ServiceUtility;
+
+namespace Tgs.GamePluggable.Controllers.Backoffice;
+
+[Route("bo/[controller]")]
+[ApiController]
+public class PlayerController : ControllerBase
+{
+	/// <summary>
+	/// Funds the in asynchronous.
+	/// </summary>
+	/// <param name="service">The service.</param>
+	/// <param name="source">The source.</param>
+	/// <returns></returns>
+	/// <remarks>
+	/// <b>Example</b><br />
+	///
+	///     Post
+	///         {
+	///             "playerCode": "4ucmqplxb029",
+	///             "gameProviderCode": "ky"
+	///         }
+	/// </remarks>
+	[HttpPost("fund/in", Name = "Backoffice_Player_FundIn")]
+	public ValueTask FundInAsync(
+		[FromServices] ICommandService<FundInCommand> service,
+		 FundInQueryViewModel source)
+	{
+		var command = new FundInCommand(
+			source.PlayerCode,
+			source.GameProviderCode);
+
+		return service
+			.ExecuteAsync(
+			command,
+			HttpContext.RequestAborted);
+	}
+
+	/// <summary>
+	/// Gets the balance asynchronous.
+	/// </summary>
+	/// <param name="service">The service.</param>
+	/// <param name="playerCode">The player code.</param>
+	/// <param name="gameProviderCode">The game provider code.</param>
+	/// <returns></returns>
+	/// <remarks>
+	/// <b>Example</b><br />
+	///
+	///     GetAsync
+	///         /bo/balance/player/4ucmqplxb029/KY
+	/// </remarks>
+	[HttpGet("balance/{playerCode}/{gameProviderCode}", Name = "Backoffice_Player_GetBalance")]
+	public async ValueTask<decimal> GetBalanceAsync(
+		[FromServices] IGetService<PlayerBalanceQuery, PlayerBalanceResult> service,
+		string playerCode,
+		string gameProviderCode)
+	{
+		var query = new PlayerBalanceQuery(
+			PlayerCode: playerCode,
+			GameProviderCode: gameProviderCode);
+
+		var result = await service
+			.GetAsync(
+			query: query,
+			cancellationToken: HttpContext.RequestAborted)
+			.ConfigureAwait(false);
+
+		return result.FreeBalance;
+	}
+
+	/// <summary>
+	/// Gets the balance information asynchronous.
+	/// </summary>
+	/// <param name="service">The service.</param>
+	/// <param name="playerCode">The player code.</param>
+	/// <param name="gameProviderCode">The game provider code.</param>
+	/// <returns></returns>
+	/// <remarks>
+	/// <b>Example</b><br />
+	///
+	///     GetAsync
+	///         /bo/player/balance/info/4ucmqplxb029/KY
+	/// </remarks>
+	[HttpGet("balance/info/{playerCode}/{gameProviderCode}", Name = "Backoffice_Player_GetBalanceInfo")]
+	public async ValueTask<PlayerBalanceInfoViewModel> GetBalanceInfoAsync(
+		[FromServices] IGetService<PlayerBalanceQuery, PlayerBalanceResult> service,
+		string playerCode,
+		string gameProviderCode)
+	{
+		var query = new PlayerBalanceQuery(
+			PlayerCode: playerCode,
+			GameProviderCode: gameProviderCode);
+
+		var result = await service
+			.GetAsync(
+			query: query,
+			cancellationToken: HttpContext.RequestAborted)
+			.ConfigureAwait(false);
+
+		return new PlayerBalanceInfoViewModel(
+			result.Balance,
+			result.FreeBalance,
+			result.OutstandingBalance);
+	}
+
+	/// <summary>
+	/// Kicks the player asynchronous.
+	/// </summary>
+	/// <param name="service">The service.</param>
+	/// <param name="playerCode">The player code.</param>
+	/// <returns></returns>
+	/// <remarks>
+	/// <b>Example</b><br />
+	///
+	///     Delete
+	///         /bo/player/kick/4ucmqplxb029
+	/// </remarks>
+	[HttpDelete("kick/{playerCode}", Name = "Backoffice_Player_KickPlayer")]
+	public ValueTask KickPlayerAsync(
+		[FromServices] ICommandService<PlayerLogOutCommand> service,
+		string playerCode)
+	{
+		var command = new PlayerLogOutCommand(
+			PlayerCode: playerCode);
+
+		return service
+			.ExecuteAsync(
+			command: command,
+			cancellationToken: HttpContext.RequestAborted);
+	}
+
+	/// <summary>
+	/// Kicks the player asynchronous.
+	/// </summary>
+	/// <param name="service">The service.</param>
+	/// <param name="playerCode">The player code.</param>
+	/// <param name="gameProviderCode">The game provider code.</param>
+	/// <returns></returns>
+	/// <remarks>
+	/// <b>Example</b><br />
+	///
+	///     Delete
+	///         /bo/player/kick/4ucmqplxb029/ky
+	/// </remarks>
+	[HttpDelete("kick/{playerCode}/{gameProviderCode}", Name = "Backoffice_Player_Game_KickPlayer")]
+	public ValueTask KickPlayerAsync(
+		[FromServices] ICommandService<PlayerLogOutGameProviderCommand> service,
+		string playerCode,
+		string gameProviderCode)
+	{
+		var command = new PlayerLogOutGameProviderCommand(
+			PlayerCode: playerCode,
+			GameProviderCode: gameProviderCode);
+
+		return service
+			.ExecuteAsync(
+			command: command,
+			cancellationToken: HttpContext.RequestAborted);
+	}
+}
