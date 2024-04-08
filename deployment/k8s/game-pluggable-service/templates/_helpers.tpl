@@ -47,8 +47,11 @@ Selector labels
 */}}
 {{- define "game-pluggable-service.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "game-pluggable-service.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 app: {{ include "game-pluggable-service.name" . }}
 tgs.kind: game
+tgs.game.kind: pluggable
+tgs.pluggable.kind: service
 {{- end }}
 
 {{/*
