@@ -34,9 +34,11 @@ public static class ServiceRegisterExtensions
 						code: gameProviderCode)
 						.ConfigureAwait(false);
 
+					/*
 					logger.LogInformation("LogOn:{logOn} Mesaage:This game provider performs caching.({gameProviderCode})",
 						DateTime.Now.ToString("o"),
 						gameProviderCode);
+					*/
 					_ = await gameProviderRepository
 						.GetAsync(
 						id: gameProviderId)
@@ -53,10 +55,11 @@ public static class ServiceRegisterExtensions
 						{
 							try
 							{
+								/*
 								logger.LogInformation("LogOn:{logOn} Mesaage:This game is cached({gameId})",
 									DateTime.Now.ToString("o"),
 									gameId);
-
+								*/
 								_ = await gameRepository.GetAsync(
 									id: gameId)
 									.ConfigureAwait(false);
