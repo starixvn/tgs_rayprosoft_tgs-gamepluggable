@@ -51,5 +51,9 @@ public partial class GameProvider
 
     public virtual ICollection<Game> Games { get; set; } = new List<Game>();
 
+    public virtual ICollection<LicenseeGameProvider> LicenseeGameProviders { get; set; } = new List<LicenseeGameProvider>();
+
+    public virtual ICollection<ResellerGameProvider> ResellerGameProviders { get; set; } = new List<ResellerGameProvider>();
+
     public virtual ICollection<SubGameProvider> SubGameProviders { get; set; } = new List<SubGameProvider>();
 }

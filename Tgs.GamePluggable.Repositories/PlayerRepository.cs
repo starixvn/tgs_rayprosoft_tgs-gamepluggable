@@ -10,8 +10,6 @@ internal class PlayerRepository(
 {
 	public async ValueTask<PlayerInfo> GetAsync(string playerCode, CancellationToken cancellationToken = default)
 		=> await context.Players
-		.Where(
-			player => player.PlayerCode == playerCode)
 		.Join(
 			context.Brands,
 			player => player.BrandId,
@@ -26,6 +24,8 @@ internal class PlayerRepository(
 				WalletId = player.DefaultWalletId,
 				CurrencyCode = player.DefaultWalletCurrencyCode
 			})
+		.Where(
+			player => player.PlayerCode == playerCode)
 		.Select(
 			selector: player => new PlayerInfo(
 				player.BrandId,
@@ -41,8 +41,6 @@ internal class PlayerRepository(
 
 	public async ValueTask<bool> GetStatusAsync(string playerCode, CancellationToken cancellationToken = default)
 		=> await context.Players
-		.Where(
-			player => player.PlayerCode == playerCode)
 		.Join(
 			context.Brands,
 			player => player.BrandId,
@@ -51,7 +49,6 @@ internal class PlayerRepository(
 			{
 				brand.LicenseeId,
 				BrandId = brand.Id,
-				BrandCode = brand.Code,
 				BrandStatus = brand.Status,
 				player.PlayerCode,
 				PlayerStatus = player.Status
@@ -64,10 +61,8 @@ internal class PlayerRepository(
 			{
 				licensee.ResellerId,
 				conform.LicenseeId,
-				LicenseeCode = licensee.Code,
 				LicenseeStatus = licensee.Status,
 				conform.BrandId,
-				conform.BrandCode,
 				conform.BrandStatus,
 				conform.PlayerCode,
 				conform.PlayerStatus
@@ -78,20 +73,18 @@ internal class PlayerRepository(
 			reseller => reseller.Id,
 			(conform, reseller) => new
 			{
-				conform.ResellerId,
-				ResellerCode = reseller.Code,
 				ResellerStatus = reseller.Status,
-				conform.LicenseeId,
-				conform.LicenseeCode,
 				conform.LicenseeStatus,
-				conform.BrandId,
-				conform.BrandCode,
 				conform.BrandStatus,
 				conform.PlayerCode,
 				conform.PlayerStatus
 			})
 		.AnyAsync(
-			predicate: player => player.ResellerStatus == 0 && player.LicenseeStatus == 0 && player.BrandStatus == 0 && player.PlayerStatus == 0,
+			predicate: player => player.PlayerCode == playerCode &&
+			player.ResellerStatus == 0 &&
+			player.LicenseeStatus == 0 &&
+			player.BrandStatus == 0 &&
+			player.PlayerStatus == 0,
 			cancellationToken: cancellationToken)
 		.ConfigureAwait(false);
 }

@@ -30,4 +30,6 @@ public partial class Reseller
     public string UpdatedByUsername { get; set; } = null!;
 
     public virtual ICollection<Licensee> Licensees { get; set; } = new List<Licensee>();
+
+    public virtual ICollection<ResellerGameProvider> ResellerGameProviders { get; set; } = new List<ResellerGameProvider>();
 }

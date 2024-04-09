@@ -143,6 +143,6 @@ _ = app.MapControllers();
 
 app.MapHealthChecks("/healthz");
 
-_ = app.UseGameProviderRegisterAsync();
+_ = app.UseGamePluggableRegisterAsync();
 
 app.Run();

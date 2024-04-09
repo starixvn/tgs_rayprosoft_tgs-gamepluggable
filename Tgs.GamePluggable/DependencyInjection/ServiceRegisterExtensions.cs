@@ -3,19 +3,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
-using Tgs.GameFundTransfer.Client;
+using Microsoft.Extensions.Logging.Console;
 using Tgs.GamePluggable.Core;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceRegisterExtensions
 {
-	private static readonly ILogger _Logger = ApplicationLogging.CreateLogger("ServiceRegisterExtensions");
-
-	public static async Task<WebApplication> UseGameProviderRegisterAsync(this WebApplication app)
+	public static async Task<WebApplication> UseGamePluggableRegisterAsync(this WebApplication app)
 	{
 		using (var scope = app.Services.CreateScope())
 		{
+			using var loggerFactory = LoggerFactory.Create(builder => builder.AddSimpleConsole(i => i.ColorBehavior = LoggerColorBehavior.Disabled));
+
+			var logger = loggerFactory.CreateLogger<Program>();
+
 			var gameProviderRepository = scope.ServiceProvider.GetRequiredService<IGameProviderRepository>();
 			var gameRepository = scope.ServiceProvider.GetRequiredService<IGameRepository>();
 
@@ -32,6 +34,9 @@ public static class ServiceRegisterExtensions
 						code: gameProviderCode)
 						.ConfigureAwait(false);
 
+					logger.LogInformation("LogOn:{logOn} Mesaage:This game provider performs caching.({gameProviderCode})",
+						DateTime.Now.ToString("o"),
+						gameProviderCode);
 					_ = await gameProviderRepository
 						.GetAsync(
 						id: gameProviderId)
@@ -48,13 +53,17 @@ public static class ServiceRegisterExtensions
 						{
 							try
 							{
+								logger.LogInformation("LogOn:{logOn} Mesaage:This game is cached({gameId})",
+									DateTime.Now.ToString("o"),
+									gameId);
+
 								_ = await gameRepository.GetAsync(
 									id: gameId)
 									.ConfigureAwait(false);
 							}
 							catch (Exception ex)
 							{
-								_Logger.LogError(ex, "LogOn:{logOn} Mesaage:An exception occurred while caching this game.({gameId})",
+								logger.LogError(ex, "LogOn:{logOn} Mesaage:An exception occurred while caching this game.({gameId})",
 									DateTime.Now.ToString("o"),
 									gameId);
 							}
@@ -62,14 +71,14 @@ public static class ServiceRegisterExtensions
 					}
 					catch (Exception ex)
 					{
-						_Logger.LogError(ex, "LogOn:{logOn} Mesaage:An exception occurred while caching this game query.({gameProviderId})",
+						logger.LogError(ex, "LogOn:{logOn} Mesaage:An exception occurred while caching this game query.({gameProviderId})",
 							DateTime.Now.ToString("o"),
 							gameProviderId);
 					}
 				}
 				catch (Exception ex)
 				{
-					_Logger.LogError(ex, "LogOn:{logOn} Mesaage:An exception occurred while caching this game provider.({gameProviderCode})",
+					logger.LogError(ex, "LogOn:{logOn} Mesaage:An exception occurred while caching this game provider.({gameProviderCode})",
 						DateTime.Now.ToString("o"),
 						gameProviderCode);
 				}

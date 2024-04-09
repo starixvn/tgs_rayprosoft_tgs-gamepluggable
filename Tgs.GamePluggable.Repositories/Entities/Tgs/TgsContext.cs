@@ -36,6 +36,8 @@ public partial class TgsContext : DbContext
 
     public virtual DbSet<Licensee> Licensees { get; set; }
 
+    public virtual DbSet<LicenseeGameProvider> LicenseeGameProviders { get; set; }
+
     public virtual DbSet<Player> Players { get; set; }
 
     public virtual DbSet<PlayerIpRecord> PlayerIpRecords { get; set; }
@@ -43,6 +45,8 @@ public partial class TgsContext : DbContext
     public virtual DbSet<PlayerLoginRecord> PlayerLoginRecords { get; set; }
 
     public virtual DbSet<Reseller> Resellers { get; set; }
+
+    public virtual DbSet<ResellerGameProvider> ResellerGameProviders { get; set; }
 
     public virtual DbSet<SubGameProvider> SubGameProviders { get; set; }
 
@@ -66,10 +70,12 @@ public partial class TgsContext : DbContext
         modelBuilder.ApplyConfiguration(new Configurations.GameProviderCurrencyConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.GameProviderLanguageConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.LicenseeConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.LicenseeGameProviderConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.PlayerConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.PlayerIpRecordConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.PlayerLoginRecordConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.ResellerConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.ResellerGameProviderConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.SubGameProviderConfiguration());
         OnModelCreatingPartial(modelBuilder);
     }

@@ -60,6 +60,10 @@
       "ObjectType": 0
     },
     {
+      "Name": "dbo.licensee_game_providers",
+      "ObjectType": 0
+    },
+    {
       "Name": "dbo.licensees",
       "ObjectType": 0
     },
@@ -73,6 +77,10 @@
     },
     {
       "Name": "dbo.players",
+      "ObjectType": 0
+    },
+    {
+      "Name": "dbo.reseller_game_providers",
       "ObjectType": 0
     },
     {

@@ -22,7 +22,6 @@ internal class GameProviderRepository(
 
 	public async ValueTask<Core.Models.GameProviderConfigInfo> GetConfigurationAsync(Guid gameProviderConfigId, CancellationToken cancellationToken = default)
 		=> await context.GameProviderConfigs
-		.Where(gp => gp.Id == gameProviderConfigId)
 		.Join(
 			context.GameProviders,
 			gameProviderConfig => gameProviderConfig.GameProviderId,
@@ -40,6 +39,7 @@ internal class GameProviderRepository(
 				gameProviderConfig.MobileEndpoint,
 				gameProviderConfig.ConfigurationData,
 				gameProviderConfig.IsDefault))
+		.Where(gp => gp.GameProviderConfigId == gameProviderConfigId)
 		.FirstOrDefaultAsync(
 			cancellationToken: cancellationToken)
 		.ConfigureAwait(false)
@@ -56,16 +56,17 @@ internal class GameProviderRepository(
 	{
 		code = code.ToUpperInvariant().Trim();
 		return await context.GameProviders
-		.Where(gp => gp.Code == code)
-		.Select(gp => (Guid?)gp.Id)
-		.FirstOrDefaultAsync(
+			.Where(gp => gp.Code == code)
+			.Select(gp => (Guid?)gp.Id)
+			.FirstOrDefaultAsync(
 			cancellationToken: cancellationToken)
-		.ConfigureAwait(false)
-		?? throw new ArgumentNullException(paramName: code, message: $"This game provider does not exist.{code}");
+			.ConfigureAwait(false)
+			?? throw new ArgumentNullException(paramName: code, message: $"This game provider does not exist.{code}");
 	}
 
 	public IAsyncEnumerable<string> QueryAsync(CancellationToken cancellationToken = default)
 		=> context.GameProviders
+		.Where(gp => gp.Status != 1)
 		.Select(gp => gp.Code)
 		.AsAsyncEnumerable();
 }

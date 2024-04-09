@@ -33,7 +33,7 @@ internal class GameRepository(
 
 	public IAsyncEnumerable<int> QueryAsync(Guid gameProviderId, CancellationToken cancellationToken = default)
 		=> context.Games
-		.Where(g => g.GameProviderId == gameProviderId)
+		.Where(g => g.GameProviderId == gameProviderId && g.Status == 0)
 		.Select(g => g.Id)
 		.AsAsyncEnumerable();
 }

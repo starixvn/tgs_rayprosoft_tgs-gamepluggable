@@ -31,5 +31,7 @@ public partial class Licensee
 
     public virtual ICollection<Brand> Brands { get; set; } = new List<Brand>();
 
+    public virtual ICollection<LicenseeGameProvider> LicenseeGameProviders { get; set; } = new List<LicenseeGameProvider>();
+
     public virtual Reseller Reseller { get; set; } = null!;
 }

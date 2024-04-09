@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Text;
-using Tgs.GamePluggable.Entities;
+﻿using System.Text;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+
+using Tgs.GamePluggable.Entities;
 
 namespace Tgs.GamePluggable.Repositories.UnitTest;
 
