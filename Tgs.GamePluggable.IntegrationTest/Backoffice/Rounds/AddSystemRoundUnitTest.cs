@@ -6,7 +6,6 @@ using NSubstitute;
 using Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.ViewModels;
-using Tgs.GameRounds.Common;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GamePluggable.IntegrationTest.Backoffice.Rounds;
@@ -24,7 +23,7 @@ public class AddSystemRoundUnitTest
 		var commission = 0.0m;
 		var turnover = 0.06m;
 		var winLoss = -0.06m;
-		var clientRoundStatus = GameRoundClientStatus.Loss;
+		var clientRoundStatus = GameRounds.Common.Enums.RoundClientStatus.Loss;
 		var externalCreatedOn = DateTimeOffset.Parse("2021-06-01 13:57:05.000 +0800");
 		var externalClosedOn = DateTimeOffset.Parse("2021-06-03 13:57:05.000 +0800");
 		var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
@@ -53,7 +52,7 @@ public class AddSystemRoundUnitTest
 					Turnover: turnover,
 					Commission: commission,
 					CompanyWinLoss: winLoss,
-					ClientRoundStatus: clientRoundStatus,
+					ClientStatus: clientRoundStatus,
 					OperatorId: operatorId,
 					Remark: remark);
 

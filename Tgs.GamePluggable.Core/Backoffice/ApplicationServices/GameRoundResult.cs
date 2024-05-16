@@ -10,7 +10,7 @@ public record GameRoundResult(
 	string PlayerCode,
 	int GameId,
 	string CurrencyCode,
-	GameRoundStatus Status,
+	GameRounds.Common.Enums.RoundStatus Status,
 	Guid GameProviderConfigurationId,
 	Guid WalletId,
 	DateTimeOffset CreatedOn,
@@ -26,8 +26,4 @@ public record GameRoundResult(
 	decimal? Turnover,
 	decimal? WinLoss,
 	decimal? TieBetAdjustment,
-	GameRoundClientStatus ClientStatus,
-	decimal? ReopenTurnoverAdjustment,
-	DateTimeOffset? ReopenedOn,
-	decimal? EffectiveBettingPercentage
-	);
+	GameRounds.Common.Enums.RoundClientStatus ClientStatus);

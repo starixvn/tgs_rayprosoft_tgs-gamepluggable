@@ -27,7 +27,4 @@ public record GameRoundViewModel
 	public decimal? WinLoss { get; init; }
 	public decimal? TieBetAdjustment { get; init; }
 	public int ClientStatus { get; init; }
-	public decimal? ReopenTurnoverAdjustment { get; init; }
-	public DateTimeOffset? ReopenedOn { get; init; }
-	public decimal? EffectiveBettingPercentage { get; init; }
 }

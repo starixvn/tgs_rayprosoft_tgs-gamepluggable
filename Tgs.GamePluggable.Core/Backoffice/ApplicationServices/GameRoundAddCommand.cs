@@ -1,5 +1,4 @@
 ﻿using System;
-using Tgs.GameRounds.Common;
 
 namespace Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 
@@ -19,6 +18,6 @@ public record GameRoundAddCommand(
 	decimal Commission,
 	decimal Turnover,
 	decimal CompanyWinLoss,
-	GameRoundClientStatus ClientRoundStatus,
+	GameRounds.Common.Enums.RoundClientStatus ClientStatus,
 	Guid OperatorId,
 	string? Remark);

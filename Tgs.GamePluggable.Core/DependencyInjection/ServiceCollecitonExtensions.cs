@@ -13,19 +13,12 @@ public static class ServiceCollecitonExtensions
 	public static IServiceCollection AddGamePluggableCore(
 		this IServiceCollection services,
 		Action<CashServiceClientOptions, IServiceProvider> cashServiceClientOptions,
-		Action<GameProvidersClientOptions, IServiceProvider> gameProvidersClientOptions,
-		Action<GameFundTransferClientOptions, IServiceProvider> gameTransferClientOptions,
-		Action<GameCurrencyClientOptions, IServiceProvider> gameCurrencyClientOptions,
-		Action<GameRoundsClientOptions, IServiceProvider> gameRoundsConfigure)
+		Action<GameFundTransferClientOptions, IServiceProvider> gameTransferClientOptions)
 		=> services
 		.RegisterAllServiceUtilityTypes(
 			Assembly.GetExecutingAssembly(),
 			ServiceLifetime.Transient)
 		.AddCashServiceClient(cashServiceClientOptions)
-		.AddGameProvidersClient(gameProvidersClientOptions)
 		.AddGameFundTransferClient(gameTransferClientOptions)
-		.AddGameCurrencyClient(gameCurrencyClientOptions)
-		.AddGameRoundsClient(gameRoundsConfigure)
-		.AddGamePlayerLogOutClient()
-		.AddGameRecordHandleClient();
+		.AddGamePlayerLogOutClient();
 }

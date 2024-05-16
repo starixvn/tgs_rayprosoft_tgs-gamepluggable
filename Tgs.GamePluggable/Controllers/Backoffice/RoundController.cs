@@ -43,7 +43,7 @@ public class RoundController : ControllerBase
 			Turnover: source.Turnover,
 			Commission: source.Commission,
 			CompanyWinLoss: source.CompanyWinLoss,
-			ClientRoundStatus: (GameRoundClientStatus)source.ClientRoundStatus,
+			ClientStatus: (GameRounds.Common.Enums.RoundClientStatus)source.ClientRoundStatus,
 			OperatorId: source.OperatorId,
 			Remark: source.Remark),
 		cancellationToken: HttpContext.RequestAborted);
@@ -69,7 +69,7 @@ public class RoundController : ControllerBase
 				Commission: source.Commission,
 				Turnover: source.Turnover,
 				CompanyWinLoss: source.WinLoss,
-				RoundClientStatus: (GameRoundClientStatus)source.ClientRoundStatus,
+				ClientStatus: (GameRounds.Common.Enums.RoundClientStatus)source.ClientRoundStatus,
 				ExternalClosedOn: source.ExternalClosedOn,
 				OperatorId: source.OperatorId,
 				Remark: source.Remark,
@@ -161,7 +161,7 @@ public class RoundController : ControllerBase
 				Commission: source.Commission,
 				Turnover: source.Turnover,
 				CompanyWinLoss: source.WinLoss,
-				RoundClientStatus: (GameRoundClientStatus)source.ClientRoundStatus,
+				ClientStatus: (GameRounds.Common.Enums.RoundClientStatus)source.ClientRoundStatus,
 				ExternalClosedOn: source.ExternalClosedOn,
 				OperatorId: source.OperatorId,
 				Remark: source.Remark,
@@ -241,10 +241,7 @@ public class RoundController : ControllerBase
 			Turnover = data.Turnover,
 			WinLoss = data.WinLoss,
 			TieBetAdjustment = data.TieBetAdjustment,
-			ClientStatus = (int)data.ClientStatus,
-			ReopenTurnoverAdjustment = data.ReopenTurnoverAdjustment,
-			ReopenedOn = data.ReopenedOn,
-			EffectiveBettingPercentage = data.EffectiveBettingPercentage
+			ClientStatus = (int)data.ClientStatus
 		};
 	}
 }

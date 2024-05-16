@@ -62,28 +62,29 @@ builder.Services.AddGamePluggable(
 	(options, sp) =>
 	{
 		var configuration = sp.GetRequiredService<IConfiguration>();
-		options.BaseUrl = configuration.GetValue<Uri>("Pluggable:CashServiceClientBaseUrl")!;
+		options.BaseUrl = configuration.GetValue<Uri>("PluggableConnectionStrings:CashServiceClientBaseUrl")!;
 	},
 	(options, sp) =>
 	{
 		var configuration = sp.GetRequiredService<IConfiguration>();
-		options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameProvidersClientBaseUrl")!;
-	},
-	(options, sp) =>
+		options.BaseUrl = configuration.GetValue<Uri>("PluggableConnectionStrings:GameFundTransferClientBaseUrl")!;
+	})
+	.AddGameProvidersClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
 	{
-		var configuration = sp.GetRequiredService<IConfiguration>();
-		options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameFundTransferClientBaseUrl")!;
-	},
-	(options, sp) =>
+		var config = sp.GetRequiredService<IConfiguration>();
+		http.BaseAddress = config.GetValue<Uri>("PluggableConnectionStrings:GameProvidersClientBaseUrl");
+	}))
+	.AddGameCurrencyClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
 	{
-		var configuration = sp.GetRequiredService<IConfiguration>();
-		options.BaseUrl = configuration.GetValue<Uri>("Pluggable:GameCurrencyClientBaseUrl")!;
-	},
-	(options, sp) =>
+		var config = sp.GetRequiredService<IConfiguration>();
+		http.BaseAddress = config.GetValue<Uri>("PluggableConnectionStrings:GameCurrencyClientBaseUrl");
+	}))
+	.AddGameRoundsClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
 	{
-		var configuration = sp.GetRequiredService<IConfiguration>();
-		options.BaseUrl = new(configuration.GetSection("Pluggable:GameRoundsClientBaseUrl")!.Value!);
-	});
+		var config = sp.GetRequiredService<IConfiguration>();
+		http.BaseAddress = config.GetValue<Uri>("PluggableConnectionStrings:GameRoundsClientBaseUrl");
+	}))
+;
 
 builder.Services
 	.AddKeyedSingleton("Nats", (sp, _) => new NatsConnection(NatsOpts.Default with

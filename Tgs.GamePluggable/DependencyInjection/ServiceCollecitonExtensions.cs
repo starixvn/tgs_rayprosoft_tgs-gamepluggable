@@ -14,18 +14,12 @@ public static class ServiceCollecitonExtensions
 		this IServiceCollection services,
 		Action<IServiceProvider, DbContextOptionsBuilder> dbContextOptions,
 		Action<CashServiceClientOptions, IServiceProvider> cashServiceClientOptions,
-		Action<GameProvidersClientOptions, IServiceProvider> gameProvidersClientOptions,
-		Action<GameFundTransferClientOptions, IServiceProvider> gameTransferClientOptions,
-		Action<GameCurrencyClientOptions, IServiceProvider> gameCurrencyClientOptions,
-		Action<GameRoundsClientOptions, IServiceProvider> gameRoundsConfigure)
+		Action<GameFundTransferClientOptions, IServiceProvider> gameTransferClientOptions)
 		=> services
 		.AddMemoryCache()
 		.AddGamePluggableCore(
 			cashServiceClientOptions: cashServiceClientOptions,
-			gameProvidersClientOptions: gameProvidersClientOptions,
-			gameTransferClientOptions: gameTransferClientOptions,
-			gameCurrencyClientOptions: gameCurrencyClientOptions,
-			gameRoundsConfigure: gameRoundsConfigure)
+			gameTransferClientOptions: gameTransferClientOptions)
 		.AddGamePluggableRepositories(
 			dbContextOptions: dbContextOptions);
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using Tgs.GameRounds.Common;
 
 namespace Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 
@@ -11,7 +10,7 @@ public record GameRoundResettleCommand(
 	decimal Commission,
 	decimal Turnover,
 	decimal CompanyWinLoss,
-	GameRoundClientStatus RoundClientStatus,
+	GameRounds.Common.Enums.RoundClientStatus ClientStatus,
 	DateTimeOffset ExternalClosedOn,
 	Guid OperatorId,
 	string Remark,

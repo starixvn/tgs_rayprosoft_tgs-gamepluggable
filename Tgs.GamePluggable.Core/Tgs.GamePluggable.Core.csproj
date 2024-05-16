@@ -9,16 +9,18 @@
     <PackageReference Include="Grpc.AspNetCore" Version="2.62.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+    <PackageReference Include="PhoenixToolkits.MessageQueue" Version="2.2.0" />
+    <PackageReference Include="PhoenixToolkits.MessageQueue.Nats" Version="2.2.0" />
     <PackageReference Include="PhoenixToolkits.Protobuf.ExtendTypes" Version="0.0.7" />
     <PackageReference Include="Scrutor" Version="4.2.2" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />    
     <PackageReference Include="Tgs.CashService.Client" Version="0.2.9" />    
-    <PackageReference Include="Tgs.GameCurrency.Client" Version="1.0.0" />    
+    <PackageReference Include="Tgs.GameCurrency.Client" Version="1.0.2" />    
     <PackageReference Include="Tgs.GameFundTransfer.Client" Version="1.0.0" />    
     <PackageReference Include="Tgs.GamePlayerLogOut.Client" Version="1.0.0" />
-    <PackageReference Include="Tgs.GameProviders.Client" Version="0.0.79" />
-    <PackageReference Include="Tgs.GameRecord.Handle.Client" Version="1.0.0" />
-    <PackageReference Include="Tgs.GameRounds.Client" Version="0.0.41" />
+    <PackageReference Include="Tgs.GameProviders.Client" Version="1.0.0" />
+    <PackageReference Include="Tgs.GameRecord.Handle.Client" Version="1.0.5" />
+    <PackageReference Include="Tgs.GameRounds.Client" Version="1.0.0" />
     <PackageReference Include="TGS.ServiceUtility" Version="0.2.0" />
   </ItemGroup>
 
