@@ -69,11 +69,11 @@ builder.Services.AddGamePluggable(
 		var configuration = sp.GetRequiredService<IConfiguration>();
 		options.BaseUrl = configuration.GetValue<Uri>("PluggableConnectionStrings:GameFundTransferClientBaseUrl")!;
 	})
-	.AddGameProvidersClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
+	.AddGameProvidersClient((options, sp) =>
 	{
-		var config = sp.GetRequiredService<IConfiguration>();
-		http.BaseAddress = config.GetValue<Uri>("PluggableConnectionStrings:GameProvidersClientBaseUrl");
-	}))
+		var configuration = sp.GetRequiredService<IConfiguration>();
+		options.BaseUrl = configuration.GetValue<Uri>("PluggableConnectionStrings:GameProvidersClientBaseUrl")!;
+	})
 	.AddGameCurrencyClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
 	{
 		var config = sp.GetRequiredService<IConfiguration>();
