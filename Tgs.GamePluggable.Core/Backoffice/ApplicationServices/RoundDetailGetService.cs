@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains.RoundDetail;
 using Tgs.GameRounds.Client;
-using Tgs.GameRounds.Common;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
@@ -17,16 +16,15 @@ internal class RoundDetailGetService(
 {
 	public async ValueTask<JsonDocument> GetAsync(RoundDetailQuery query, CancellationToken cancellationToken = default)
 	{
-		var data = await gameRoundsClient
-			.GetGameRoundAsync(
+		var round = await gameRoundsClient.RoundGetAsync(
 			roundId: query.RoundId,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false)
-			?? throw new Exception($"Game Round does not exist.({query})");
+			?? throw new ArgumentNullException(query.RoundId.ToString(), $"This game bet does not exist.");
 
-		if (data.Status is GameRoundStatus.Open or GameRoundStatus.New
+		if (round.Status is GameRounds.Common.Enums.RoundStatus.Open or GameRounds.Common.Enums.RoundStatus.New
 			||
-			data.ClientStatus is GameRoundClientStatus.Open)
+			round.ClientStatus is GameRounds.Common.Enums.RoundClientStatus.Open)
 		{
 			return JsonDocument.Parse(JsonSerializer.Serialize(new RoundDetailDataText()
 			{
@@ -36,7 +34,7 @@ internal class RoundDetailGetService(
 
 		var gameProviderModel = await gameProvider
 			.GetAsync(
-			id: data.GameProviderId,
+			id: round.GameProviderId,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
@@ -45,7 +43,7 @@ internal class RoundDetailGetService(
 			var roundDetailResult = await gameProvidersClient
 				.RoundDetailAsync(
 				gameProviderCode: gameProviderModel!.GameProviderCode,
-				roundId: data.RoundId,
+				roundId: round.RoundId,
 				language: query.Language,
 				cancellationToken: cancellationToken)
 				.ConfigureAwait(false);

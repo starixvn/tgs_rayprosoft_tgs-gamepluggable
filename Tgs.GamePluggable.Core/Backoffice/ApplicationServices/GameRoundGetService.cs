@@ -6,16 +6,16 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 
-internal class GameRoundGetService(IGameRoundsClient client) : IGetService<GameRoundQuery, GameRoundResult>
+internal class GameRoundGetService(
+	IGameRoundsClient client) : IGetService<GameRoundQuery, GameRoundResult>
 {
 	public async ValueTask<GameRoundResult> GetAsync(GameRoundQuery query, CancellationToken cancellationToken = default)
 	{
-		var data = await client
-			.GetGameRoundAsync(
+		var data = await client.RoundGetAsync(
 			roundId: query.RoundId,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false)
-			?? throw new Exception($"Game Round does not exist.({query})");
+			?? throw new ArgumentNullException(query.RoundId.ToString(), $"This game bet does not exist.");
 
 		return new GameRoundResult(
 			RoundId: data.RoundId,
@@ -39,10 +39,7 @@ internal class GameRoundGetService(IGameRoundsClient client) : IGetService<GameR
 			Commission: data.Commission,
 			Turnover: data.Turnover,
 			WinLoss: data.CompanyWinLoss,
-			TieBetAdjustment: data.TieBetAdjustment,
-			ClientStatus: data.ClientStatus,
-			ReopenTurnoverAdjustment: data.ReopenTurnoverAdjustment,
-			ReopenedOn: data.ReopenedOn,
-			EffectiveBettingPercentage: data.EffectiveBettingPercentage);
+			TieBetAdjustment: 0.0m,
+			ClientStatus: data.ClientStatus);
 	}
 }

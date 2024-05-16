@@ -5,7 +5,6 @@ using NSubstitute;
 using Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.ViewModels;
-using Tgs.GameRounds.Common;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GamePluggable.IntegrationTest.Backoffice.Rounds;
@@ -44,7 +43,7 @@ public class AdjustClosedRoundUnitTest
 					Commission: model.Commission,
 					Turnover: model.Turnover,
 					CompanyWinLoss: model.WinLoss,
-					RoundClientStatus: (GameRoundClientStatus)model.ClientRoundStatus,
+					ClientStatus: (GameRounds.Common.Enums.RoundClientStatus)model.ClientRoundStatus,
 					ExternalClosedOn: model.ExternalClosedOn,
 					OperatorId: model.OperatorId,
 					Remark: model.Remark,

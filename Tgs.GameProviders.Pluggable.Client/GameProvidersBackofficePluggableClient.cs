@@ -91,7 +91,7 @@ internal class GameProvidersBackofficePluggableClient(HttpClient httpClient) : I
 			.ConfigureAwait(false);
 
 		var payments = JsonSerializer.Deserialize<IEnumerable<GameActionViewModel>>(contentJson, _SerializerOptions)
-			?? Enumerable.Empty<GameActionViewModel>();
+			?? [];
 
 		if (!payments.Any())
 		{

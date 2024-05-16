@@ -9,10 +9,13 @@ data:
     {
       "Logging": {
         "LogLevel": {
-          "Default": "Warning"
+          "Default": "Warning",
+          "Tgs.GamePluggable.Core.Backoffice.ApplicationServices.GameRoundAddCommandService": "Information",
+          "Tgs.GamePluggable.Core.Backoffice.ApplicationServices.GameRoundClosedCommandService": "Information",
+          "Tgs.GamePluggable.Core.Backoffice.ApplicationServices.GameRoundResettleCommandService": "Information"
         }
       },
-      "Pluggable": {
+      "PluggableConnectionStrings": {
         "GameProvidersClientBaseUrl": "http://game-gameproviders/",
         "CashServiceClientBaseUrl": "http://cashservice-api/",
         "GameFundTransferClientBaseUrl": "dns:///game-gamefundtransfer:9090/",
