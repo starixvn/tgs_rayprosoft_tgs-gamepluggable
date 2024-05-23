@@ -5,7 +5,6 @@ using NSubstitute;
 using Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.GameProviders.Pluggable.ViewModels;
-using Tgs.GameRounds.Common;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GamePluggable.IntegrationTest.Backoffice.Rounds;

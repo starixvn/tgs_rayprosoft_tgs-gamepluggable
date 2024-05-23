@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Tgs.CashService.Client;
@@ -16,277 +17,276 @@ public class FundOutGetServiceUnitTest
 	[Fact]
 	public async Task Fund_Out()
 	{
+		var faceLogger = NullLogger<FundInCommandService>.Instance;
+		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+		var fakeVerification = Substitute.For<IVerification>();
 		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
 		var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
-		var fakeGameProvider = Substitute.For<IGameProviderRepository>();
-		var fakeVerification = Substitute.For<IVerification>();
-		var fakePlayer = Substitute.For<IPlayerRepository>();
-		var fakePlayerGameBalance = Substitute.For<IPlayerGameBalance>();
 
 		var command = new FundOutCommand(
 			PlayerCode: "4ucmqplxb029",
 			GameProviderCode: "ky",
-			Amount: 1);
+			Amount: 1.00m);
 
-		var player = new PlayerInfo(
+		var playerInfo = new PlayerInfo(
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
 			Username: "4ucmqplxb029",
 			WalletId: Guid.NewGuid(),
 			CurrencyCode: "CNY");
-		_ = fakePlayer
-			.GetAsync(
-			playerCode: Arg.Is(command.PlayerCode),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(ValueTask.FromResult(player));
+		_ = fakePlayerRepository.GetAsync(
+			Arg.Is(command.PlayerCode),
+			Arg.Any<CancellationToken>())
+			.Returns(playerInfo);
 
 		var gameProviderId = Guid.NewGuid();
-		_ = fakeGameProvider
-			.GetGameProviderIdAsync(
-			code: Arg.Is(command.GameProviderCode),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(ValueTask.FromResult(gameProviderId));
+		_ = fakeGameProviderRepository.GetGameProviderIdAsync(
+			Arg.Is(command.GameProviderCode),
+			Arg.Any<CancellationToken>())
+			.Returns(gameProviderId);
 
-		var gameProvider = new GameProviderInfo(
+		var gameProviderInfo = new GameProviderInfo(
 			GameProviderId: gameProviderId,
-			GameProviderCode: GameProviderType.Kaiyuan,
+			GameProviderCode: command.GameProviderCode,
 			TransferWallet: true,
 			AllowKickPlayer: true);
-		_ = fakeGameProvider
-			.GetAsync(
-			id: Arg.Is(gameProviderId),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(ValueTask.FromResult(gameProvider));
-
-		var platformBalance = new PlatformBalanceInfo(
-			Balance: 1000m,
-			FreeBalance: 0m,
-			OutstandingBalance: 1000m);
-		_ = fakePlayerGameBalance
-			.GetBalanceAsync(
-			gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
-			playerCode: Arg.Is(player.PlayerCode),
-			currencyCode: Arg.Is(player.CurrencyCode))
-			.Returns(platformBalance);
+		_ = fakeGameProviderRepository.GetAsync(
+			Arg.Is(gameProviderId),
+			Arg.Any<CancellationToken>())
+			.Returns(gameProviderInfo);
 
 		var balance = 10.0m;
-		_ = fakeCashServiceClient
-			.GetBalanceAsync(
-			walletId: Arg.Is(player.WalletId),
+		_ = fakeCashServiceClient.GetBalanceAsync(
+			walletId: Arg.Is(playerInfo.WalletId),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(ValueTask.FromResult(balance));
 
 		var fakeService = new FundOutCommandService(
-			fakeCashServiceClient,
-			fakeGameFundTransferClient,
-			fakeGameProvider,
+			faceLogger,
+			fakePlayerRepository,
+			fakeGameProviderRepository,
 			fakeVerification,
-			fakePlayer,
-			fakePlayerGameBalance);
+			fakeCashServiceClient,
+			fakeGameFundTransferClient);
 
 		await fakeService.ExecuteAsync(command);
 
 		_ = fakeVerification
 			.Received(1)
 			.VerifyPlayerFundAsync(
-			player: Arg.Is(player),
-			gameProvider: Arg.Is(gameProvider),
+			player: Arg.Is(playerInfo),
+			gameProvider: Arg.Is(gameProviderInfo),
 			cancellationToken: Arg.Any<CancellationToken>());
 
 		_ = fakeGameFundTransferClient
 			.Received(1)
 			.FundOutAsync(
-			gameProviderId: Arg.Is(gameProviderId),
-			gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
-			brandCode: Arg.Is(player.BrandCode),
-			playerCode: Arg.Is(player.PlayerCode),
-			walletId: Arg.Is(player.WalletId),
-			currencyCode: Arg.Is(player.CurrencyCode),
-			amount: Arg.Is(command.Amount),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
+			playerCode: Arg.Is(playerInfo.PlayerCode),
+			walletId: Arg.Is(playerInfo.WalletId),
+			currencyCode: Arg.Is(playerInfo.CurrencyCode),
+			amount: Arg.Is(1.00m),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
-	[Fact]
-	public async Task GameProvider_SM01_Fund_Out_Amount_Only_Integer()
+	[Theory]
+	[InlineData(0.99)]
+	[InlineData(10000001)]
+	public async Task The_field_Amount_must_be_between_1_and_10000000(decimal amount)
 	{
+		var faceLogger = NullLogger<FundInCommandService>.Instance;
+		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+		var fakeVerification = Substitute.For<IVerification>();
 		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
 		var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
-		var fakeGameProvider = Substitute.For<IGameProviderRepository>();
-		var fakeVerification = Substitute.For<IVerification>();
-		var fakePlayer = Substitute.For<IPlayerRepository>();
-		var fakePlayerGameBalance = Substitute.For<IPlayerGameBalance>();
 
 		var command = new FundOutCommand(
-			GameProviderType.SM01,
-			"4ucmqplxb029",
-			123.45M);
-
-		var player = new PlayerInfo(
-			BrandId: Guid.NewGuid(),
-			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
-			Username: "4ucmqplxb029",
-			WalletId: Guid.NewGuid(),
-			CurrencyCode: "CNY");
-		_ = fakePlayer
-			.GetAsync(
-				Arg.Is(command.PlayerCode))
-			.Returns(ValueTask.FromResult(player));
-
-		var gameProviderId = Guid.NewGuid();
-		_ = fakeGameProvider
-			.GetGameProviderIdAsync(
-				Arg.Is(command.GameProviderCode))
-			.Returns(ValueTask.FromResult(gameProviderId));
-
-		var gameProvider = new GameProviderInfo(
-			GameProviderId: gameProviderId,
-			GameProviderCode: GameProviderType.SM01,
-			TransferWallet: true,
-			AllowKickPlayer: true);
-		_ = fakeGameProvider
-			.GetAsync(
-				Arg.Is(gameProviderId))
-			.Returns(ValueTask.FromResult(gameProvider));
-
-		var platformBalance = new PlatformBalanceInfo(
-			Balance: 1000M,
-			FreeBalance: 0M,
-			OutstandingBalance: 1000m);
-		_ = fakePlayerGameBalance
-			.GetBalanceAsync(
-			gameProviderCode: Arg.Is(command.GameProviderCode),
-			playerCode: Arg.Is(player.PlayerCode),
-			currencyCode: Arg.Is(player.CurrencyCode))
-			.Returns(platformBalance);
-
-		var balance = 1000.0M;
-		_ = fakeCashServiceClient
-			.GetBalanceAsync(
-				Arg.Is(player.WalletId))
-			.Returns(ValueTask.FromResult(balance));
+			GameProviderCode: "ky",
+			Amount: amount);
 
 		var fakeService = new FundOutCommandService(
-			fakeCashServiceClient,
-			fakeGameFundTransferClient,
-			fakeGameProvider,
+			faceLogger,
+			fakePlayerRepository,
+			fakeGameProviderRepository,
 			fakeVerification,
-			fakePlayer,
-			fakePlayerGameBalance);
+			fakeCashServiceClient,
+			fakeGameFundTransferClient);
 
 		await fakeService.ExecuteAsync(command);
 
 		_ = fakeVerification
-			.Received(1)
+			.Received(0)
 			.VerifyPlayerFundAsync(
-			   player: Arg.Is(player),
-			   gameProvider: Arg.Is(gameProvider),
-			   cancellationToken: Arg.Any<CancellationToken>());
+			player: Arg.Any<Models.PlayerInfo>(),
+			gameProvider: Arg.Any<Models.GameProviderInfo>(),
+			cancellationToken: Arg.Any<CancellationToken>());
 
 		_ = fakeGameFundTransferClient
-			.Received(1)
+			.Received(0)
 			.FundOutAsync(
-				gameProviderId: Arg.Is(gameProviderId),
-				gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
-				brandCode: Arg.Is(player.BrandCode),
-				playerCode: Arg.Is(player.PlayerCode),
-				walletId: Arg.Is(player.WalletId),
-				currencyCode: Arg.Is(player.CurrencyCode),
-				amount: Arg.Is(123M),
-				cancellationToken: Arg.Any<CancellationToken>());
+			gameProviderCode: Arg.Any<string>(),
+			playerCode: Arg.Any<string>(),
+			walletId: Arg.Any<Guid>(),
+			currencyCode: Arg.Any<string>(),
+			amount: Arg.Any<decimal>(),
+			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
 	[Fact]
 	public async Task Timeout_Exception()
 	{
+		var faceLogger = NullLogger<FundInCommandService>.Instance;
+		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+		var fakeVerification = Substitute.For<IVerification>();
 		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
 		var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
-		var fakeGameProvider = Substitute.For<IGameProviderRepository>();
-		var fakeVerification = Substitute.For<IVerification>();
-		var fakePlayer = Substitute.For<IPlayerRepository>();
-		var fakePlayerGameBalance = Substitute.For<IPlayerGameBalance>();
 
 		var command = new FundOutCommand(
 			PlayerCode: "4ucmqplxb029",
 			GameProviderCode: "ky",
-			Amount: 1);
+			Amount: 1.00m);
 
-		var player = new PlayerInfo(
+		var playerInfo = new PlayerInfo(
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
 			Username: "4ucmqplxb029",
 			WalletId: Guid.NewGuid(),
 			CurrencyCode: "CNY");
-		_ = fakePlayer
-			.GetAsync(
-			playerCode: Arg.Is(command.PlayerCode),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(ValueTask.FromResult(player));
+		_ = fakePlayerRepository.GetAsync(
+			Arg.Is(command.PlayerCode),
+			Arg.Any<CancellationToken>())
+			.Returns(playerInfo);
 
 		var gameProviderId = Guid.NewGuid();
-		_ = fakeGameProvider
-			.GetGameProviderIdAsync(
-			code: Arg.Is(command.GameProviderCode),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(ValueTask.FromResult(gameProviderId));
+		_ = fakeGameProviderRepository.GetGameProviderIdAsync(
+			Arg.Is(command.GameProviderCode),
+			Arg.Any<CancellationToken>())
+			.Returns(gameProviderId);
 
-		var gameProvider = new GameProviderInfo(
+		var gameProviderInfo = new GameProviderInfo(
 			GameProviderId: gameProviderId,
-			GameProviderCode: GameProviderType.Kaiyuan,
+			GameProviderCode: command.GameProviderCode,
 			TransferWallet: true,
 			AllowKickPlayer: true);
-		_ = fakeGameProvider
-			.GetAsync(
-			id: Arg.Is(gameProviderId),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(ValueTask.FromResult(gameProvider));
-
-		var platformBalance = new PlatformBalanceInfo(
-			Balance: 1000m,
-			FreeBalance: 0m,
-			OutstandingBalance: 1000m);
-		_ = fakePlayerGameBalance
-			.GetBalanceAsync(
-			gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
-			playerCode: Arg.Is(player.PlayerCode),
-			currencyCode: Arg.Is(player.CurrencyCode))
-			.Returns(platformBalance);
+		_ = fakeGameProviderRepository.GetAsync(
+			Arg.Is(gameProviderId),
+			Arg.Any<CancellationToken>())
+			.Returns(gameProviderInfo);
 
 		_ = fakeCashServiceClient
 			.GetBalanceAsync(
-			walletId: Arg.Is(player.WalletId),
+			walletId: Arg.Is(playerInfo.WalletId),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.ThrowsAsync(new TimeoutException());
 
 		var fakeService = new FundOutCommandService(
-			fakeCashServiceClient,
-			fakeGameFundTransferClient,
-			fakeGameProvider,
+			faceLogger,
+			fakePlayerRepository,
+			fakeGameProviderRepository,
 			fakeVerification,
-			fakePlayer,
-			fakePlayerGameBalance);
+			fakeCashServiceClient,
+			fakeGameFundTransferClient);
 
 		_ = await Assert.ThrowsAsync<TimeoutException>(() => fakeService.ExecuteAsync(command).AsTask());
 
 		_ = fakeVerification
 			.Received(1)
 			.VerifyPlayerFundAsync(
-			player: Arg.Is(player),
-			gameProvider: Arg.Is(gameProvider),
+			player: Arg.Is(playerInfo),
+			gameProvider: Arg.Is(gameProviderInfo),
 			cancellationToken: Arg.Any<CancellationToken>());
 
 		_ = fakeGameFundTransferClient
 			.Received(0)
 			.FundOutAsync(
-			gameProviderId: Arg.Is(gameProviderId),
-			gameProviderCode: Arg.Is(gameProvider.GameProviderCode),
-			brandCode: Arg.Is(player.BrandCode),
-			playerCode: Arg.Is(player.PlayerCode),
-			walletId: Arg.Is(player.WalletId),
-			currencyCode: Arg.Is(player.CurrencyCode),
-			amount: Arg.Is(command.Amount),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
+			playerCode: Arg.Is(playerInfo.PlayerCode),
+			walletId: Arg.Is(playerInfo.WalletId),
+			currencyCode: Arg.Is(playerInfo.CurrencyCode),
+			amount: Arg.Is(1.00m),
+			cancellationToken: Arg.Any<CancellationToken>());
+	}
+
+	[Fact]
+	public async Task ArgumentOutOfRangeException_ThrowIfLessThan()
+	{
+		var faceLogger = NullLogger<FundInCommandService>.Instance;
+		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+		var fakeVerification = Substitute.For<IVerification>();
+		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
+		var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
+
+		var command = new FundOutCommand(
+			PlayerCode: "4ucmqplxb029",
+			GameProviderCode: "ky",
+			Amount: 11.00m);
+
+		var playerInfo = new PlayerInfo(
+			BrandId: Guid.NewGuid(),
+			BrandCode: "GPI",
+			PlayerCode: "4ucmqplxb029",
+			Username: "4ucmqplxb029",
+			WalletId: Guid.NewGuid(),
+			CurrencyCode: "CNY");
+		_ = fakePlayerRepository.GetAsync(
+			Arg.Is(command.PlayerCode),
+			Arg.Any<CancellationToken>())
+			.Returns(playerInfo);
+
+		var gameProviderId = Guid.NewGuid();
+		_ = fakeGameProviderRepository.GetGameProviderIdAsync(
+			Arg.Is(command.GameProviderCode),
+			Arg.Any<CancellationToken>())
+			.Returns(gameProviderId);
+
+		var gameProviderInfo = new GameProviderInfo(
+			GameProviderId: gameProviderId,
+			GameProviderCode: command.GameProviderCode,
+			TransferWallet: true,
+			AllowKickPlayer: true);
+		_ = fakeGameProviderRepository.GetAsync(
+			Arg.Is(gameProviderId),
+			Arg.Any<CancellationToken>())
+			.Returns(gameProviderInfo);
+
+		var balance = 10.0m;
+		_ = fakeCashServiceClient.GetBalanceAsync(
+			walletId: Arg.Is(playerInfo.WalletId),
+			cancellationToken: Arg.Any<CancellationToken>())
+			.Returns(ValueTask.FromResult(balance));
+
+		var fakeService = new FundOutCommandService(
+			faceLogger,
+			fakePlayerRepository,
+			fakeGameProviderRepository,
+			fakeVerification,
+			fakeCashServiceClient,
+			fakeGameFundTransferClient);
+
+		_ = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => fakeService.ExecuteAsync(command).AsTask());
+
+		_ = fakeVerification
+			.Received(1)
+			.VerifyPlayerFundAsync(
+			player: Arg.Is(playerInfo),
+			gameProvider: Arg.Is(gameProviderInfo),
+			cancellationToken: Arg.Any<CancellationToken>());
+
+		_ = fakeGameFundTransferClient
+			.Received(0)
+			.FundOutAsync(
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
+			playerCode: Arg.Is(playerInfo.PlayerCode),
+			walletId: Arg.Is(playerInfo.WalletId),
+			currencyCode: Arg.Is(playerInfo.CurrencyCode),
+			amount: Arg.Is(1.00m),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 }
