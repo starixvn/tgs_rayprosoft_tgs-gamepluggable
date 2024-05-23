@@ -1,49 +1,44 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-
+using Tgs.GameFundTransfer.Client;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 
 internal class PlayerBalanceGetService(
-	IGameProviderRepository gameProvider,
-	IPlayerRepository player,
+	IPlayerRepository playerRepository,
+	IGameProviderRepository gameProviderRepository,
 	IVerification verification,
-	IPlayerGameBalance playerGameBalance) : IGetService<PlayerBalanceQuery, PlayerBalanceResult>
+	IGameFundTransferClient gameFundTransferClient) : IGetService<PlayerBalanceQuery, PlayerBalanceResult>
 {
 	public async ValueTask<PlayerBalanceResult> GetAsync(PlayerBalanceQuery query, CancellationToken cancellationToken = default)
 	{
-		var playerInfo = await player
-			.GetAsync(
+		var playerInfo = await playerRepository.GetAsync(
 			playerCode: query.PlayerCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		var gameProviderId = await gameProvider
-			.GetGameProviderIdAsync(
+		var gameProviderId = await gameProviderRepository.GetGameProviderIdAsync(
 			code: query.GameProviderCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		await verification
-			.VerifyBrandCurrencyAsync(
+		await verification.VerifyBrandCurrencyAsync(
 			brandId: playerInfo.BrandId,
 			gameProviderId: gameProviderId,
 			currencyCode: playerInfo.CurrencyCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		var result = await playerGameBalance
-			.GetBalanceAsync(
+		var fundBalanceReply = await gameFundTransferClient.FundBalanceAsync(
 			gameProviderCode: query.GameProviderCode,
 			playerCode: playerInfo.PlayerCode,
-			currencyCode: playerInfo.CurrencyCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
 		return new PlayerBalanceResult(
-			Balance: result.Balance,
-			FreeBalance: result.FreeBalance,
-			OutstandingBalance: result.OutstandingBalance);
+			Balance: fundBalanceReply.Balance,
+			FreeBalance: fundBalanceReply.FreeBalance,
+			OutstandingBalance: fundBalanceReply.OutstandingBalance);
 	}
 }

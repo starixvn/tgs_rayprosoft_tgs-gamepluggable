@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
+using Tgs.GameFundTransfer.Client;
+using Tgs.GamePluggable.Core.Models;
 using Tgs.GamePluggable.Core.Operator.ApplicationServices;
 using Tgs.GameProviders.Domains;
 
@@ -12,75 +14,72 @@ public class PlayerBalanceGetServiceUnitTest
 	[Fact]
 	public async Task Player_Balance()
 	{
-		var fakePlayer = Substitute.For<IPlayerRepository>();
-		var fakeGameProvider = Substitute.For<IGameProviderRepository>();
+		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 		var fakeVerification = Substitute.For<IVerification>();
-		var fakePlayerGameBalance = Substitute.For<IPlayerGameBalance>();
+		var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
 
 		var query = new PlayerBalanceQuery(
 			"4ucmqplxb029",
 			"KY");
 
-		var player = new Models.PlayerInfo(
+		var playerInfo = new PlayerInfo(
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
 			Username: "4ucmqplxb029",
 			WalletId: Guid.NewGuid(),
 			CurrencyCode: "CNY");
-		_ = fakePlayer
-			.GetAsync(
-			playerCode: Arg.Is(query.PlayerCode),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(ValueTask.FromResult(player));
+		_ = fakePlayerRepository.GetAsync(
+			Arg.Is(query.PlayerCode),
+			Arg.Any<CancellationToken>())
+			.Returns(playerInfo);
 
 		var gameProviderId = Guid.NewGuid();
-		_ = fakeGameProvider
-			.GetGameProviderIdAsync(
-			code: Arg.Is(query.GameProviderCode),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(ValueTask.FromResult(gameProviderId));
+		_ = fakeGameProviderRepository.GetGameProviderIdAsync(
+			Arg.Is(query.GameProviderCode),
+			Arg.Any<CancellationToken>())
+			.Returns(gameProviderId);
 
-		var gameProvider = new Models.GameProviderInfo(
+		var gameProviderInfo = new GameProviderInfo(
 			GameProviderId: gameProviderId,
-			GameProviderCode: GameProviderType.Kaiyuan,
+			GameProviderCode: query.GameProviderCode,
 			TransferWallet: true,
 			AllowKickPlayer: true);
-		_ = fakeGameProvider
-			.GetAsync(
-			id: Arg.Is(gameProviderId),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(ValueTask.FromResult(gameProvider));
+		_ = fakeGameProviderRepository.GetAsync(
+			Arg.Is(gameProviderId),
+			Arg.Any<CancellationToken>())
+			.Returns(gameProviderInfo);
 
-		var platformBalance = new Models.PlatformBalanceInfo(
-			Balance: 10000m,
-			FreeBalance: 1000m,
-			OutstandingBalance: 9000m);
-		_ = fakePlayerGameBalance
-			.GetBalanceAsync(
-			gameProviderCode: Arg.Is(query.GameProviderCode),
-			playerCode: Arg.Is(player.PlayerCode),
-			currencyCode: Arg.Is(player.CurrencyCode),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(platformBalance);
+		var fundBalanceReply = new GameFundTransfer.Protos.FundBalanceReply
+		{
+			Balance = 1000.00m,
+			FreeBalance = 123.456m,
+			OutstandingBalance = 876.554m
+		};
+		_ = fakeGameFundTransferClient.FundBalanceAsync(
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
+			playerCode: Arg.Is(playerInfo.PlayerCode),
+			Arg.Any<CancellationToken>())
+			.Returns(fundBalanceReply);
 
 		var fakeService = new PlayerBalanceGetService(
-			fakePlayer,
-			fakeGameProvider,
+			fakePlayerRepository,
+			fakeGameProviderRepository,
 			fakeVerification,
-			fakePlayerGameBalance);
+			fakeGameFundTransferClient);
 
 		var actual = await fakeService.GetAsync(query);
 
-		Assert.Equal(platformBalance.Balance, actual.Balance);
-		Assert.Equal(platformBalance.FreeBalance, actual.FreeBalance);
-		Assert.Equal(platformBalance.OutstandingBalance, actual.OutstandingBalance);
+		Assert.Equal(fundBalanceReply.Balance.ToDecimal().GetValueOrDefault(0.0m), actual.Balance);
+		Assert.Equal(fundBalanceReply.FreeBalance.ToDecimal().GetValueOrDefault(0.0m), actual.FreeBalance);
+		Assert.Equal(fundBalanceReply.OutstandingBalance.ToDecimal().GetValueOrDefault(0.0m), actual.OutstandingBalance);
 
 		_ = fakeVerification
 			.Received(1)
 			.VerifyPlayerBalanceAsync(
-			player: Arg.Is(player),
-			gameProvider: Arg.Is(gameProvider),
+			player: Arg.Is(playerInfo),
+			gameProvider: Arg.Is(gameProviderInfo),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 }

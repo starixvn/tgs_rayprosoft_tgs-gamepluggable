@@ -1,42 +1,42 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Tgs.GameFundTransfer.Client;
-using Tgs.GameProviders.Domains;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GamePluggable.Core.Operator.ApplicationServices;
 
 internal class FundInCommandService(
-  IGameFundTransferClient gameFundTransferClient,
-  IGameProviderRepository gameProviderRepository,
-  IVerification verification,
-  IPlayerRepository playerRepository,
-  IPlayerGameBalance playerGameBalance) : ICommandService<FundInCommand>
+	ILogger<FundInCommandService> logger,
+	IPlayerRepository playerRepository,
+	IGameProviderRepository gameProviderRepository,
+	IVerification verification,
+	IGameFundTransferClient gameFundTransferClient) : ICommandService<FundInCommand>
 {
 	public async ValueTask ExecuteAsync(FundInCommand command, CancellationToken cancellationToken = default)
 	{
-		if (command.Amount == 0)
+		var amount = Math.Floor(command.Amount);
+
+		if (amount is < 1 or > 10000000)
 		{
+			logger.LogWarning("The field Amount must be between 1 and 10000000.({amount})", command.Amount);
 			return;
 		}
 
-		var playerInfo = await playerRepository
-			.GetAsync(
-				command.PlayerCode,
-				cancellationToken: cancellationToken)
+		var playerInfo = await playerRepository.GetAsync(
+			command.PlayerCode,
+			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		var gameProviderId = await gameProviderRepository
-			.GetGameProviderIdAsync(
-				command.GameProviderCode,
-				cancellationToken)
+		var gameProviderId = await gameProviderRepository.GetGameProviderIdAsync(
+			command.GameProviderCode,
+			cancellationToken)
 			.ConfigureAwait(false);
 
-		var gameProviderInfo = await gameProviderRepository
-			.GetAsync(
-				gameProviderId,
-				cancellationToken)
+		var gameProviderInfo = await gameProviderRepository.GetAsync(
+			gameProviderId,
+			cancellationToken)
 			.ConfigureAwait(false);
 
 		if (!gameProviderInfo.TransferWallet)
@@ -50,29 +50,16 @@ internal class FundInCommandService(
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		var gameProviderBalance = await playerGameBalance.GetBalanceAsync(
+		var fundBalanceReply = await gameFundTransferClient.FundBalanceAsync(
 			gameProviderCode: gameProviderInfo.GameProviderCode,
 			playerCode: playerInfo.PlayerCode,
-			currencyCode: playerInfo.CurrencyCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		var freeBalance = gameProviderBalance.FreeBalance;
+		ArgumentOutOfRangeException.ThrowIfLessThan(fundBalanceReply.FreeBalance - amount, 0.0m);
 
-		if (freeBalance - command.Amount < 0)
-		{
-			throw new Exception($"Insufficient game wallet balance.({freeBalance})");
-		}
-
-		var amount = command.Amount;
-
-		if (gameProviderInfo.GameProviderCode == GameProviderType.SM01)
-			amount = Math.Floor(amount);
-
-		_ = await gameFundTransferClient.FundInAsync(
-			gameProviderId: gameProviderInfo.GameProviderId,
+		_ = await gameFundTransferClient.FundInResultAsync(
 			gameProviderCode: gameProviderInfo.GameProviderCode,
-			brandCode: playerInfo.BrandCode,
 			playerCode: playerInfo.PlayerCode,
 			walletId: playerInfo.WalletId,
 			currencyCode: playerInfo.CurrencyCode,

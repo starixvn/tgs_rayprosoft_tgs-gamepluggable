@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GameProviders.Pluggable.ViewModels;
-using Tgs.GameRounds.Common;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GamePluggable.Controllers.Backoffice;
