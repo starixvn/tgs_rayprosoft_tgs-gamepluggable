@@ -45,6 +45,7 @@ internal class RoundDetailGetService(
 				gameProviderCode: gameProviderModel!.GameProviderCode,
 				roundId: round.RoundId,
 				language: query.Language,
+				externalCreatedOn: round.ExternalCreatedOn ?? round.CreatedOn,
 				cancellationToken: cancellationToken)
 				.ConfigureAwait(false);
 			return JsonDocument.Parse(JsonSerializer.Serialize(roundDetailResult));
