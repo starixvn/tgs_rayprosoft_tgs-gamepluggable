@@ -58,7 +58,7 @@ internal class FundInCommandService(
 
 		ArgumentOutOfRangeException.ThrowIfLessThan(fundBalanceReply.FreeBalance - amount, 0.0m);
 
-		_ = await gameFundTransferClient.FundInResultAsync(
+		_ = await gameFundTransferClient.FundTransferInAsync(
 			gameProviderCode: gameProviderInfo.GameProviderCode,
 			playerCode: playerInfo.PlayerCode,
 			walletId: playerInfo.WalletId,

@@ -65,7 +65,7 @@ internal class FundInCommandService(
 		if (amount == 0)
 			return;
 
-		_ = await gameFundTransferClient.FundInResultAsync(
+		_ = await gameFundTransferClient.FundTransferInAsync(
 			gameProviderCode: gameProviderInfo.GameProviderCode,
 			playerCode: playerInfo.PlayerCode,
 			walletId: playerInfo.WalletId,

@@ -82,7 +82,7 @@ public class FundInGetServiceUnitTest
 
 		_ = fakeGameFundTransferClient
 			.Received(1)
-			.FundInResultAsync(
+			.FundTransferInAsync(
 			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
 			playerCode: Arg.Is(playerInfo.PlayerCode),
 			walletId: Arg.Is(playerInfo.WalletId),
@@ -125,7 +125,7 @@ public class FundInGetServiceUnitTest
 
 		_ = fakeGameFundTransferClient
 			.Received(0)
-			.FundInResultAsync(
+			.FundTransferInAsync(
 			gameProviderCode: Arg.Any<string>(),
 			playerCode: Arg.Any<string>(),
 			walletId: Arg.Any<Guid>(),
@@ -206,7 +206,7 @@ public class FundInGetServiceUnitTest
 
 		_ = fakeGameFundTransferClient
 			.Received(0)
-			.FundInResultAsync(
+			.FundTransferInAsync(
 			gameProviderCode: Arg.Any<string>(),
 			playerCode: Arg.Any<string>(),
 			walletId: Arg.Any<Guid>(),

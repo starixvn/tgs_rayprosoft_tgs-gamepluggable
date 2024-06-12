@@ -82,7 +82,7 @@ public class FundOutGetServiceUnitTest
 
 		_ = fakeGameFundTransferClient
 			.Received(1)
-			.FundOutAsync(
+			.FundTransferOutAsync(
 			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
 			playerCode: Arg.Is(playerInfo.PlayerCode),
 			walletId: Arg.Is(playerInfo.WalletId),
@@ -127,7 +127,7 @@ public class FundOutGetServiceUnitTest
 
 		_ = fakeGameFundTransferClient
 			.Received(0)
-			.FundOutAsync(
+			.FundTransferOutAsync(
 			gameProviderCode: Arg.Any<string>(),
 			playerCode: Arg.Any<string>(),
 			walletId: Arg.Any<Guid>(),
@@ -204,7 +204,7 @@ public class FundOutGetServiceUnitTest
 
 		_ = fakeGameFundTransferClient
 			.Received(0)
-			.FundOutAsync(
+			.FundTransferOutAsync(
 			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
 			playerCode: Arg.Is(playerInfo.PlayerCode),
 			walletId: Arg.Is(playerInfo.WalletId),
@@ -281,7 +281,7 @@ public class FundOutGetServiceUnitTest
 
 		_ = fakeGameFundTransferClient
 			.Received(0)
-			.FundOutAsync(
+			.FundTransferOutAsync(
 			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
 			playerCode: Arg.Is(playerInfo.PlayerCode),
 			walletId: Arg.Is(playerInfo.WalletId),
