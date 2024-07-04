@@ -23,9 +23,17 @@ internal class PlayerBalanceGetService(
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		await verification.VerifyBrandCurrencyAsync(
+		var gameProviderInfo = await gameProviderRepository.GetAsync(
+			id: gameProviderId,
+			cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
+
+		await verification.VerifyBrandAsync(
 			brandId: playerInfo.BrandId,
-			gameProviderId: gameProviderId,
+			brandCode: playerInfo.BrandCode,
+			gameProviderId: gameProviderInfo.GameProviderId,
+			gameProviderCode: gameProviderInfo.GameProviderCode,
+			transferWallet: gameProviderInfo.TransferWallet,
 			currencyCode: playerInfo.CurrencyCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);

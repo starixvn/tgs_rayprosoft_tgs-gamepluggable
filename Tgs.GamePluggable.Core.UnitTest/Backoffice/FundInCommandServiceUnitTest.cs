@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
 using Tgs.GameFundTransfer.Client;
+using Tgs.GameFundTransfer.Protos;
 using Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
+using Tgs.GamePluggable.Core.Exceptions;
 using Tgs.GamePluggable.Core.Models;
 
 namespace Tgs.GamePluggable.Core.UnitTest.Backoffice;
@@ -12,11 +14,92 @@ namespace Tgs.GamePluggable.Core.UnitTest.Backoffice;
 public class FundInCommandServiceUnitTest
 {
 	[Fact]
+	public async Task Verify_Brand_Exception()
+	{
+		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+		var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
+		var fakeVerification = Substitute.For<IVerification>();
+
+		var command = new FundInCommand(
+			 PlayerCode: "4ucmqplxb029",
+			 GameProviderCode: "KY");
+
+		var playerInfo = new PlayerInfo(
+			BrandId: Guid.NewGuid(),
+			BrandCode: "GPI",
+			PlayerCode: "4ucmqplxb029",
+			Username: "4ucmqplxb029",
+			WalletId: Guid.NewGuid(),
+			CurrencyCode: "CNY");
+		_ = fakePlayerRepository.GetAsync(
+			Arg.Is(command.PlayerCode),
+			Arg.Any<CancellationToken>())
+			.Returns(playerInfo);
+
+		var gameProviderId = Guid.NewGuid();
+		_ = fakeGameProviderRepository.GetGameProviderIdAsync(
+			Arg.Is(command.GameProviderCode),
+			Arg.Any<CancellationToken>())
+			.Returns(gameProviderId);
+
+		var gameProviderInfo = new GameProviderInfo(
+			GameProviderId: gameProviderId,
+			GameProviderCode: command.GameProviderCode,
+			TransferWallet: true,
+			AllowKickPlayer: true);
+		_ = fakeGameProviderRepository.GetAsync(
+			Arg.Is(gameProviderId),
+			Arg.Any<CancellationToken>())
+			.Returns(gameProviderInfo);
+
+		_ = fakeVerification
+			.VerifyBrandAsync(
+			brandId: Arg.Is(playerInfo.BrandId),
+			brandCode: Arg.Is(playerInfo.BrandCode),
+			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
+			transferWallet: Arg.Is(gameProviderInfo.TransferWallet),
+			currencyCode: Arg.Is(playerInfo.CurrencyCode),
+			cancellationToken: Arg.Any<CancellationToken>())
+			.Returns(ValueTask.FromException(new VerifyBrandException(playerInfo.BrandCode, gameProviderInfo.GameProviderCode, playerInfo.CurrencyCode)));
+
+		var sut = new FundInCommandService(
+			fakePlayerRepository,
+			fakeGameProviderRepository,
+			fakeVerification,
+			fakeGameFundTransferClient);
+
+		await Assert.ThrowsAsync<VerifyBrandException>(() =>
+		sut.ExecuteAsync(
+			command)
+		.AsTask());
+
+		_ = fakeGameFundTransferClient
+			.Received(0)
+			.FundBalanceAsync(
+			gameProviderCode: Arg.Any<string>(),
+			playerCode: Arg.Any<string>(),
+			Arg.Any<CancellationToken>());
+
+		_ = fakeGameFundTransferClient
+			.Received(0)
+			.FundTransferInAsync(
+				gameProviderCode: Arg.Any<string>(),
+				playerCode: Arg.Any<string>(),
+				walletId: Arg.Any<Guid>(),
+				currencyCode: Arg.Any<string>(),
+				amount: Arg.Any<decimal>(),
+				cancellationToken: Arg.Any<CancellationToken>());
+	}
+
+	[Fact]
 	public async Task Game_Provider_Balance_0_006_Transferred_To_Main_Wallet()
 	{
 		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 		var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
+		var fakeVerification = Substitute.For<IVerification>();
 
 		var command = new FundInCommand(
 			 PlayerCode: "4ucmqplxb029",
@@ -65,9 +148,21 @@ public class FundInCommandServiceUnitTest
 		var sut = new FundInCommandService(
 			fakePlayerRepository,
 			fakeGameProviderRepository,
+			fakeVerification,
 			fakeGameFundTransferClient);
 
 		await sut.ExecuteAsync(command);
+
+		_ = fakeVerification
+			.Received(1)
+			.VerifyBrandAsync(
+			brandId: Arg.Is(playerInfo.BrandId),
+			brandCode: Arg.Is(playerInfo.BrandCode),
+			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
+			transferWallet: Arg.Is(gameProviderInfo.TransferWallet),
+			currencyCode: Arg.Is(playerInfo.CurrencyCode),
+			cancellationToken: Arg.Any<CancellationToken>());
 
 		_ = fakeGameFundTransferClient
 			.Received(0)
@@ -86,6 +181,7 @@ public class FundInCommandServiceUnitTest
 		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 		var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
+		var fakeVerification = Substitute.For<IVerification>();
 
 		var command = new FundInCommand(
 			 PlayerCode: "4ucmqplxb029",
@@ -134,9 +230,21 @@ public class FundInCommandServiceUnitTest
 		var sut = new FundInCommandService(
 			fakePlayerRepository,
 			fakeGameProviderRepository,
+			fakeVerification,
 			fakeGameFundTransferClient);
 
 		await sut.ExecuteAsync(command);
+
+		_ = fakeVerification
+			.Received(1)
+			.VerifyBrandAsync(
+			brandId: Arg.Is(playerInfo.BrandId),
+			brandCode: Arg.Is(playerInfo.BrandCode),
+			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
+			transferWallet: Arg.Is(gameProviderInfo.TransferWallet),
+			currencyCode: Arg.Is(playerInfo.CurrencyCode),
+			cancellationToken: Arg.Any<CancellationToken>());
 
 		_ = fakeGameFundTransferClient
 			.Received(0)
@@ -155,6 +263,7 @@ public class FundInCommandServiceUnitTest
 		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 		var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
+		var fakeVerification = Substitute.For<IVerification>();
 
 		var command = new FundInCommand(
 			 PlayerCode: "4ucmqplxb029",
@@ -203,9 +312,21 @@ public class FundInCommandServiceUnitTest
 		var sut = new FundInCommandService(
 			fakePlayerRepository,
 			fakeGameProviderRepository,
+			fakeVerification,
 			fakeGameFundTransferClient);
 
 		await sut.ExecuteAsync(command);
+
+		_ = fakeVerification
+			.Received(1)
+			.VerifyBrandAsync(
+			brandId: Arg.Is(playerInfo.BrandId),
+			brandCode: Arg.Is(playerInfo.BrandCode),
+			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
+			transferWallet: Arg.Is(gameProviderInfo.TransferWallet),
+			currencyCode: Arg.Is(playerInfo.CurrencyCode),
+			cancellationToken: Arg.Any<CancellationToken>());
 
 		_ = fakeGameFundTransferClient
 			.Received(1)
@@ -224,6 +345,7 @@ public class FundInCommandServiceUnitTest
 		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 		var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
+		var fakeVerification = Substitute.For<IVerification>();
 
 		var command = new FundInCommand(
 			 PlayerCode: "4ucmqplxb029",
@@ -272,9 +394,21 @@ public class FundInCommandServiceUnitTest
 		var sut = new FundInCommandService(
 			fakePlayerRepository,
 			fakeGameProviderRepository,
+			fakeVerification,
 			fakeGameFundTransferClient);
 
 		await sut.ExecuteAsync(command);
+
+		_ = fakeVerification
+			.Received(1)
+			.VerifyBrandAsync(
+			brandId: Arg.Is(playerInfo.BrandId),
+			brandCode: Arg.Is(playerInfo.BrandCode),
+			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
+			transferWallet: Arg.Is(gameProviderInfo.TransferWallet),
+			currencyCode: Arg.Is(playerInfo.CurrencyCode),
+			cancellationToken: Arg.Any<CancellationToken>());
 
 		_ = fakeGameFundTransferClient
 			.Received(1)
@@ -293,6 +427,7 @@ public class FundInCommandServiceUnitTest
 		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 		var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
+		var fakeVerification = Substitute.For<IVerification>();
 
 		var command = new FundInCommand(
 			 PlayerCode: "4ucmqplxb029",
@@ -341,9 +476,21 @@ public class FundInCommandServiceUnitTest
 		var sut = new FundInCommandService(
 			fakePlayerRepository,
 			fakeGameProviderRepository,
+			fakeVerification,
 			fakeGameFundTransferClient);
 
 		await sut.ExecuteAsync(command);
+
+		_ = fakeVerification
+			.Received(1)
+			.VerifyBrandAsync(
+			brandId: Arg.Is(playerInfo.BrandId),
+			brandCode: Arg.Is(playerInfo.BrandCode),
+			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
+			transferWallet: Arg.Is(gameProviderInfo.TransferWallet),
+			currencyCode: Arg.Is(playerInfo.CurrencyCode),
+			cancellationToken: Arg.Any<CancellationToken>());
 
 		_ = fakeGameFundTransferClient
 			.Received(0)
@@ -362,6 +509,7 @@ public class FundInCommandServiceUnitTest
 		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 		var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
+		var fakeVerification = Substitute.For<IVerification>();
 
 		var command = new FundInCommand(
 			 PlayerCode: "4ucmqplxb029",
@@ -410,9 +558,21 @@ public class FundInCommandServiceUnitTest
 		var sut = new FundInCommandService(
 			fakePlayerRepository,
 			fakeGameProviderRepository,
+			fakeVerification,
 			fakeGameFundTransferClient);
 
 		await sut.ExecuteAsync(command);
+
+		_ = fakeVerification
+			.Received(1)
+			.VerifyBrandAsync(
+			brandId: Arg.Is(playerInfo.BrandId),
+			brandCode: Arg.Is(playerInfo.BrandCode),
+			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
+			transferWallet: Arg.Is(gameProviderInfo.TransferWallet),
+			currencyCode: Arg.Is(playerInfo.CurrencyCode),
+			cancellationToken: Arg.Any<CancellationToken>());
 
 		_ = fakeGameFundTransferClient
 			.Received(0)
@@ -431,6 +591,7 @@ public class FundInCommandServiceUnitTest
 		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 		var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
+		var fakeVerification = Substitute.For<IVerification>();
 
 		var command = new FundInCommand(
 			 PlayerCode: "4ucmqplxb029",
@@ -479,9 +640,21 @@ public class FundInCommandServiceUnitTest
 		var sut = new FundInCommandService(
 			fakePlayerRepository,
 			fakeGameProviderRepository,
+			fakeVerification,
 			fakeGameFundTransferClient);
 
 		await sut.ExecuteAsync(command);
+
+		_ = fakeVerification
+			.Received(1)
+			.VerifyBrandAsync(
+			brandId: Arg.Is(playerInfo.BrandId),
+			brandCode: Arg.Is(playerInfo.BrandCode),
+			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
+			transferWallet: Arg.Is(gameProviderInfo.TransferWallet),
+			currencyCode: Arg.Is(playerInfo.CurrencyCode),
+			cancellationToken: Arg.Any<CancellationToken>());
 
 		_ = fakeGameFundTransferClient
 			.Received(1)
@@ -500,6 +673,7 @@ public class FundInCommandServiceUnitTest
 		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 		var fakeGameFundTransferClient = Substitute.For<IGameFundTransferClient>();
+		var fakeVerification = Substitute.For<IVerification>();
 
 		var command = new FundInCommand(
 			 PlayerCode: "4ucmqplxb029",
@@ -548,9 +722,21 @@ public class FundInCommandServiceUnitTest
 		var sut = new FundInCommandService(
 			fakePlayerRepository,
 			fakeGameProviderRepository,
+			fakeVerification,
 			fakeGameFundTransferClient);
 
 		await sut.ExecuteAsync(command);
+
+		_ = fakeVerification
+			.Received(1)
+			.VerifyBrandAsync(
+			brandId: Arg.Is(playerInfo.BrandId),
+			brandCode: Arg.Is(playerInfo.BrandCode),
+			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
+			transferWallet: Arg.Is(gameProviderInfo.TransferWallet),
+			currencyCode: Arg.Is(playerInfo.CurrencyCode),
+			cancellationToken: Arg.Any<CancellationToken>());
 
 		_ = fakeGameFundTransferClient
 			.Received(1)
