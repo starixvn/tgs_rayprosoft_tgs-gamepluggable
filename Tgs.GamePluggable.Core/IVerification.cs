@@ -6,7 +6,9 @@ namespace Tgs.GamePluggable.Core;
 
 public interface IVerification
 {
-	ValueTask VerifyBrandCurrencyAsync(Guid brandId, Guid gameProviderId, string currencyCode, CancellationToken cancellationToken = default);
+	ValueTask VerifyBackofficePlayerFundInAsync(Guid brandId, string brandCode, Guid gameProviderId, string gameProviderCode, bool transferWallet, string currencyCode, CancellationToken cancellationToken = default);
+
+	ValueTask VerifyBackofficePlayerBalanceAsync(Guid brandId, string brandCode, Guid gameProviderId, string gameProviderCode, bool transferWallet, string currencyCode, CancellationToken cancellationToken = default);
 
 	ValueTask VerifyPlayerBalanceAsync(Models.PlayerInfo player, Models.GameProviderInfo gameProvider, CancellationToken cancellationToken = default);
 

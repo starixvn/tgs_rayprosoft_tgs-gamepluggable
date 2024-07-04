@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using Grpc.Net.Client.Balancer;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Tgs.GamePluggable.Core;
 using Tgs.GamePluggable.Entities;
 

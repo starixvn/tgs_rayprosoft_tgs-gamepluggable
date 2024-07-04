@@ -4,7 +4,7 @@ using Tgs.GamePluggable.Core.Exceptions;
 
 namespace Tgs.GamePluggable.Repositories.UnitTest;
 
-public class VerificationRepositoryVerifyPlayerFundUnitTest
+public class VerifyPlayerBalanceUnitTest
 {
 	[Fact]
 	public async Task Brand_Currency_Is_False()
@@ -55,8 +55,8 @@ public class VerificationRepositoryVerifyPlayerFundUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		_ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
-			() => sut.VerifyPlayerFundAsync(
+		_ = await Assert.ThrowsAsync<VerifyPlayerBalanceException>(
+			() => sut.VerifyPlayerBalanceAsync(
 				player: player,
 				gameProvider: gameProvider)
 			.AsTask());
@@ -111,8 +111,8 @@ public class VerificationRepositoryVerifyPlayerFundUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		_ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
-			() => sut.VerifyPlayerFundAsync(
+		_ = await Assert.ThrowsAsync<VerifyPlayerBalanceException>(
+			() => sut.VerifyPlayerBalanceAsync(
 				player: player,
 				gameProvider: gameProvider)
 			.AsTask());
@@ -167,8 +167,8 @@ public class VerificationRepositoryVerifyPlayerFundUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		_ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
-			() => sut.VerifyPlayerFundAsync(
+		_ = await Assert.ThrowsAsync<VerifyPlayerBalanceException>(
+			() => sut.VerifyPlayerBalanceAsync(
 				player: player,
 				gameProvider: gameProvider)
 			.AsTask());
@@ -223,8 +223,8 @@ public class VerificationRepositoryVerifyPlayerFundUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		_ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
-			() => sut.VerifyPlayerFundAsync(
+		_ = await Assert.ThrowsAsync<VerifyPlayerBalanceException>(
+			() => sut.VerifyPlayerBalanceAsync(
 				player: player,
 				gameProvider: gameProvider)
 			.AsTask());
@@ -279,7 +279,7 @@ public class VerificationRepositoryVerifyPlayerFundUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		await sut.VerifyPlayerFundAsync(
+		await sut.VerifyPlayerBalanceAsync(
 			player: player,
 			gameProvider: gameProvider);
 	}

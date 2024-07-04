@@ -10,6 +10,7 @@ namespace Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 internal class FundInCommandService(
 	IPlayerRepository playerRepository,
 	IGameProviderRepository gameProviderRepository,
+	IVerification verification,
 	IGameFundTransferClient gameFundTransferClient) : ICommandService<FundInCommand>
 {
 	public async ValueTask ExecuteAsync(FundInCommand command, CancellationToken cancellationToken = default)
@@ -29,10 +30,15 @@ internal class FundInCommandService(
 			cancellationToken)
 			.ConfigureAwait(false);
 
-		if (!gameProviderInfo.TransferWallet)
-		{
-			throw new Exception($"This game provider does not provide multi-wallet functionality.({gameProviderInfo.GameProviderCode})");
-		}
+		await verification.VerifyBackofficePlayerFundInAsync(
+			brandId: playerInfo.BrandId,
+			brandCode: playerInfo.BrandCode,
+			gameProviderId: gameProviderInfo.GameProviderId,
+			gameProviderCode: gameProviderInfo.GameProviderCode,
+			transferWallet: gameProviderInfo.TransferWallet,
+			currencyCode: playerInfo.CurrencyCode,
+			cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
 
 		var fundBalanceReply = await gameFundTransferClient.FundBalanceAsync(
 			gameProviderCode: gameProviderInfo.GameProviderCode,

@@ -49,7 +49,6 @@ internal class GameRoundAddCommandService(
 		{
 			throw new DuplicateNameException($"This game bet already exists.( {new JsonObject
 			{
-
 				["GameProviderCode"] = gameProviderInfo.GameProviderCode,
 				["PlayerCode"] = playerInfo.PlayerCode,
 				["ExternalRoundId"] = round.ExternalRoundId,

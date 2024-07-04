@@ -4,24 +4,27 @@ using Tgs.GamePluggable.Core.Exceptions;
 
 namespace Tgs.GamePluggable.Repositories.UnitTest;
 
-public class VerificationRepositoryVerifyBrandCurrencyUnitTest
+public class VerifyBackofficePlayerBalanceUnitTest
 {
 	[Fact]
-	public async Task Brand_Currency_Is_False()
+	public async Task Normal_Process()
 	{
 		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
 		var fakeBrandRepository = Substitute.For<IBrandRepository>();
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 
 		var brandId = Guid.NewGuid();
+		var brandCode = "GPI";
 		var gameProviderId = Guid.NewGuid();
+		var gameProviderCode = "KY";
+		var transferWallet = true;
 		var currencyCode = "CNY";
 
 		_ = fakeBrandRepository.GetCurrencyExistAsync(
 			brandId: Arg.Is(brandId),
 			currencyCode: Arg.Is(currencyCode),
 			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(false);
+			.Returns(true);
 
 		_ = fakeGameProviderRepository
 			.GetCurrencyExistAsync(
@@ -35,10 +38,41 @@ public class VerificationRepositoryVerifyBrandCurrencyUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		_ = await Assert.ThrowsAsync<VerifyBrandCurrencyException>(
-			() => sut.VerifyBrandCurrencyAsync(
+		await sut.VerifyBackofficePlayerBalanceAsync(
+			brandId: brandId,
+			brandCode: brandCode,
+			gameProviderId: gameProviderId,
+			gameProviderCode: gameProviderCode,
+			transferWallet: transferWallet,
+			currencyCode: currencyCode);
+	}
+
+	[Fact]
+	public async Task TransferWallet_Is_False()
+	{
+		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+		var fakeBrandRepository = Substitute.For<IBrandRepository>();
+		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+
+		var brandId = Guid.NewGuid();
+		var brandCode = "GPI";
+		var gameProviderId = Guid.NewGuid();
+		var gameProviderCode = "KY";
+		var transferWallet = false;
+		var currencyCode = "CNY";
+
+		var sut = new VerificationRepository(
+			fakePlayerRepository,
+			fakeBrandRepository,
+			fakeGameProviderRepository);
+
+		_ = await Assert.ThrowsAsync<VerifyBackofficePlayerBalanceException>(
+			() => sut.VerifyBackofficePlayerBalanceAsync(
 				brandId: brandId,
+				brandCode: brandCode,
 				gameProviderId: gameProviderId,
+				gameProviderCode: gameProviderCode,
+				transferWallet: transferWallet,
 				currencyCode: currencyCode)
 			.AsTask());
 	}
@@ -51,7 +85,10 @@ public class VerificationRepositoryVerifyBrandCurrencyUnitTest
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 
 		var brandId = Guid.NewGuid();
+		var brandCode = "GPI";
 		var gameProviderId = Guid.NewGuid();
+		var gameProviderCode = "KY";
+		var transferWallet = true;
 		var currencyCode = "CNY";
 
 		_ = fakeBrandRepository.GetCurrencyExistAsync(
@@ -72,30 +109,36 @@ public class VerificationRepositoryVerifyBrandCurrencyUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		_ = await Assert.ThrowsAsync<VerifyBrandCurrencyException>(
-			() => sut.VerifyBrandCurrencyAsync(
+		_ = await Assert.ThrowsAsync<VerifyBackofficePlayerBalanceException>(
+			() => sut.VerifyBackofficePlayerBalanceAsync(
 				brandId: brandId,
+				brandCode: brandCode,
 				gameProviderId: gameProviderId,
+				gameProviderCode: gameProviderCode,
+				transferWallet: transferWallet,
 				currencyCode: currencyCode)
-			 .AsTask());
+			.AsTask());
 	}
 
 	[Fact]
-	public async Task Normal_Process()
+	public async Task Brand_Currency_Is_False()
 	{
 		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
 		var fakeBrandRepository = Substitute.For<IBrandRepository>();
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 
 		var brandId = Guid.NewGuid();
+		var brandCode = "GPI";
 		var gameProviderId = Guid.NewGuid();
+		var gameProviderCode = "KY";
+		var transferWallet = true;
 		var currencyCode = "CNY";
 
 		_ = fakeBrandRepository.GetCurrencyExistAsync(
 			brandId: Arg.Is(brandId),
 			currencyCode: Arg.Is(currencyCode),
 			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(true);
+			.Returns(false);
 
 		_ = fakeGameProviderRepository
 			.GetCurrencyExistAsync(
@@ -109,9 +152,14 @@ public class VerificationRepositoryVerifyBrandCurrencyUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		await sut.VerifyBrandCurrencyAsync(
-			brandId: brandId,
-			gameProviderId: gameProviderId,
-			currencyCode: currencyCode);
+		_ = await Assert.ThrowsAsync<VerifyBackofficePlayerBalanceException>(
+			() => sut.VerifyBackofficePlayerBalanceAsync(
+				brandId: brandId,
+				brandCode: brandCode,
+				gameProviderId: gameProviderId,
+				gameProviderCode: gameProviderCode,
+				transferWallet: transferWallet,
+				currencyCode: currencyCode)
+			.AsTask());
 	}
 }

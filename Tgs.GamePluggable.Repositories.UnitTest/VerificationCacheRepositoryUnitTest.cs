@@ -1,29 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using NSubstitute;
 using Tgs.GamePluggable.Core;
-using Tgs.GamePluggable.Entities;
-using Tgs.GameProviders.Domains;
 
 namespace Tgs.GamePluggable.Repositories.UnitTest;
+
 public class VerificationCacheRepositoryUnitTest
 {
 	[Fact]
-	public async Task VerifyBrandCurrency_Cache_Is_False()
+	public async Task VerifyBackofficePlayerFundIn_Cache_Is_False()
 	{
 		var fakeVerification = Substitute.For<IVerification>();
 		var fakeMemoryCache = Substitute.For<IMemoryCache>();
 		var absoluteExpiration = TimeSpan.FromMinutes(10);
 
 		var brandId = Guid.NewGuid();
+		var brandCode = "GPI";
 		var gameProviderId = Guid.NewGuid();
+		var gameProviderCode = "KY";
+		var transferWallet = true;
 		var currencyCode = "CNY";
 
-		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "brand", ":", "currency", ":", brandId, ":", gameProviderId, ":", currencyCode);
+		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "backoffice", ":", "player", ":", "fundin", ":", brandCode, ":", gameProviderCode, ":", currencyCode);
 
 		_ = fakeMemoryCache.TryGetValue(
 			key: Arg.Is(key),
@@ -35,13 +32,16 @@ public class VerificationCacheRepositoryUnitTest
 			fakeMemoryCache,
 			absoluteExpiration);
 
-		await sut.VerifyBrandCurrencyAsync(brandId, gameProviderId, currencyCode);
+		await sut.VerifyBackofficePlayerFundInAsync(brandId, brandCode, gameProviderId, gameProviderCode, transferWallet, currencyCode);
 
 		_ = fakeVerification
 			.Received(1)
-			.VerifyBrandCurrencyAsync(
+			.VerifyBackofficePlayerFundInAsync(
 			brandId: Arg.Is(brandId),
+			brandCode: Arg.Is(brandCode),
 			gameProviderId: Arg.Is(gameProviderId),
+			gameProviderCode: Arg.Is(gameProviderCode),
+			transferWallet: Arg.Is(transferWallet),
 			currencyCode: Arg.Is(currencyCode),
 			Arg.Any<CancellationToken>());
 
@@ -53,17 +53,20 @@ public class VerificationCacheRepositoryUnitTest
 	}
 
 	[Fact]
-	public async Task VerifyBrandCurrency_Cache_Is_True()
+	public async Task VerifyBackofficePlayerFundIn_Cache_Is_True()
 	{
 		var fakeVerification = Substitute.For<IVerification>();
 		var fakeMemoryCache = Substitute.For<IMemoryCache>();
 		var absoluteExpiration = TimeSpan.FromMinutes(10);
 
 		var brandId = Guid.NewGuid();
+		var brandCode = "GPI";
 		var gameProviderId = Guid.NewGuid();
+		var gameProviderCode = "KY";
+		var transferWallet = true;
 		var currencyCode = "CNY";
 
-		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "brand", ":", "currency", ":", brandId, ":", gameProviderId, ":", currencyCode);
+		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "backoffice", ":", "player", ":", "fundin", ":", brandCode, ":", gameProviderCode, ":", currencyCode);
 
 		_ = fakeMemoryCache.TryGetValue(
 			key: Arg.Is(key),
@@ -75,13 +78,16 @@ public class VerificationCacheRepositoryUnitTest
 			fakeMemoryCache,
 			absoluteExpiration);
 
-		await sut.VerifyBrandCurrencyAsync(brandId, gameProviderId, currencyCode);
+		await sut.VerifyBackofficePlayerFundInAsync(brandId, brandCode, gameProviderId, gameProviderCode, transferWallet, currencyCode);
 
 		_ = fakeVerification
 			.Received(0)
-			.VerifyBrandCurrencyAsync(
+			.VerifyBackofficePlayerFundInAsync(
 			brandId: Arg.Is(brandId),
+			brandCode: Arg.Is(brandCode),
 			gameProviderId: Arg.Is(gameProviderId),
+			gameProviderCode: Arg.Is(gameProviderCode),
+			transferWallet: Arg.Is(transferWallet),
 			currencyCode: Arg.Is(currencyCode),
 			Arg.Any<CancellationToken>());
 
@@ -113,7 +119,7 @@ public class VerificationCacheRepositoryUnitTest
 			TransferWallet: true,
 			AllowKickPlayer: true);
 
-		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "player", ":", "balance", ":", player.PlayerCode, ":", gameProvider.GameProviderCode);
+		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "player", ":", "balance", ":", player.PlayerCode, ":", gameProvider.GameProviderCode);
 
 		_ = fakeMemoryCache.TryGetValue(
 			key: Arg.Is(key),
@@ -162,7 +168,7 @@ public class VerificationCacheRepositoryUnitTest
 			TransferWallet: true,
 			AllowKickPlayer: true);
 
-		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "player", ":", "balance", ":", player.PlayerCode, ":", gameProvider.GameProviderCode);
+		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "player", ":", "balance", ":", player.PlayerCode, ":", gameProvider.GameProviderCode);
 
 		_ = fakeMemoryCache.TryGetValue(
 			key: Arg.Is(key),
@@ -211,7 +217,7 @@ public class VerificationCacheRepositoryUnitTest
 			TransferWallet: true,
 			AllowKickPlayer: true);
 
-		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "player", ":", "fund", ":", player.PlayerCode, ":", gameProvider.GameProviderCode);
+		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "player", ":", "fund", ":", player.PlayerCode, ":", gameProvider.GameProviderCode);
 
 		_ = fakeMemoryCache.TryGetValue(
 			key: Arg.Is(key),
@@ -260,7 +266,7 @@ public class VerificationCacheRepositoryUnitTest
 			TransferWallet: true,
 			AllowKickPlayer: true);
 
-		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "player", ":", "fund", ":", player.PlayerCode, ":", gameProvider.GameProviderCode);
+		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "player", ":", "fund", ":", player.PlayerCode, ":", gameProvider.GameProviderCode);
 
 		_ = fakeMemoryCache.TryGetValue(
 			key: Arg.Is(key),
@@ -315,7 +321,7 @@ public class VerificationCacheRepositoryUnitTest
 			RuleUrl: null,
 			AvailableCurrencies: null);
 
-		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "player", ":", "gameurl", ":", player.PlayerCode, ":", game.GameProviderCode, ":", game.GameId);
+		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "player", ":", "gameurl", ":", player.PlayerCode, ":", game.GameProviderCode, ":", game.GameId);
 
 		_ = fakeMemoryCache.TryGetValue(
 			key: Arg.Is(key),
@@ -370,7 +376,7 @@ public class VerificationCacheRepositoryUnitTest
 			RuleUrl: null,
 			AvailableCurrencies: null);
 
-		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "player", ":", "gameurl", ":", player.PlayerCode, ":", game.GameProviderCode, ":", game.GameId);
+		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "player", ":", "gameurl", ":", player.PlayerCode, ":", game.GameProviderCode, ":", game.GameId);
 
 		_ = fakeMemoryCache.TryGetValue(
 			key: Arg.Is(key),
