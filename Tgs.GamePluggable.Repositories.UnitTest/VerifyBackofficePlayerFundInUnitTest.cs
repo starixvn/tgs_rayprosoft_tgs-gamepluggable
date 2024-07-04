@@ -4,7 +4,7 @@ using Tgs.GamePluggable.Core.Exceptions;
 
 namespace Tgs.GamePluggable.Repositories.UnitTest;
 
-public class VerificationRepositoryVerifyBrandCurrencyUnitTest
+public class VerifyBackofficePlayerFundInUnitTest
 {
 	[Fact]
 	public async Task Normal_Process()
@@ -44,7 +44,7 @@ public class VerificationRepositoryVerifyBrandCurrencyUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		await sut.VerifyBrandAsync(
+		await sut.VerifyBackofficePlayerFundInAsync(
 			brandId: brandId,
 			brandCode: brandCode,
 			gameProviderId: gameProviderId,
@@ -72,8 +72,8 @@ public class VerificationRepositoryVerifyBrandCurrencyUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		_ = await Assert.ThrowsAsync<VerifyBrandException>(
-			() => sut.VerifyBrandAsync(
+		_ = await Assert.ThrowsAsync<VerifyBackofficePlayerFundInException>(
+			() => sut.VerifyBackofficePlayerFundInAsync(
 				brandId: brandId,
 				brandCode: brandCode,
 				gameProviderId: gameProviderId,
@@ -121,8 +121,8 @@ public class VerificationRepositoryVerifyBrandCurrencyUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		_ = await Assert.ThrowsAsync<VerifyBrandException>(
-			() => sut.VerifyBrandAsync(
+		_ = await Assert.ThrowsAsync<VerifyBackofficePlayerFundInException>(
+			() => sut.VerifyBackofficePlayerFundInAsync(
 				brandId: brandId,
 				brandCode: brandCode,
 				gameProviderId: gameProviderId,
@@ -170,8 +170,8 @@ public class VerificationRepositoryVerifyBrandCurrencyUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		_ = await Assert.ThrowsAsync<VerifyBrandException>(
-			() => sut.VerifyBrandAsync(
+		_ = await Assert.ThrowsAsync<VerifyBackofficePlayerFundInException>(
+			() => sut.VerifyBackofficePlayerFundInAsync(
 				brandId: brandId,
 				brandCode: brandCode,
 				gameProviderId: gameProviderId,
@@ -219,8 +219,8 @@ public class VerificationRepositoryVerifyBrandCurrencyUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		_ = await Assert.ThrowsAsync<VerifyBrandException>(
-			() => sut.VerifyBrandAsync(
+		_ = await Assert.ThrowsAsync<VerifyBackofficePlayerFundInException>(
+			() => sut.VerifyBackofficePlayerFundInAsync(
 				brandId: brandId,
 				brandCode: brandCode,
 				gameProviderId: gameProviderId,

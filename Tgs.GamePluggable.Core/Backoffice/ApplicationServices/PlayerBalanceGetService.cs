@@ -28,7 +28,7 @@ internal class PlayerBalanceGetService(
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		await verification.VerifyBrandAsync(
+		await verification.VerifyBackofficePlayerBalanceAsync(
 			brandId: playerInfo.BrandId,
 			brandCode: playerInfo.BrandCode,
 			gameProviderId: gameProviderInfo.GameProviderId,

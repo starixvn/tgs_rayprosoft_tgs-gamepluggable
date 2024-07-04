@@ -9,26 +9,44 @@ internal class VerificationRepository(
 	IBrandRepository brandRepository,
 	IGameProviderRepository gameProviderRepository) : IVerification
 {
-	public async ValueTask VerifyBrandAsync(Guid brandId, string brandCode, Guid gameProviderId, string gameProviderCode, bool transferWallet, string currencyCode, CancellationToken cancellationToken = default)
+	public async ValueTask VerifyBackofficePlayerBalanceAsync(Guid brandId, string brandCode, Guid gameProviderId, string gameProviderCode, bool transferWallet, string currencyCode, CancellationToken cancellationToken = default)
 	{
 		if (!transferWallet)
 		{
-			throw new VerifyBrandException(brandCode, gameProviderCode, currencyCode);
-		}
-
-		if (!await brandRepository.GetGameProviderStatusAsync(brandId, gameProviderId, cancellationToken).ConfigureAwait(false))
-		{
-			throw new VerifyBrandException(brandCode, gameProviderCode, currencyCode);
+			throw new VerifyBackofficePlayerBalanceException(brandCode, gameProviderCode, currencyCode);
 		}
 
 		if (!await brandRepository.GetCurrencyExistAsync(brandId, currencyCode, cancellationToken).ConfigureAwait(false))
 		{
-			throw new VerifyBrandException(brandCode, gameProviderCode, currencyCode);
+			throw new VerifyBackofficePlayerBalanceException(brandCode, gameProviderCode, currencyCode);
 		}
 
 		if (!await gameProviderRepository.GetCurrencyExistAsync(gameProviderId, currencyCode, cancellationToken).ConfigureAwait(false))
 		{
-			throw new VerifyBrandException(brandCode, gameProviderCode, currencyCode);
+			throw new VerifyBackofficePlayerBalanceException(brandCode, gameProviderCode, currencyCode);
+		}
+	}
+
+	public async ValueTask VerifyBackofficePlayerFundInAsync(Guid brandId, string brandCode, Guid gameProviderId, string gameProviderCode, bool transferWallet, string currencyCode, CancellationToken cancellationToken = default)
+	{
+		if (!transferWallet)
+		{
+			throw new VerifyBackofficePlayerFundInException(brandCode, gameProviderCode, currencyCode);
+		}
+
+		if (!await brandRepository.GetGameProviderStatusAsync(brandId, gameProviderId, cancellationToken).ConfigureAwait(false))
+		{
+			throw new VerifyBackofficePlayerFundInException(brandCode, gameProviderCode, currencyCode);
+		}
+
+		if (!await brandRepository.GetCurrencyExistAsync(brandId, currencyCode, cancellationToken).ConfigureAwait(false))
+		{
+			throw new VerifyBackofficePlayerFundInException(brandCode, gameProviderCode, currencyCode);
+		}
+
+		if (!await gameProviderRepository.GetCurrencyExistAsync(gameProviderId, currencyCode, cancellationToken).ConfigureAwait(false))
+		{
+			throw new VerifyBackofficePlayerFundInException(brandCode, gameProviderCode, currencyCode);
 		}
 	}
 

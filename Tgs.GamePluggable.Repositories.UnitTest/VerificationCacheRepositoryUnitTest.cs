@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using NSubstitute;
 using Tgs.GamePluggable.Core;
-using Tgs.GamePluggable.Entities;
-using Tgs.GameProviders.Domains;
 
 namespace Tgs.GamePluggable.Repositories.UnitTest;
+
 public class VerificationCacheRepositoryUnitTest
 {
 	[Fact]
-	public async Task VerifyBrandCurrency_Cache_Is_False()
+	public async Task VerifyBackofficePlayerFundIn_Cache_Is_False()
 	{
 		var fakeVerification = Substitute.For<IVerification>();
 		var fakeMemoryCache = Substitute.For<IMemoryCache>();
@@ -26,7 +20,7 @@ public class VerificationCacheRepositoryUnitTest
 		var transferWallet = true;
 		var currencyCode = "CNY";
 
-		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "brand", ":", brandCode, ":", gameProviderCode, ":", currencyCode);
+		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "backoffice", ":", "player", ":", "fundin", ":", brandCode, ":", gameProviderCode, ":", currencyCode);
 
 		_ = fakeMemoryCache.TryGetValue(
 			key: Arg.Is(key),
@@ -38,11 +32,11 @@ public class VerificationCacheRepositoryUnitTest
 			fakeMemoryCache,
 			absoluteExpiration);
 
-		await sut.VerifyBrandAsync(brandId, brandCode, gameProviderId, gameProviderCode, transferWallet, currencyCode);
+		await sut.VerifyBackofficePlayerFundInAsync(brandId, brandCode, gameProviderId, gameProviderCode, transferWallet, currencyCode);
 
 		_ = fakeVerification
 			.Received(1)
-			.VerifyBrandAsync(
+			.VerifyBackofficePlayerFundInAsync(
 			brandId: Arg.Is(brandId),
 			brandCode: Arg.Is(brandCode),
 			gameProviderId: Arg.Is(gameProviderId),
@@ -59,7 +53,7 @@ public class VerificationCacheRepositoryUnitTest
 	}
 
 	[Fact]
-	public async Task VerifyBrandCurrency_Cache_Is_True()
+	public async Task VerifyBackofficePlayerFundIn_Cache_Is_True()
 	{
 		var fakeVerification = Substitute.For<IVerification>();
 		var fakeMemoryCache = Substitute.For<IMemoryCache>();
@@ -72,7 +66,7 @@ public class VerificationCacheRepositoryUnitTest
 		var transferWallet = true;
 		var currencyCode = "CNY";
 
-		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "brand", ":", brandCode, ":", gameProviderCode, ":", currencyCode);
+		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "backoffice", ":", "player", ":", "fundin", ":", brandCode, ":", gameProviderCode, ":", currencyCode);
 
 		_ = fakeMemoryCache.TryGetValue(
 			key: Arg.Is(key),
@@ -84,11 +78,11 @@ public class VerificationCacheRepositoryUnitTest
 			fakeMemoryCache,
 			absoluteExpiration);
 
-		await sut.VerifyBrandAsync(brandId, brandCode, gameProviderId, gameProviderCode, transferWallet, currencyCode);
+		await sut.VerifyBackofficePlayerFundInAsync(brandId, brandCode, gameProviderId, gameProviderCode, transferWallet, currencyCode);
 
 		_ = fakeVerification
 			.Received(0)
-			.VerifyBrandAsync(
+			.VerifyBackofficePlayerFundInAsync(
 			brandId: Arg.Is(brandId),
 			brandCode: Arg.Is(brandCode),
 			gameProviderId: Arg.Is(gameProviderId),

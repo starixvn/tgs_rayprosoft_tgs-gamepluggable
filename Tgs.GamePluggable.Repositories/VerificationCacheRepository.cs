@@ -8,12 +8,31 @@ internal class VerificationCacheRepository(
 	IMemoryCache memoryCache,
 	TimeSpan absoluteExpiration) : IVerification
 {
-	public async ValueTask VerifyBrandAsync(Guid brandId, string brandCode, Guid gameProviderId, string gameProviderCode, bool transferWallet, string currencyCode, CancellationToken cancellationToken = default)
+	public async ValueTask VerifyBackofficePlayerFundInAsync(Guid brandId, string brandCode, Guid gameProviderId, string gameProviderCode, bool transferWallet, string currencyCode, CancellationToken cancellationToken = default)
 	{
-		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "brand", ":", brandCode, ":", gameProviderCode, ":", currencyCode);
+		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "backoffice", ":", "player", ":", "fundin", ":", brandCode, ":", gameProviderCode, ":", currencyCode);
 		if (!memoryCache.TryGetValue(key, out _))
 		{
-			await verification.VerifyBrandAsync(
+			await verification.VerifyBackofficePlayerFundInAsync(
+				brandId: brandId,
+				brandCode: brandCode,
+				gameProviderId: gameProviderId,
+				gameProviderCode: gameProviderCode,
+				transferWallet: transferWallet,
+				currencyCode: currencyCode,
+				cancellationToken: cancellationToken)
+				.ConfigureAwait(false);
+
+			_ = memoryCache.Set(key, DateTime.UtcNow, absoluteExpiration);
+		}
+	}
+
+	public async ValueTask VerifyBackofficePlayerBalanceAsync(Guid brandId, string brandCode, Guid gameProviderId, string gameProviderCode, bool transferWallet, string currencyCode, CancellationToken cancellationToken = default)
+	{
+		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "backoffice", ":", "player", ":", "balance", ":", brandCode, ":", gameProviderCode, ":", currencyCode);
+		if (!memoryCache.TryGetValue(key, out _))
+		{
+			await verification.VerifyBackofficePlayerBalanceAsync(
 				brandId: brandId,
 				brandCode: brandCode,
 				gameProviderId: gameProviderId,

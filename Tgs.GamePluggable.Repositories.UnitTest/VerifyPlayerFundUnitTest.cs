@@ -4,7 +4,7 @@ using Tgs.GamePluggable.Core.Exceptions;
 
 namespace Tgs.GamePluggable.Repositories.UnitTest;
 
-public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
+public class VerifyPlayerFundUnitTest
 {
 	[Fact]
 	public async Task Brand_Currency_Is_False()
@@ -21,26 +21,20 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
 			WalletId: Guid.NewGuid(),
 			CurrencyCode: "CNY");
 
-		var game = new Core.Models.GameInfo(
-			GameId: 1,
-			GameCode: "lobby",
+		var gameProvider = new Core.Models.GameProviderInfo(
 			GameProviderId: Guid.NewGuid(),
 			GameProviderCode: "KY",
-			ExternalGameId: "lobby",
-			Type: Core.Enums.GameType.CardGameLobby,
-			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
-			EndpointPath: null,
-			RuleUrl: null,
-			AvailableCurrencies: null);
+			TransferWallet: true,
+			AllowKickPlayer: true);
 
 		_ = fakePlayerRepository.GetStatusAsync(
 			playerCode: Arg.Is(player.PlayerCode),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
-		_ = fakeBrandRepository.GetGameStatusAsync(
+		_ = fakeBrandRepository.GetGameProviderStatusAsync(
 			brandId: Arg.Is(player.BrandId),
-			gameId: Arg.Is(game.GameId),
+			gameProviderId: Arg.Is(gameProvider.GameProviderId),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
@@ -51,7 +45,7 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
 			.Returns(false);
 
 		_ = fakeGameProviderRepository.GetCurrencyExistAsync(
-			id: Arg.Is(game.GameProviderId),
+			id: Arg.Is(gameProvider.GameProviderId),
 			currencyCode: Arg.Is(player.CurrencyCode),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
@@ -61,134 +55,10 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		_ = await Assert.ThrowsAsync<VerifyPlayerGameUrlException>(
-			() => sut.VerifyPlayerGameUrlAsync(
+		_ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
+			() => sut.VerifyPlayerFundAsync(
 				player: player,
-				game: game)
-			.AsTask());
-	}
-
-	[Fact]
-	public async Task Brand_Game_Is_False()
-	{
-		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
-		var fakeBrandRepository = Substitute.For<IBrandRepository>();
-		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
-
-		var player = new Core.Models.PlayerInfo(
-			BrandId: Guid.NewGuid(),
-			BrandCode: "GPI",
-			PlayerCode: "4ucmqplxb029",
-			Username: "4ucmqplxb029",
-			WalletId: Guid.NewGuid(),
-			CurrencyCode: "CNY");
-
-		var game = new Core.Models.GameInfo(
-			GameId: 1,
-			GameCode: "lobby",
-			GameProviderId: Guid.NewGuid(),
-			GameProviderCode: "KY",
-			ExternalGameId: "lobby",
-			Type: Core.Enums.GameType.CardGameLobby,
-			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
-			EndpointPath: null,
-			RuleUrl: null,
-			AvailableCurrencies: null);
-
-		_ = fakePlayerRepository.GetStatusAsync(
-			playerCode: Arg.Is(player.PlayerCode),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(true);
-
-		_ = fakeBrandRepository.GetGameStatusAsync(
-			brandId: Arg.Is(player.BrandId),
-			gameId: Arg.Is(game.GameId),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(false);
-
-		_ = fakeBrandRepository.GetCurrencyExistAsync(
-			brandId: Arg.Is(player.BrandId),
-			currencyCode: Arg.Is(player.CurrencyCode),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(true);
-
-		_ = fakeGameProviderRepository.GetCurrencyExistAsync(
-			id: Arg.Is(game.GameProviderId),
-			currencyCode: Arg.Is(player.CurrencyCode),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(true);
-
-		var sut = new VerificationRepository(
-			fakePlayerRepository,
-			fakeBrandRepository,
-			fakeGameProviderRepository);
-
-		_ = await Assert.ThrowsAsync<VerifyPlayerGameUrlException>(
-			() => sut.VerifyPlayerGameUrlAsync(
-				player: player,
-				game: game)
-			.AsTask());
-	}
-
-	[Fact]
-	public async Task GameProvider_Currency_Is_False()
-	{
-		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
-		var fakeBrandRepository = Substitute.For<IBrandRepository>();
-		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
-
-		var player = new Core.Models.PlayerInfo(
-			BrandId: Guid.NewGuid(),
-			BrandCode: "GPI",
-			PlayerCode: "4ucmqplxb029",
-			Username: "4ucmqplxb029",
-			WalletId: Guid.NewGuid(),
-			CurrencyCode: "CNY");
-
-		var game = new Core.Models.GameInfo(
-			GameId: 1,
-			GameCode: "lobby",
-			GameProviderId: Guid.NewGuid(),
-			GameProviderCode: "KY",
-			ExternalGameId: "lobby",
-			Type: Core.Enums.GameType.CardGameLobby,
-			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
-			EndpointPath: null,
-			RuleUrl: null,
-			AvailableCurrencies: null);
-
-		_ = fakePlayerRepository.GetStatusAsync(
-			playerCode: Arg.Is(player.PlayerCode),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(true);
-
-		_ = fakeBrandRepository.GetGameStatusAsync(
-			brandId: Arg.Is(player.BrandId),
-			gameId: Arg.Is(game.GameId),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(true);
-
-		_ = fakeBrandRepository.GetCurrencyExistAsync(
-			brandId: Arg.Is(player.BrandId),
-			currencyCode: Arg.Is(player.CurrencyCode),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(true);
-
-		_ = fakeGameProviderRepository.GetCurrencyExistAsync(
-			id: Arg.Is(game.GameProviderId),
-			currencyCode: Arg.Is(player.CurrencyCode),
-			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(false);
-
-		var sut = new VerificationRepository(
-			fakePlayerRepository,
-			fakeBrandRepository,
-			fakeGameProviderRepository);
-
-		_ = await Assert.ThrowsAsync<VerifyPlayerGameUrlException>(
-			() => sut.VerifyPlayerGameUrlAsync(
-				player: player,
-				game: game)
+				gameProvider: gameProvider)
 			.AsTask());
 	}
 
@@ -207,26 +77,20 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
 			WalletId: Guid.NewGuid(),
 			CurrencyCode: "CNY");
 
-		var game = new Core.Models.GameInfo(
-			GameId: 1,
-			GameCode: "lobby",
+		var gameProvider = new Core.Models.GameProviderInfo(
 			GameProviderId: Guid.NewGuid(),
 			GameProviderCode: "KY",
-			ExternalGameId: "lobby",
-			Type: Core.Enums.GameType.CardGameLobby,
-			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
-			EndpointPath: null,
-			RuleUrl: null,
-			AvailableCurrencies: null);
+			TransferWallet: true,
+			AllowKickPlayer: true);
 
 		_ = fakePlayerRepository.GetStatusAsync(
 			playerCode: Arg.Is(player.PlayerCode),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(false);
 
-		_ = fakeBrandRepository.GetGameStatusAsync(
+		_ = fakeBrandRepository.GetGameProviderStatusAsync(
 			brandId: Arg.Is(player.BrandId),
-			gameId: Arg.Is(game.GameId),
+			gameProviderId: Arg.Is(gameProvider.GameProviderId),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
@@ -237,7 +101,7 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
 			.Returns(true);
 
 		_ = fakeGameProviderRepository.GetCurrencyExistAsync(
-			id: Arg.Is(game.GameProviderId),
+			id: Arg.Is(gameProvider.GameProviderId),
 			currencyCode: Arg.Is(player.CurrencyCode),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
@@ -247,15 +111,15 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		_ = await Assert.ThrowsAsync<VerifyPlayerGameUrlException>(
-			() => sut.VerifyPlayerGameUrlAsync(
+		_ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
+			() => sut.VerifyPlayerFundAsync(
 				player: player,
-				game: game)
+				gameProvider: gameProvider)
 			.AsTask());
 	}
 
 	[Fact]
-	public async Task Game_Available_Currency_Is_Not_CNY()
+	public async Task GameProvider_Currency_Is_False()
 	{
 		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
 		var fakeBrandRepository = Substitute.For<IBrandRepository>();
@@ -269,26 +133,20 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
 			WalletId: Guid.NewGuid(),
 			CurrencyCode: "CNY");
 
-		var game = new Core.Models.GameInfo(
-			GameId: 1,
-			GameCode: "lobby",
+		var gameProvider = new Core.Models.GameProviderInfo(
 			GameProviderId: Guid.NewGuid(),
 			GameProviderCode: "KY",
-			ExternalGameId: "lobby",
-			Type: Core.Enums.GameType.CardGameLobby,
-			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
-			EndpointPath: null,
-			RuleUrl: null,
-			AvailableCurrencies: ["PHP", "HKD"]);
+			TransferWallet: true,
+			AllowKickPlayer: true);
 
 		_ = fakePlayerRepository.GetStatusAsync(
 			playerCode: Arg.Is(player.PlayerCode),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
-		_ = fakeBrandRepository.GetGameStatusAsync(
+		_ = fakeBrandRepository.GetGameProviderStatusAsync(
 			brandId: Arg.Is(player.BrandId),
-			gameId: Arg.Is(game.GameId),
+			gameProviderId: Arg.Is(gameProvider.GameProviderId),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
@@ -299,25 +157,25 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
 			.Returns(true);
 
 		_ = fakeGameProviderRepository.GetCurrencyExistAsync(
-			id: Arg.Is(game.GameProviderId),
+			id: Arg.Is(gameProvider.GameProviderId),
 			currencyCode: Arg.Is(player.CurrencyCode),
 			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(true);
+			.Returns(false);
 
 		var sut = new VerificationRepository(
 			fakePlayerRepository,
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		_ = await Assert.ThrowsAsync<VerifyPlayerGameUrlException>(
-			() => sut.VerifyPlayerGameUrlAsync(
+		_ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
+			() => sut.VerifyPlayerFundAsync(
 				player: player,
-				game: game)
+				gameProvider: gameProvider)
 			.AsTask());
 	}
 
 	[Fact]
-	public async Task Game_Available_Currency_Is_CNY()
+	public async Task GameProvider_TransferWallet_Is_False()
 	{
 		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
 		var fakeBrandRepository = Substitute.For<IBrandRepository>();
@@ -331,26 +189,20 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
 			WalletId: Guid.NewGuid(),
 			CurrencyCode: "CNY");
 
-		var game = new Core.Models.GameInfo(
-			GameId: 1,
-			GameCode: "lobby",
+		var gameProvider = new Core.Models.GameProviderInfo(
 			GameProviderId: Guid.NewGuid(),
 			GameProviderCode: "KY",
-			ExternalGameId: "lobby",
-			Type: Core.Enums.GameType.CardGameLobby,
-			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
-			EndpointPath: null,
-			RuleUrl: null,
-			AvailableCurrencies: ["PHP", "HKD", "CNY"]);
+			TransferWallet: false,
+			AllowKickPlayer: true);
 
 		_ = fakePlayerRepository.GetStatusAsync(
 			playerCode: Arg.Is(player.PlayerCode),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
-		_ = fakeBrandRepository.GetGameStatusAsync(
+		_ = fakeBrandRepository.GetGameProviderStatusAsync(
 			brandId: Arg.Is(player.BrandId),
-			gameId: Arg.Is(game.GameId),
+			gameProviderId: Arg.Is(gameProvider.GameProviderId),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
@@ -361,7 +213,7 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
 			.Returns(true);
 
 		_ = fakeGameProviderRepository.GetCurrencyExistAsync(
-			id: Arg.Is(game.GameProviderId),
+			id: Arg.Is(gameProvider.GameProviderId),
 			currencyCode: Arg.Is(player.CurrencyCode),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
@@ -371,9 +223,11 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		await sut.VerifyPlayerGameUrlAsync(
-			player: player,
-			game: game);
+		_ = await Assert.ThrowsAsync<VerifyPlayerFundException>(
+			() => sut.VerifyPlayerFundAsync(
+				player: player,
+				gameProvider: gameProvider)
+			.AsTask());
 	}
 
 	[Fact]
@@ -391,26 +245,20 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
 			WalletId: Guid.NewGuid(),
 			CurrencyCode: "CNY");
 
-		var game = new Core.Models.GameInfo(
-			GameId: 1,
-			GameCode: "lobby",
+		var gameProvider = new Core.Models.GameProviderInfo(
 			GameProviderId: Guid.NewGuid(),
 			GameProviderCode: "KY",
-			ExternalGameId: "lobby",
-			Type: Core.Enums.GameType.CardGameLobby,
-			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
-			EndpointPath: null,
-			RuleUrl: null,
-			AvailableCurrencies: null);
+			TransferWallet: true,
+			AllowKickPlayer: true);
 
 		_ = fakePlayerRepository.GetStatusAsync(
 			playerCode: Arg.Is(player.PlayerCode),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
-		_ = fakeBrandRepository.GetGameStatusAsync(
+		_ = fakeBrandRepository.GetGameProviderStatusAsync(
 			brandId: Arg.Is(player.BrandId),
-			gameId: Arg.Is(game.GameId),
+			gameProviderId: Arg.Is(gameProvider.GameProviderId),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
@@ -421,7 +269,7 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
 			.Returns(true);
 
 		_ = fakeGameProviderRepository.GetCurrencyExistAsync(
-			id: Arg.Is(game.GameProviderId),
+			id: Arg.Is(gameProvider.GameProviderId),
 			currencyCode: Arg.Is(player.CurrencyCode),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
@@ -431,8 +279,8 @@ public class VerificationRepositoryVerifyPlayerGameUrlUnitTest
 			fakeBrandRepository,
 			fakeGameProviderRepository);
 
-		await sut.VerifyPlayerGameUrlAsync(
+		await sut.VerifyPlayerFundAsync(
 			player: player,
-			game: game);
+			gameProvider: gameProvider);
 	}
 }

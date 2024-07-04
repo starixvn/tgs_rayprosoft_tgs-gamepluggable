@@ -30,7 +30,7 @@ internal class FundInCommandService(
 			cancellationToken)
 			.ConfigureAwait(false);
 
-		await verification.VerifyBrandAsync(
+		await verification.VerifyBackofficePlayerFundInAsync(
 			brandId: playerInfo.BrandId,
 			brandCode: playerInfo.BrandCode,
 			gameProviderId: gameProviderInfo.GameProviderId,

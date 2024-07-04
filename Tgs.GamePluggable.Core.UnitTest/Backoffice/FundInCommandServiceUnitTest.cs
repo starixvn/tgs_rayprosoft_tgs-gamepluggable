@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
 using Tgs.GameFundTransfer.Client;
-using Tgs.GameFundTransfer.Protos;
 using Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 using Tgs.GamePluggable.Core.Exceptions;
 using Tgs.GamePluggable.Core.Models;
@@ -54,7 +53,7 @@ public class FundInCommandServiceUnitTest
 			.Returns(gameProviderInfo);
 
 		_ = fakeVerification
-			.VerifyBrandAsync(
+			.VerifyBackofficePlayerFundInAsync(
 			brandId: Arg.Is(playerInfo.BrandId),
 			brandCode: Arg.Is(playerInfo.BrandCode),
 			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
@@ -62,7 +61,7 @@ public class FundInCommandServiceUnitTest
 			transferWallet: Arg.Is(gameProviderInfo.TransferWallet),
 			currencyCode: Arg.Is(playerInfo.CurrencyCode),
 			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(ValueTask.FromException(new VerifyBrandException(playerInfo.BrandCode, gameProviderInfo.GameProviderCode, playerInfo.CurrencyCode)));
+			.Returns(ValueTask.FromException(new VerifyBackofficePlayerFundInException(playerInfo.BrandCode, gameProviderInfo.GameProviderCode, playerInfo.CurrencyCode)));
 
 		var sut = new FundInCommandService(
 			fakePlayerRepository,
@@ -70,7 +69,7 @@ public class FundInCommandServiceUnitTest
 			fakeVerification,
 			fakeGameFundTransferClient);
 
-		await Assert.ThrowsAsync<VerifyBrandException>(() =>
+		await Assert.ThrowsAsync<VerifyBackofficePlayerFundInException>(() =>
 		sut.ExecuteAsync(
 			command)
 		.AsTask());
@@ -155,7 +154,7 @@ public class FundInCommandServiceUnitTest
 
 		_ = fakeVerification
 			.Received(1)
-			.VerifyBrandAsync(
+			.VerifyBackofficePlayerFundInAsync(
 			brandId: Arg.Is(playerInfo.BrandId),
 			brandCode: Arg.Is(playerInfo.BrandCode),
 			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
@@ -237,7 +236,7 @@ public class FundInCommandServiceUnitTest
 
 		_ = fakeVerification
 			.Received(1)
-			.VerifyBrandAsync(
+			.VerifyBackofficePlayerFundInAsync(
 			brandId: Arg.Is(playerInfo.BrandId),
 			brandCode: Arg.Is(playerInfo.BrandCode),
 			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
@@ -319,7 +318,7 @@ public class FundInCommandServiceUnitTest
 
 		_ = fakeVerification
 			.Received(1)
-			.VerifyBrandAsync(
+			.VerifyBackofficePlayerFundInAsync(
 			brandId: Arg.Is(playerInfo.BrandId),
 			brandCode: Arg.Is(playerInfo.BrandCode),
 			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
@@ -401,7 +400,7 @@ public class FundInCommandServiceUnitTest
 
 		_ = fakeVerification
 			.Received(1)
-			.VerifyBrandAsync(
+			.VerifyBackofficePlayerFundInAsync(
 			brandId: Arg.Is(playerInfo.BrandId),
 			brandCode: Arg.Is(playerInfo.BrandCode),
 			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
@@ -483,7 +482,7 @@ public class FundInCommandServiceUnitTest
 
 		_ = fakeVerification
 			.Received(1)
-			.VerifyBrandAsync(
+			.VerifyBackofficePlayerFundInAsync(
 			brandId: Arg.Is(playerInfo.BrandId),
 			brandCode: Arg.Is(playerInfo.BrandCode),
 			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
@@ -565,7 +564,7 @@ public class FundInCommandServiceUnitTest
 
 		_ = fakeVerification
 			.Received(1)
-			.VerifyBrandAsync(
+			.VerifyBackofficePlayerFundInAsync(
 			brandId: Arg.Is(playerInfo.BrandId),
 			brandCode: Arg.Is(playerInfo.BrandCode),
 			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
@@ -647,7 +646,7 @@ public class FundInCommandServiceUnitTest
 
 		_ = fakeVerification
 			.Received(1)
-			.VerifyBrandAsync(
+			.VerifyBackofficePlayerFundInAsync(
 			brandId: Arg.Is(playerInfo.BrandId),
 			brandCode: Arg.Is(playerInfo.BrandCode),
 			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
@@ -729,7 +728,7 @@ public class FundInCommandServiceUnitTest
 
 		_ = fakeVerification
 			.Received(1)
-			.VerifyBrandAsync(
+			.VerifyBackofficePlayerFundInAsync(
 			brandId: Arg.Is(playerInfo.BrandId),
 			brandCode: Arg.Is(playerInfo.BrandCode),
 			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
