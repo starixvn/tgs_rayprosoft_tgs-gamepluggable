@@ -17,10 +17,10 @@ data:
       },
       "PluggableConnectionStrings": {
         "GameProvidersClientBaseUrl": "http://game-gameproviders/",
-        "CashServiceClientBaseUrl": "http://cashservice-api/",
+        "GamePlayerLogOutClientBaseUrl": "http://game-gameplayerlogout/",
         "GameFundTransferClientBaseUrl": "dns:///game-gamefundtransfer:9090/",
-        "GameCurrencyClientBaseUrl": "http://game-gamecurrency/",
-        "GameRoundsClientBaseUrl": "http://game-gamerounds"
+        "GameRoundsClientBaseUrl": "http://game-gamerounds",
+        "CashServiceClientBaseUrl": "http://cashservice-api/"
       }
     }
   otel-collector-config.yaml: |

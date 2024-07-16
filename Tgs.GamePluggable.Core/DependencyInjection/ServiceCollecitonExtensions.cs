@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Tgs.CashService.Client;
-using Tgs.GameCurrency.Client;
 using Tgs.GameFundTransfer.Client;
-using Tgs.GameProviders.Client;
-using Tgs.GameRounds.Client;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -19,6 +16,5 @@ public static class ServiceCollecitonExtensions
 			Assembly.GetExecutingAssembly(),
 			ServiceLifetime.Transient)
 		.AddCashServiceClient(cashServiceClientOptions)
-		.AddGameFundTransferClient(gameTransferClientOptions)
-		.AddGamePlayerLogOutClient();
+		.AddGameFundTransferClient(gameTransferClientOptions);
 }

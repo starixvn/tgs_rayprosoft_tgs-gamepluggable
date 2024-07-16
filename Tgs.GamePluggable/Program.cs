@@ -75,17 +75,17 @@ builder.Services.AddGamePluggable(
 		var configuration = sp.GetRequiredService<IConfiguration>();
 		options.BaseUrl = configuration.GetValue<Uri>("PluggableConnectionStrings:GameProvidersClientBaseUrl")!;
 	})
-	.AddGameCurrencyClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
-	{
-		var config = sp.GetRequiredService<IConfiguration>();
-		http.BaseAddress = config.GetValue<Uri>("PluggableConnectionStrings:GameCurrencyClientBaseUrl");
-	}))
 	.AddGameRoundsClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
 	{
 		var config = sp.GetRequiredService<IConfiguration>();
 		http.BaseAddress = config.GetValue<Uri>("PluggableConnectionStrings:GameRoundsClientBaseUrl");
 	}))
-;
+	.AddGamePlayerLogOutClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
+	{
+		var config = sp.GetRequiredService<IConfiguration>();
+		http.BaseAddress = config.GetValue<Uri>("PluggableConnectionStrings:GamePlayerLogOutClientBaseUrl");
+	})
+);
 
 builder.Services
 	.AddKeyedSingleton("Nats", (sp, _) => new NatsConnection(NatsOpts.Default with

@@ -1,10 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Tgs.CashService.Client;
-using Tgs.GameCurrency.Client;
 using Tgs.GameFundTransfer.Client;
-using Tgs.GameProviders.Client;
-using Tgs.GameRounds.Client;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
