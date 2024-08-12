@@ -9,6 +9,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+COPY ["nuget.config", "."]
 COPY ["Tgs.GamePluggable/Tgs.GamePluggable.csproj", "Tgs.GamePluggable/"]
 COPY ["Tgs.GamePluggable.Core/Tgs.GamePluggable.Core.csproj", "Tgs.GamePluggable.Core/"]
 COPY ["Tgs.GamePluggable.Repositories/Tgs.GamePluggable.Repositories.csproj", "Tgs.GamePluggable.Repositories/"]

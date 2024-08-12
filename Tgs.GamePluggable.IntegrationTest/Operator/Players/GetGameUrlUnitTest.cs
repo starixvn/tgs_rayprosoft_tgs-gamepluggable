@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Tgs.GamePluggable.Core.Operator.ApplicationServices;
-using Tgs.GameProviders.Client;
+using Tgs.GameProviders.Domains;
 using Tgs.GameProviders.Pluggable.Client;
 using Tgs.ServiceUtility;
 
@@ -15,16 +15,15 @@ public class GetGameUrlUnitTest
 	[Fact]
 	public async Task GetGameUrlAsync()
 	{
-		string playerCode = "4ucmqplxb029";
-		Guid loginRecordId = Guid.NewGuid();
-		var platformType = GameProvidersClientPlatformType.Desktop;
-		bool isMobile = platformType == GameProvidersClientPlatformType.Mobile;
-		int gameId = 1000001;
-		string language = "zh-CN";
-		string ipAddress = "127.0.0.1";
-		Uri backUrl = new("https://dev-t1.rpgp.cc");
-		Uri gameurl = new("https://www.google.com/");
+		var playerCode = "Test";
+		var gameId = 1;
+		var loginRecordId = Guid.NewGuid();
+		var language = "zh-TW";
+		var isMobile = false;
+		var ipAddress = "127.0.01";
+		var backUrl = new Uri("https://dev-t1.rpgp.cc");
 
+		var expected = new Uri("https://localhost/");
 		await using var web = new TestPluggableApplication(builder => _ = builder.ConfigureServices(services =>
 			  {
 				  var fakeGameUrlGetService = Substitute.For<IGetService<GameUrlQuery, Uri>>();
@@ -32,17 +31,16 @@ public class GetGameUrlUnitTest
 				  var query = new GameUrlQuery(
 					  PlayerCode: playerCode,
 					  LoginRecordId: loginRecordId,
-					  PlatformType: platformType,
+					  PlatformType: PlatformType.Desktop,
 					  GameId: gameId,
 					  Language: language,
 					  IpAddress: ipAddress,
 					  BackUrl: backUrl);
 
-				  _ = fakeGameUrlGetService
-				   .GetAsync(
+				  _ = fakeGameUrlGetService.GetAsync(
 					  query: Arg.Is(query),
 					  cancellationToken: Arg.Any<CancellationToken>())
-				   .Returns(ValueTask.FromResult<Uri>(gameurl));
+				  .Returns(expected);
 
 				  _ = services.AddSingleton(fakeGameUrlGetService);
 			  }));
@@ -61,6 +59,6 @@ public class GetGameUrlUnitTest
 			backUrl: backUrl);
 
 		Assert.NotNull(actual);
-		Assert.Equal(gameurl, actual);
+		Assert.Equal(expected, actual);
 	}
 }

@@ -26,22 +26,20 @@ internal class RoundDetailGetService(
 			||
 			round.ClientStatus is GameRounds.Common.Enums.RoundClientStatus.Open)
 		{
-			return JsonDocument.Parse(JsonSerializer.Serialize(new RoundDetailDataText()
+			return JsonDocument.Parse(JsonSerializer.Serialize(new RoundDetailDataJson()
 			{
-				Value = "The game has not been settled, please wait!(遊戲尚未結算，請稍後!)"
+				Value = round.AdditionalData.ToString()
 			}));
 		}
 
-		var gameProviderModel = await gameProvider
-			.GetAsync(
+		var gameProviderModel = await gameProvider.GetAsync(
 			id: round.GameProviderId,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
 		try
 		{
-			var roundDetailResult = await gameProvidersClient
-				.RoundDetailAsync(
+			var roundDetailResult = await gameProvidersClient.RoundDetailAsync(
 				gameProviderCode: gameProviderModel!.GameProviderCode,
 				roundId: round.RoundId,
 				language: query.Language,

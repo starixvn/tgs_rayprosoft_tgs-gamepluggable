@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Tgs.GameProviders.Client;
-using Tgs.GameProviders.Domains;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GamePluggable.Core.Operator.ApplicationServices;
@@ -31,58 +29,16 @@ internal class GameUrlGetService(
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		return gameInfo.GameProviderCode switch
-		{
-			var o when o == GameProviderType.AsiaGaming
-			=> await gameUrl
-				.GetGameUrlByAsiaGamingAsync(
-					gameInfo.GameProviderCode,
-					(GameProvidersClientGameType)gameInfo.Type,
-					gameInfo.GameId,
-					playerInfo.BrandCode,
-					playerInfo.PlayerCode,
-					playerInfo.CurrencyCode,
-					query.LoginRecordId,
-					query.PlatformType,
-					query.Language,
-					query.IpAddress,
-					query.BackUrl,
-					playerInfo.WalletId,
-					cancellationToken)
-				.ConfigureAwait(false),
-			var o when o == GameProviderType.BetConstruct
-			=> await gameUrl
-				.GetGameUrlByBetConstructAsync(
-					gameInfo.GameProviderCode,
-					(GameProvidersClientGameType)gameInfo.Type,
-					gameInfo.GameId,
-					playerInfo.BrandCode,
-					playerInfo.PlayerCode,
-					playerInfo.CurrencyCode,
-					query.LoginRecordId,
-					query.PlatformType,
-					query.Language,
-					query.IpAddress,
-					query.BackUrl,
-					playerInfo.BrandId,
-					gameInfo.GameProviderId,
-					cancellationToken)
-				.ConfigureAwait(false),
-			_ => await gameUrl
-				.GetGameUrlAsync(
-					gameInfo.GameProviderCode,
-					(GameProvidersClientGameType)gameInfo.Type,
-					gameInfo.GameId,
-					playerInfo.BrandCode,
-					playerInfo.PlayerCode,
-					playerInfo.CurrencyCode,
-					query.LoginRecordId,
-					query.PlatformType,
-					query.Language,
-					query.IpAddress,
-					query.BackUrl,
-					cancellationToken)
-				.ConfigureAwait(false)
-		};
+		return await gameUrl.GetGameUrlAsync(
+			gameProviderCode: gameInfo.GameProviderCode,
+			playerCode: playerInfo.PlayerCode,
+			gameId: gameInfo.GameId,
+			loginRecordId: query.LoginRecordId,
+			language: query.Language,
+			platformType: query.PlatformType,
+			ipAddress: query.IpAddress,
+			backUrl: query.BackUrl,
+			cancellationToken: cancellationToken)
+			.ConfigureAwait(false);
 	}
 }

@@ -17,56 +17,33 @@ public class PlayerController : ControllerBase
 	/// <param name="service">The service.</param>
 	/// <param name="source">The source.</param>
 	/// <returns></returns>
-	/// <remarks>
-	/// <b>Example</b><br />
-	///
-	///     Post
-	///         {
-	///             "playerCode": "4ucmqplxb029",
-	///             "gameProviderCode": "ky"
-	///         }
-	/// </remarks>
 	[HttpPost("fund/in", Name = "Backoffice_Player_FundIn")]
 	public ValueTask FundInAsync(
 		[FromServices] ICommandService<FundInCommand> service,
 		 FundInQueryViewModel source)
-	{
-		var command = new FundInCommand(
-			source.PlayerCode,
-			source.GameProviderCode);
-
-		return service
-			.ExecuteAsync(
-			command,
-			HttpContext.RequestAborted);
-	}
+		=> service.ExecuteAsync(
+			command: new FundInCommand(
+				PlayerCode: source.PlayerCode,
+				GameProviderCode: source.GameProviderCode),
+			cancellationToken: HttpContext.RequestAborted);
 
 	/// <summary>
-	/// Gets the balance asynchronous.
+	/// Players the balance asynchronous.
 	/// </summary>
 	/// <param name="service">The service.</param>
 	/// <param name="playerCode">The player code.</param>
 	/// <param name="gameProviderCode">The game provider code.</param>
 	/// <returns></returns>
-	/// <remarks>
-	/// <b>Example</b><br />
-	///
-	///     GetAsync
-	///         /bo/balance/player/4ucmqplxb029/KY
-	/// </remarks>
-	[HttpGet("balance/{playerCode}/{gameProviderCode}", Name = "Backoffice_Player_GetBalance")]
-	public async ValueTask<decimal> GetBalanceAsync(
+	[HttpGet("balance/{playerCode}/{gameProviderCode}", Name = "Backoffice_Player_Balance")]
+	public async ValueTask<decimal> PlayerBalanceAsync(
 		[FromServices] IGetService<PlayerBalanceQuery, PlayerBalanceResult> service,
-		string playerCode,
-		string gameProviderCode)
+		string playerCode = "4ucmqplxb029",
+		string gameProviderCode = "KY")
 	{
-		var query = new PlayerBalanceQuery(
-			PlayerCode: playerCode,
-			GameProviderCode: gameProviderCode);
-
-		var result = await service
-			.GetAsync(
-			query: query,
+		var result = await service.GetAsync(
+			query: new PlayerBalanceQuery(
+				PlayerCode: playerCode,
+				GameProviderCode: gameProviderCode),
 			cancellationToken: HttpContext.RequestAborted)
 			.ConfigureAwait(false);
 
@@ -74,31 +51,22 @@ public class PlayerController : ControllerBase
 	}
 
 	/// <summary>
-	/// Gets the balance information asynchronous.
+	/// Players the balance information asynchronous.
 	/// </summary>
 	/// <param name="service">The service.</param>
 	/// <param name="playerCode">The player code.</param>
 	/// <param name="gameProviderCode">The game provider code.</param>
 	/// <returns></returns>
-	/// <remarks>
-	/// <b>Example</b><br />
-	///
-	///     GetAsync
-	///         /bo/player/balance/info/4ucmqplxb029/KY
-	/// </remarks>
-	[HttpGet("balance/info/{playerCode}/{gameProviderCode}", Name = "Backoffice_Player_GetBalanceInfo")]
-	public async ValueTask<PlayerBalanceInfoViewModel> GetBalanceInfoAsync(
+	[HttpGet("balance/info/{playerCode}/{gameProviderCode}", Name = "Backoffice_Player_Balance_Info")]
+	public async ValueTask<PlayerBalanceInfoViewModel> PlayerBalanceInfoAsync(
 		[FromServices] IGetService<PlayerBalanceQuery, PlayerBalanceResult> service,
-		string playerCode,
-		string gameProviderCode)
+		string playerCode = "4ucmqplxb029",
+		string gameProviderCode = "KY")
 	{
-		var query = new PlayerBalanceQuery(
-			PlayerCode: playerCode,
-			GameProviderCode: gameProviderCode);
-
-		var result = await service
-			.GetAsync(
-			query: query,
+		var result = await service.GetAsync(
+			query: new PlayerBalanceQuery(
+				PlayerCode: playerCode,
+				GameProviderCode: gameProviderCode),
 			cancellationToken: HttpContext.RequestAborted)
 			.ConfigureAwait(false);
 
@@ -109,57 +77,35 @@ public class PlayerController : ControllerBase
 	}
 
 	/// <summary>
-	/// Kicks the player asynchronous.
+	/// Players the log out asynchronous.
 	/// </summary>
 	/// <param name="service">The service.</param>
 	/// <param name="playerCode">The player code.</param>
 	/// <returns></returns>
-	/// <remarks>
-	/// <b>Example</b><br />
-	///
-	///     Delete
-	///         /bo/player/kick/4ucmqplxb029
-	/// </remarks>
-	[HttpDelete("kick/{playerCode}", Name = "Backoffice_Player_KickPlayer")]
-	public ValueTask KickPlayerAsync(
+	[HttpDelete("kick/{playerCode}", Name = "Backoffice_Player_LogOut")]
+	public ValueTask PlayerLogOutAsync(
 		[FromServices] ICommandService<PlayerLogOutCommand> service,
-		string playerCode)
-	{
-		var command = new PlayerLogOutCommand(
-			PlayerCode: playerCode);
-
-		return service
-			.ExecuteAsync(
-			command: command,
+		string playerCode = "4ucmqplxb029")
+		=> service.ExecuteAsync(
+			command: new PlayerLogOutCommand(
+				PlayerCode: playerCode),
 			cancellationToken: HttpContext.RequestAborted);
-	}
 
 	/// <summary>
-	/// Kicks the player asynchronous.
+	/// Players the log out game provider asynchronous.
 	/// </summary>
 	/// <param name="service">The service.</param>
 	/// <param name="playerCode">The player code.</param>
 	/// <param name="gameProviderCode">The game provider code.</param>
 	/// <returns></returns>
-	/// <remarks>
-	/// <b>Example</b><br />
-	///
-	///     Delete
-	///         /bo/player/kick/4ucmqplxb029/ky
-	/// </remarks>
-	[HttpDelete("kick/{playerCode}/{gameProviderCode}", Name = "Backoffice_Player_Game_KickPlayer")]
-	public ValueTask KickPlayerAsync(
+	[HttpDelete("kick/{playerCode}/{gameProviderCode}", Name = "Backoffice_Player_LogOut_GameProvider")]
+	public ValueTask PlayerLogOutGameProviderAsync(
 		[FromServices] ICommandService<PlayerLogOutGameProviderCommand> service,
-		string playerCode,
-		string gameProviderCode)
-	{
-		var command = new PlayerLogOutGameProviderCommand(
-			PlayerCode: playerCode,
-			GameProviderCode: gameProviderCode);
-
-		return service
-			.ExecuteAsync(
-			command: command,
+		string playerCode = "4ucmqplxb029",
+		string gameProviderCode = "KY")
+		=> service.ExecuteAsync(
+			command: new PlayerLogOutGameProviderCommand(
+				PlayerCode: playerCode,
+				GameProviderCode: gameProviderCode),
 			cancellationToken: HttpContext.RequestAborted);
-	}
 }
