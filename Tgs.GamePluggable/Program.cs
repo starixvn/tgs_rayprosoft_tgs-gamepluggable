@@ -101,7 +101,8 @@ builder.Services
 
 builder.Services
 	.AddOpenTelemetry()
-	.WithTracing(builder => builder
+	.ConfigureResource(_ => _.AddService(builder.Configuration.GetValue<string>("Otel:ServiceName")))
+	.WithTracing(tracingBuilder => tracingBuilder
 		.SetResourceBuilder(ResourceBuilder.CreateDefault()
 			.AddEnvironmentVariableDetector())
 		.AddSource("Tgs.*")
@@ -112,7 +113,7 @@ builder.Services
 		.AddGrpcClientInstrumentation()
 		.AddGrpcCoreInstrumentation()
 		.AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
-		.AddOtlpExporter())
+		.AddOtlpExporter(options => options.Endpoint = builder.Configuration.GetValue<Uri>("Otel:Collector")))
 	.WithMetrics(meterBuiler => meterBuiler
 	.SetResourceBuilder(ResourceBuilder.CreateDefault()
 	.AddEnvironmentVariableDetector())
