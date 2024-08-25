@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Mime;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,11 +15,14 @@ using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Sentry;
 using Tgs.MessageQueue.Nats.Serializers;
 
 var filterInstrumentations = new[] { "html", "ico", "png", "jpg" };
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.UseSentry();
 
 builder.Logging
 	.AddOpenTelemetry(options =>
@@ -150,5 +154,7 @@ app.MapHealthChecks("/health");
 app.MapHealthChecks("/");
 
 _ = app.UseGamePluggableRegisterAsync();
+
+SentrySdk.CaptureMessage($"Started result Tgs-GamePluggable at {DateTime.Now.ToString()}");
 
 app.Run();
