@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Tgs.CashService.Client;
 using Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
+using Tgs.GameRecord.Handle.Client;
 using Tgs.GameRounds.Client;
 using Valhalla.MessageQueue;
 
@@ -19,7 +20,7 @@ public class GameRoundClosedCommandServiceUnitTest
 		var faceLogger = NullLogger<GameRoundAddCommandService>.Instance;
 		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
 		var fakeGameRoundsClient = Substitute.For<IGameRoundsClient>();
-		var fakeMessageSender = Substitute.For<IMessageSender>();
+		var fakeGameRecordHandleClient = Substitute.For<IGameRecordHandleClient>();
 
 		var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
 		var walletId = Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9");
@@ -86,25 +87,24 @@ public class GameRoundClosedCommandServiceUnitTest
 			faceLogger,
 			fakeCashServiceClient,
 			fakeGameRoundsClient,
-			fakeMessageSender);
+			fakeGameRecordHandleClient);
 
 		await sut.ExecuteAsync(command);
 
-		_ = fakeMessageSender
+		_ = fakeGameRecordHandleClient
 			.Received(1)
-			.PublishAsync(
-			subject: Arg.Is(GameRecord.Handle.Common.GameRecordHandleNatsConst.GameRecordHandleRequest),
-			data: Arg.Is(new GameRecord.Handle.Common.Protos.GameRecordHandleRequest
+			.HandleAsync(
+			source: Arg.Is(new GameRecord.Handle.Common.ViewModels.GameRecordHandleViewModel
 			{
 				GameProviderCode = round.GameProviderCode,
 				PlayerCode = round.PlayerCode,
 				ExternalRoundId = round.ExternalRoundId,
 				ExternalBetId = round.ExternalRoundId,
 				ExternalGameId = round.ExternalGameId,
-				ExternalCreatedOn = round.ExternalCreatedOn!.Value.ToTimestamp(),
-				ExternalClosedOn = command.ExternalClosedOn.ToTimestamp(),
-				ExternalPayoffOn = command.ExternalClosedOn.ToTimestamp(),
-				ExternalResettleOn = DateTimeOffset.UnixEpoch.ToTimestamp(),
+				ExternalCreatedOn = round.ExternalCreatedOn!.Value,
+				ExternalClosedOn = command.ExternalClosedOn,
+				ExternalPayoffOn = command.ExternalClosedOn,
+				ExternalResettleOn = DateTimeOffset.UnixEpoch,
 				BetState = GameRecord.Handle.Common.Protos.BetState.Loss,
 				BetType = GameRecord.Handle.Common.Protos.BetType.Normal,
 				FreeGameState = GameRecord.Handle.Common.Protos.FreeGameState.None,
@@ -139,7 +139,7 @@ public class GameRoundClosedCommandServiceUnitTest
 		var faceLogger = NullLogger<GameRoundAddCommandService>.Instance;
 		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
 		var fakeGameRoundsClient = Substitute.For<IGameRoundsClient>();
-		var fakeMessageSender = Substitute.For<IMessageSender>();
+		var fakeGameRecordHandleClient = Substitute.For<IGameRecordHandleClient>();
 
 		var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
 		var walletId = Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9");
@@ -207,15 +207,14 @@ public class GameRoundClosedCommandServiceUnitTest
 			faceLogger,
 			fakeCashServiceClient,
 			fakeGameRoundsClient,
-			fakeMessageSender);
+			fakeGameRecordHandleClient);
 
 		_ = await Assert.ThrowsAsync<Exception>(() => sut.ExecuteAsync(command).AsTask());
 
-		_ = fakeMessageSender
+		_ = fakeGameRecordHandleClient
 			.Received(0)
-			.PublishAsync(
-			subject: Arg.Is(GameRecord.Handle.Common.GameRecordHandleNatsConst.GameRecordHandleRequest),
-			data: Arg.Any<GameRecord.Handle.Common.Protos.GameRecordHandleRequest>(),
+			.HandleAsync(
+			source: Arg.Any<GameRecord.Handle.Common.ViewModels.GameRecordHandleViewModel>(),
 			cancellationToken: Arg.Any<CancellationToken>());
 
 		_ = fakeCashServiceClient
@@ -234,7 +233,7 @@ public class GameRoundClosedCommandServiceUnitTest
 		var faceLogger = NullLogger<GameRoundAddCommandService>.Instance;
 		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
 		var fakeGameRoundsClient = Substitute.For<IGameRoundsClient>();
-		var fakeMessageSender = Substitute.For<IMessageSender>();
+		var fakeGameRecordHandleClient = Substitute.For<IGameRecordHandleClient>();
 
 		var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
 		var walletId = Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9");
@@ -273,15 +272,14 @@ public class GameRoundClosedCommandServiceUnitTest
 			faceLogger,
 			fakeCashServiceClient,
 			fakeGameRoundsClient,
-			fakeMessageSender);
+			fakeGameRecordHandleClient);
 
 		_ = await Assert.ThrowsAsync<ArgumentNullException>(() => sut.ExecuteAsync(command).AsTask());
 
-		_ = fakeMessageSender
+		_ = fakeGameRecordHandleClient
 			.Received(0)
-			.PublishAsync(
-			subject: Arg.Is(GameRecord.Handle.Common.GameRecordHandleNatsConst.GameRecordHandleRequest),
-			data: Arg.Any<GameRecord.Handle.Common.Protos.GameRecordHandleRequest>(),
+			.HandleAsync(
+			source: Arg.Any<GameRecord.Handle.Common.ViewModels.GameRecordHandleViewModel>(),
 			cancellationToken: Arg.Any<CancellationToken>());
 
 		_ = fakeCashServiceClient

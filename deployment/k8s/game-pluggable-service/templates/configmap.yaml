@@ -15,12 +15,13 @@ data:
           "Tgs.GamePluggable.Core.Backoffice.ApplicationServices.GameRoundResettleCommandService": "Information"
         }
       },
-      "PluggableConnectionStrings": {
+      "GamePluggableConnectionStrings": {
         "GameProvidersClientBaseUrl": "http://game-gameproviders/",
         "GamePlayerLogOutClientBaseUrl": "http://game-gameplayerlogout/",
-        "GameFundTransferClientBaseUrl": "dns:///game-gamefundtransfer:9090/",
+        "GameFundTransferClientBaseUrl": "http://game-gamefundtransfer/",
         "GameRoundsClientBaseUrl": "http://game-gamerounds",
-        "CashServiceClientBaseUrl": "http://cashservice-api/"
+        "CashServiceClientBaseUrl": "http://cashservice-api/",
+        "GameRecordHandleClientBaseUrl": "http://game-gamerecord-handle/"
       }
     }
   otel-collector-config.yaml: |

@@ -14,6 +14,7 @@ using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Tgs.CashService.Client;
 using Tgs.MessageQueue.Nats.Serializers;
 
 var filterInstrumentations = new[] { "html", "ico", "png", "jpg" };
@@ -53,39 +54,44 @@ builder.Services.AddSwaggerGen(c =>
 		c.IncludeXmlComments(xmlFileName);
 	}
 });
-
-builder.Services.AddGamePluggable(
-	(sp, dbBuilder) =>
-	{
-		var config = sp.GetRequiredService<IConfiguration>();
-		_ = dbBuilder.UseNpgsql(config.GetConnectionString("Tgs"));
-	},
-	(options, sp) =>
-	{
-		var configuration = sp.GetRequiredService<IConfiguration>();
-		options.BaseUrl = configuration.GetValue<Uri>("PluggableConnectionStrings:CashServiceClientBaseUrl")!;
-	},
-	(options, sp) =>
-	{
-		var configuration = sp.GetRequiredService<IConfiguration>();
-		options.BaseUrl = configuration.GetValue<Uri>("PluggableConnectionStrings:GameFundTransferClientBaseUrl")!;
-	})
+builder.Services
+	.AddMemoryCache()
 	.AddGameProvidersClient((options, sp) =>
 	{
 		var configuration = sp.GetRequiredService<IConfiguration>();
-		options.BaseUrl = configuration.GetValue<Uri>("PluggableConnectionStrings:GameProvidersClientBaseUrl")!;
+		options.BaseUrl = configuration.GetValue<Uri>("GamePluggableConnectionStrings:GameProvidersClientBaseUrl")!;
 	})
+	.AddCashServiceClient((options, sp) =>
+	{
+		var configuration = sp.GetRequiredService<IConfiguration>();
+		options.BaseUrl = configuration.GetValue<Uri>("GamePluggableConnectionStrings:CashServiceClientBaseUrl")!;
+	})
+	.AddGameFundTransferClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
+	{
+		var config = sp.GetRequiredService<IConfiguration>();
+		http.BaseAddress = config.GetValue<Uri>("GamePluggableConnectionStrings:GameFundTransferClientBaseUrl");
+	}))
 	.AddGameRoundsClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
 	{
 		var config = sp.GetRequiredService<IConfiguration>();
-		http.BaseAddress = config.GetValue<Uri>("PluggableConnectionStrings:GameRoundsClientBaseUrl");
+		http.BaseAddress = config.GetValue<Uri>("GamePluggableConnectionStrings:GameRoundsClientBaseUrl");
 	}))
 	.AddGamePlayerLogOutClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
 	{
 		var config = sp.GetRequiredService<IConfiguration>();
-		http.BaseAddress = config.GetValue<Uri>("PluggableConnectionStrings:GamePlayerLogOutClientBaseUrl");
-	})
-);
+		http.BaseAddress = config.GetValue<Uri>("GamePluggableConnectionStrings:GamePlayerLogOutClientBaseUrl");
+	}))
+	.AddGameRecordHandleClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
+	{
+		var config = sp.GetRequiredService<IConfiguration>();
+		http.BaseAddress = config.GetValue<Uri>("GameRecord:GameRecordHandleClientBaseUrl");
+	}))
+	.AddGamePluggableCore()
+	.AddGamePluggableRepositories((sp, dbBuilder) =>
+	{
+		var config = sp.GetRequiredService<IConfiguration>();
+		_ = dbBuilder.UseNpgsql(config.GetConnectionString("Tgs"));
+	});
 
 builder.Services
 	.AddKeyedSingleton("Nats", (sp, _) => new NatsConnection(NatsOpts.Default with

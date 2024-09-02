@@ -2,12 +2,11 @@
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;
 using Tgs.CashService.Client;
+using Tgs.GameRecord.Handle.Client;
 using Tgs.GameRounds.Client;
 using Tgs.ServiceUtility;
-using Valhalla.MessageQueue;
 
 namespace Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 
@@ -15,7 +14,7 @@ internal class GameRoundResettleCommandService(
 	ILogger<GameRoundResettleCommandService> logger,
 	ICashServiceClient cashServiceClient,
 	IGameRoundsClient gameRoundsClient,
-	IMessageSender messageSender) : ICommandService<GameRoundResettleCommand>
+	IGameRecordHandleClient gameRecordHandleClient) : ICommandService<GameRoundResettleCommand>
 {
 	public async ValueTask ExecuteAsync(GameRoundResettleCommand command, CancellationToken cancellationToken = default)
 	{
@@ -49,17 +48,17 @@ internal class GameRoundResettleCommandService(
 			additionalData = JsonNode.Parse("{}")!;
 		}
 
-		var request = new GameRecord.Handle.Common.Protos.GameRecordHandleRequest
+		var source = new GameRecord.Handle.Common.ViewModels.GameRecordHandleViewModel
 		{
 			GameProviderCode = round.GameProviderCode,
 			PlayerCode = round.PlayerCode,
 			ExternalRoundId = round.ExternalRoundId,
 			ExternalBetId = round.ExternalRoundId,
 			ExternalGameId = round.ExternalGameId,
-			ExternalCreatedOn = round.ExternalCreatedOn!.Value.ToTimestamp(),
-			ExternalClosedOn = command.ExternalClosedOn.ToTimestamp(),
-			ExternalPayoffOn = command.ExternalClosedOn.ToTimestamp(),
-			ExternalResettleOn = DateTimeOffset.UnixEpoch.ToTimestamp(),
+			ExternalCreatedOn = round.ExternalCreatedOn!.Value,
+			ExternalClosedOn = command.ExternalClosedOn,
+			ExternalPayoffOn = command.ExternalClosedOn,
+			ExternalResettleOn = DateTimeOffset.UnixEpoch,
 			BetState = betState,
 			BetType = GameRecord.Handle.Common.Protos.BetType.Normal,
 			FreeGameState = GameRecord.Handle.Common.Protos.FreeGameState.None,
@@ -77,25 +76,26 @@ internal class GameRoundResettleCommandService(
 			AdditionalData = additionalData.ToJsonString()
 		};
 
-		await messageSender.PublishAsync(
-			subject: GameRecord.Handle.Common.GameRecordHandleNatsConst.GameRecordHandleRequest,
-			data: request,
+		await gameRecordHandleClient.HandleAsync(
+			source: source,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		logger.LogInformation("LogOn:{logOn} Subject:{subject} Mesaage:This publication requests information.({request})",
-			DateTime.Now.ToString("o"),
-			GameRecord.Handle.Common.GameRecordHandleNatsConst.GameRecordHandleRequest,
+		logger.LogInformation("{logWarning}",
 			new
 			{
-				request.GameProviderCode,
-				request.PlayerCode,
-				request.ExternalRoundId,
-				request.ExternalBetId,
-				request.ExternalGameId,
-				ExternalCreatedOn = request.ExternalCreatedOn.ToDateTimeOffset(),
-				ExternalClosedOn = request.ExternalClosedOn.ToDateTimeOffset(),
-				request.BetState
+				LogOn = DateTime.Now.ToString("u"),
+				Data = new
+				{
+					source.GameProviderCode,
+					source.PlayerCode,
+					source.ExternalRoundId,
+					source.ExternalBetId,
+					source.ExternalGameId,
+					ExternalCreatedOn = source.ExternalCreatedOn.ToString("u"),
+					ExternalClosedOn = source.ExternalClosedOn.ToString("u"),
+					source.BetState
+				}
 			});
 
 		if (command.AdjustAmount.HasValue)

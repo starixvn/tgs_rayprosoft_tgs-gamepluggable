@@ -5,7 +5,6 @@ using NSubstitute;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GamePluggable.Core.Models;
 using Tgs.GamePluggable.Core.Operator.ApplicationServices;
-using Tgs.GameProviders.Domains;
 
 namespace Tgs.GamePluggable.Core.UnitTest.Operator;
 
@@ -51,17 +50,15 @@ public class PlayerBalanceGetServiceUnitTest
 			Arg.Any<CancellationToken>())
 			.Returns(gameProviderInfo);
 
-		var fundBalanceReply = new GameFundTransfer.Protos.FundBalanceReply
-		{
-			Balance = 1000.00m,
-			FreeBalance = 123.456m,
-			OutstandingBalance = 876.554m
-		};
-		_ = fakeGameFundTransferClient.FundBalanceAsync(
-			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
+		var fundTransferBalanceResult = new GameFundTransfer.Common.ViewModels.FundTransferBalanceResultViewModel(
+			Balance: 1000.00m,
+			FreeBalance: 100.00m,
+			OutstandingBalance: 900.00m);
+		_ = fakeGameFundTransferClient.FundTransferBalanceAsync(
 			playerCode: Arg.Is(playerInfo.PlayerCode),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
 			Arg.Any<CancellationToken>())
-			.Returns(fundBalanceReply);
+			.Returns(fundTransferBalanceResult);
 
 		var fakeService = new PlayerBalanceGetService(
 			fakePlayerRepository,
@@ -71,9 +68,9 @@ public class PlayerBalanceGetServiceUnitTest
 
 		var actual = await fakeService.GetAsync(query);
 
-		Assert.Equal(fundBalanceReply.Balance.ToDecimal().GetValueOrDefault(0.0m), actual.Balance);
-		Assert.Equal(fundBalanceReply.FreeBalance.ToDecimal().GetValueOrDefault(0.0m), actual.FreeBalance);
-		Assert.Equal(fundBalanceReply.OutstandingBalance.ToDecimal().GetValueOrDefault(0.0m), actual.OutstandingBalance);
+		Assert.Equal(fundTransferBalanceResult.Balance, actual.Balance);
+		Assert.Equal(fundTransferBalanceResult.FreeBalance, actual.FreeBalance);
+		Assert.Equal(fundTransferBalanceResult.OutstandingBalance, actual.OutstandingBalance);
 
 		_ = fakeVerification
 			.Received(1)

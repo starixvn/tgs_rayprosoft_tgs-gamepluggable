@@ -34,15 +34,15 @@ internal class PlayerBalanceGetService(
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		var fundBalanceReply = await gameFundTransferClient.FundBalanceAsync(
-			gameProviderCode: gameProviderInfo.GameProviderCode,
+		var fundTransferBalanceResult = await gameFundTransferClient.FundTransferBalanceAsync(
 			playerCode: playerInfo.PlayerCode,
+			gameProviderCode: gameProviderInfo.GameProviderCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
 		return new PlayerBalanceResult(
-			Balance: fundBalanceReply.Balance,
-			FreeBalance: fundBalanceReply.FreeBalance,
-			OutstandingBalance: fundBalanceReply.OutstandingBalance);
+			Balance: fundTransferBalanceResult.Balance,
+			FreeBalance: fundTransferBalanceResult.FreeBalance,
+			OutstandingBalance: fundTransferBalanceResult.OutstandingBalance);
 	}
 }
