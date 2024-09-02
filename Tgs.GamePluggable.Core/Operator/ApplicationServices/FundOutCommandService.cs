@@ -64,10 +64,8 @@ internal class FundOutCommandService(
 		ArgumentOutOfRangeException.ThrowIfLessThan(playerBalance - amount, 0.0m);
 
 		_ = await gameFundTransferClient.FundTransferOutAsync(
-			gameProviderCode: gameProviderInfo.GameProviderCode,
 			playerCode: playerInfo.PlayerCode,
-			walletId: playerInfo.WalletId,
-			currencyCode: playerInfo.CurrencyCode,
+			gameProviderCode: gameProviderInfo.GameProviderCode,
 			amount: amount,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);

@@ -3,13 +3,12 @@
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
-		<UserSecretsId>9f9db4ef-bfd9-4062-abdb-40f2b0b30126</UserSecretsId>
-		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-	</PropertyGroup>
-
-	<PropertyGroup>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<ServerGarbageCollection>true</ServerGarbageCollection>
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 		<NoWarn>$(NoWarn);1591;0063</NoWarn>
+		<UserSecretsId>5d3734fe-3ebc-4b5c-a1ad-701eec964128</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -26,14 +25,14 @@
 		<PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0" />
 		<PackageReference Include="PhoenixToolkits.MessageQueue" Version="2.2.0" />
 		<PackageReference Include="PhoenixToolkits.MessageQueue.Nats" Version="2.2.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
 		<PackageReference Include="Tgs.Interceptors" Version="0.2.1" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Tgs.GamePluggable.Core\Tgs.GamePluggable.Core.csproj" />
-	  <ProjectReference Include="..\Tgs.GamePluggable.Repositories\Tgs.GamePluggable.Repositories.csproj" />
-	  <ProjectReference Include="..\Tgs.GameProviders.Pluggable.ViewModels\Tgs.GameProviders.Pluggable.ViewModels.csproj" />
+		<ProjectReference Include="..\Tgs.GamePluggable.Core\Tgs.GamePluggable.Core.csproj" />
+		<ProjectReference Include="..\Tgs.GamePluggable.Repositories\Tgs.GamePluggable.Repositories.csproj" />
+		<ProjectReference Include="..\Tgs.GameProviders.Pluggable.ViewModels\Tgs.GameProviders.Pluggable.ViewModels.csproj" />
 	</ItemGroup>
 
 	<ProjectExtensions>

@@ -8,7 +8,6 @@ using Tgs.CashService.Client;
 using Tgs.GameFundTransfer.Client;
 using Tgs.GamePluggable.Core.Models;
 using Tgs.GamePluggable.Core.Operator.ApplicationServices;
-using Tgs.GameProviders.Domains;
 
 namespace Tgs.GamePluggable.Core.UnitTest.Operator;
 
@@ -83,10 +82,8 @@ public class FundOutGetServiceUnitTest
 		_ = fakeGameFundTransferClient
 			.Received(1)
 			.FundTransferOutAsync(
-			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
 			playerCode: Arg.Is(playerInfo.PlayerCode),
-			walletId: Arg.Is(playerInfo.WalletId),
-			currencyCode: Arg.Is(playerInfo.CurrencyCode),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
 			amount: Arg.Is(1.00m),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
@@ -128,10 +125,8 @@ public class FundOutGetServiceUnitTest
 		_ = fakeGameFundTransferClient
 			.Received(0)
 			.FundTransferOutAsync(
-			gameProviderCode: Arg.Any<string>(),
 			playerCode: Arg.Any<string>(),
-			walletId: Arg.Any<Guid>(),
-			currencyCode: Arg.Any<string>(),
+			gameProviderCode: Arg.Any<string>(),
 			amount: Arg.Any<decimal>(),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
@@ -205,10 +200,8 @@ public class FundOutGetServiceUnitTest
 		_ = fakeGameFundTransferClient
 			.Received(0)
 			.FundTransferOutAsync(
-			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
 			playerCode: Arg.Is(playerInfo.PlayerCode),
-			walletId: Arg.Is(playerInfo.WalletId),
-			currencyCode: Arg.Is(playerInfo.CurrencyCode),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
 			amount: Arg.Is(1.00m),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
@@ -282,10 +275,8 @@ public class FundOutGetServiceUnitTest
 		_ = fakeGameFundTransferClient
 			.Received(0)
 			.FundTransferOutAsync(
-			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
 			playerCode: Arg.Is(playerInfo.PlayerCode),
-			walletId: Arg.Is(playerInfo.WalletId),
-			currencyCode: Arg.Is(playerInfo.CurrencyCode),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
 			amount: Arg.Is(1.00m),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}

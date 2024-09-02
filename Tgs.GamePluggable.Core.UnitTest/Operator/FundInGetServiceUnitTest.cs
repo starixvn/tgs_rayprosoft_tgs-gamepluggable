@@ -52,17 +52,16 @@ public class FundInGetServiceUnitTest
 			Arg.Any<CancellationToken>())
 			.Returns(gameProviderInfo);
 
-		var fundBalanceReply = new GameFundTransfer.Protos.FundBalanceReply
-		{
-			Balance = 100.00m,
-			FreeBalance = 10.00m,
-			OutstandingBalance = 90.00m
-		};
-		_ = fakeGameFundTransferClient.FundBalanceAsync(
-			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
+		var fundTransferBalanceResult = new GameFundTransfer.Common.ViewModels.FundTransferBalanceResultViewModel(
+			Balance: 100.00m,
+			FreeBalance: 10.00m,
+			OutstandingBalance: 90.00m
+		);
+		_ = fakeGameFundTransferClient.FundTransferBalanceAsync(
 			playerCode: Arg.Is(playerInfo.PlayerCode),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
 			Arg.Any<CancellationToken>())
-			.Returns(fundBalanceReply);
+			.Returns(fundTransferBalanceResult);
 
 		var fakeService = new FundInCommandService(
 			faceLogger,
@@ -83,10 +82,8 @@ public class FundInGetServiceUnitTest
 		_ = fakeGameFundTransferClient
 			.Received(1)
 			.FundTransferInAsync(
-			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
 			playerCode: Arg.Is(playerInfo.PlayerCode),
-			walletId: Arg.Is(playerInfo.WalletId),
-			currencyCode: Arg.Is(playerInfo.CurrencyCode),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
 			amount: Arg.Is(1.00m),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
@@ -126,10 +123,8 @@ public class FundInGetServiceUnitTest
 		_ = fakeGameFundTransferClient
 			.Received(0)
 			.FundTransferInAsync(
-			gameProviderCode: Arg.Any<string>(),
 			playerCode: Arg.Any<string>(),
-			walletId: Arg.Any<Guid>(),
-			currencyCode: Arg.Any<string>(),
+			gameProviderCode: Arg.Any<string>(),
 			amount: Arg.Any<decimal>(),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
@@ -176,17 +171,15 @@ public class FundInGetServiceUnitTest
 			Arg.Any<CancellationToken>())
 			.Returns(gameProviderInfo);
 
-		var fundBalanceReply = new GameFundTransfer.Protos.FundBalanceReply
-		{
-			Balance = 1.00m,
-			FreeBalance = 1.00m,
-			OutstandingBalance = 0.00m
-		};
-		_ = fakeGameFundTransferClient.FundBalanceAsync(
-			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
+		var fundTransferBalanceResult = new GameFundTransfer.Common.ViewModels.FundTransferBalanceResultViewModel(
+			Balance: 1.00m,
+			FreeBalance: 1.00m,
+			OutstandingBalance: 0.00m);
+		_ = fakeGameFundTransferClient.FundTransferBalanceAsync(
 			playerCode: Arg.Is(playerInfo.PlayerCode),
+			gameProviderCode: Arg.Is(gameProviderInfo.GameProviderCode),
 			Arg.Any<CancellationToken>())
-			.Returns(fundBalanceReply);
+			.Returns(fundTransferBalanceResult);
 
 		var fakeService = new FundInCommandService(
 			faceLogger,
@@ -207,10 +200,8 @@ public class FundInGetServiceUnitTest
 		_ = fakeGameFundTransferClient
 			.Received(0)
 			.FundTransferInAsync(
-			gameProviderCode: Arg.Any<string>(),
 			playerCode: Arg.Any<string>(),
-			walletId: Arg.Any<Guid>(),
-			currencyCode: Arg.Any<string>(),
+			gameProviderCode: Arg.Any<string>(),
 			amount: Arg.Any<decimal>(),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}

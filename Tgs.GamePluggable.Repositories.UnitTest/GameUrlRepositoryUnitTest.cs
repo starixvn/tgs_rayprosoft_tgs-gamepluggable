@@ -1,6 +1,4 @@
 ﻿using NSubstitute;
-using Tgs.CashService.Client;
-using Tgs.GamePluggable.Core;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains;
 

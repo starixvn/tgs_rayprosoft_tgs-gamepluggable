@@ -3,12 +3,11 @@ using System.Data;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
+using Tgs.GameRecord.Handle.Client;
 using Tgs.GameRounds.Client;
-using Valhalla.MessageQueue;
 
 namespace Tgs.GamePluggable.Core.UnitTest.Backoffice;
 
@@ -22,7 +21,7 @@ public class GameRoundAddCommandServiceUnitTest
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 		var fakeGameRepository = Substitute.For<IGameRepository>();
 		var fakeGameRoundsClient = Substitute.For<IGameRoundsClient>();
-		var fakeMessageSender = Substitute.For<IMessageSender>();
+		var fakeGameRecordHandleClient = Substitute.For<IGameRecordHandleClient>();
 
 		var command = new GameRoundAddCommand(
 			ExternalRoundId: Guid.NewGuid().ToString("N"),
@@ -96,25 +95,24 @@ public class GameRoundAddCommandServiceUnitTest
 			fakeGameProviderRepository,
 			fakeGameRepository,
 			fakeGameRoundsClient,
-			fakeMessageSender);
+			fakeGameRecordHandleClient);
 
 		await sut.ExecuteAsync(command);
 
-		_ = fakeMessageSender
+		_ = fakeGameRecordHandleClient
 			.Received(1)
-			.PublishAsync(
-			subject: Arg.Is(GameRecord.Handle.Common.GameRecordHandleNatsConst.GameRecordHandleRequest),
-			data: Arg.Is(new GameRecord.Handle.Common.Protos.GameRecordHandleRequest
+			.HandleAsync(
+			source: Arg.Is(new GameRecord.Handle.Common.ViewModels.GameRecordHandleViewModel
 			{
 				GameProviderCode = gameProviderInfo.GameProviderCode,
 				PlayerCode = command.PlayerCode,
 				ExternalRoundId = command.ExternalRoundId,
 				ExternalBetId = command.ExternalRoundId,
 				ExternalGameId = gameInfo.ExternalGameId,
-				ExternalCreatedOn = command.ExternalCreatedOn.ToTimestamp(),
-				ExternalClosedOn = command.ExternalClosedOn.ToTimestamp(),
-				ExternalPayoffOn = command.ExternalClosedOn.ToTimestamp(),
-				ExternalResettleOn = DateTimeOffset.UnixEpoch.ToTimestamp(),
+				ExternalCreatedOn = command.ExternalCreatedOn,
+				ExternalClosedOn = command.ExternalClosedOn,
+				ExternalPayoffOn = command.ExternalClosedOn,
+				ExternalResettleOn = DateTimeOffset.UnixEpoch,
 				BetState = GameRecord.Handle.Common.Protos.BetState.Win,
 				BetType = GameRecord.Handle.Common.Protos.BetType.Normal,
 				FreeGameState = GameRecord.Handle.Common.Protos.FreeGameState.None,
@@ -142,7 +140,7 @@ public class GameRoundAddCommandServiceUnitTest
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 		var fakeGameRepository = Substitute.For<IGameRepository>();
 		var fakeGameRoundsClient = Substitute.For<IGameRoundsClient>();
-		var fakeMessageSender = Substitute.For<IMessageSender>();
+		var fakeGameRecordHandleClient = Substitute.For<IGameRecordHandleClient>();
 
 		var command = new GameRoundAddCommand(
 			ExternalRoundId: Guid.NewGuid().ToString("N"),
@@ -243,15 +241,14 @@ public class GameRoundAddCommandServiceUnitTest
 			fakeGameProviderRepository,
 			fakeGameRepository,
 			fakeGameRoundsClient,
-			fakeMessageSender);
+			fakeGameRecordHandleClient);
 
 		_ = await Assert.ThrowsAsync<DuplicateNameException>(() => sut.ExecuteAsync(command).AsTask());
 
-		_ = fakeMessageSender
+		_ = fakeGameRecordHandleClient
 			.Received(0)
-			.PublishAsync(
-			subject: Arg.Is(GameRecord.Handle.Common.GameRecordHandleNatsConst.GameRecordHandleRequest),
-			data: Arg.Any<GameRecord.Handle.Common.Protos.GameRecordHandleRequest>(),
+			.HandleAsync(
+			source: Arg.Any<GameRecord.Handle.Common.ViewModels.GameRecordHandleViewModel>(),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 }

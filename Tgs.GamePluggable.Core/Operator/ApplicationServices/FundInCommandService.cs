@@ -50,19 +50,17 @@ internal class FundInCommandService(
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		var fundBalanceReply = await gameFundTransferClient.FundBalanceAsync(
-			gameProviderCode: gameProviderInfo.GameProviderCode,
+		var fundTransferBalanceResult = await gameFundTransferClient.FundTransferBalanceAsync(
 			playerCode: playerInfo.PlayerCode,
+			gameProviderCode: gameProviderInfo.GameProviderCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		ArgumentOutOfRangeException.ThrowIfLessThan(fundBalanceReply.FreeBalance - amount, 0.0m);
+		ArgumentOutOfRangeException.ThrowIfLessThan(fundTransferBalanceResult.FreeBalance - amount, 0.0m);
 
 		_ = await gameFundTransferClient.FundTransferInAsync(
-			gameProviderCode: gameProviderInfo.GameProviderCode,
 			playerCode: playerInfo.PlayerCode,
-			walletId: playerInfo.WalletId,
-			currencyCode: playerInfo.CurrencyCode,
+			gameProviderCode: gameProviderInfo.GameProviderCode,
 			amount: amount,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);

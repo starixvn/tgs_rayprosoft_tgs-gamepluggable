@@ -40,13 +40,13 @@ internal class FundInCommandService(
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		var fundBalanceReply = await gameFundTransferClient.FundBalanceAsync(
-			gameProviderCode: gameProviderInfo.GameProviderCode,
+		var fundTransferBalanceResult = await gameFundTransferClient.FundTransferBalanceAsync(
 			playerCode: playerInfo.PlayerCode,
+			gameProviderCode: gameProviderInfo.GameProviderCode,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		var amount = fundBalanceReply.FreeBalance;
+		var amount = fundTransferBalanceResult.FreeBalance;
 
 		if (amount > 10000000.00m)
 		{
@@ -72,10 +72,8 @@ internal class FundInCommandService(
 			return;
 
 		_ = await gameFundTransferClient.FundTransferInAsync(
-			gameProviderCode: gameProviderInfo.GameProviderCode,
 			playerCode: playerInfo.PlayerCode,
-			walletId: playerInfo.WalletId,
-			currencyCode: playerInfo.CurrencyCode,
+			gameProviderCode: gameProviderInfo.GameProviderCode,
 			amount: amount,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
