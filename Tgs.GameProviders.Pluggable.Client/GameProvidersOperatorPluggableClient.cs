@@ -92,7 +92,15 @@ internal class GameProvidersOperatorPluggableClient(HttpClient httpClient) : IGa
 		return JsonSerializer.Deserialize<SM01PlatformLoginResponse>(contentJson, _SerializerOptions)!;
 	}
 
-	public async ValueTask<Uri> GetGameUrlAsync(string playerCode, Guid loginRecordId, bool isMobile, int gameId, string language, string ipAddress, Uri? backUrl = null, CancellationToken cancellationToken = default)
+	public async ValueTask<Uri> GetGameUrlAsync(string playerCode,
+		Guid loginRecordId,
+		bool isMobile,
+		int gameId,
+		string language,
+		string ipAddress,
+		Uri? backUrl = null,
+		object? extraInfo = null,
+		CancellationToken cancellationToken = default)
 	{
 		var request = new
 		{
@@ -102,7 +110,8 @@ internal class GameProvidersOperatorPluggableClient(HttpClient httpClient) : IGa
 			GameId = gameId,
 			Language = language,
 			IpAddress = ipAddress,
-			BackUrl = backUrl
+			BackUrl = backUrl,
+			ExtraInfo = extraInfo
 		};
 		var requestContent = new StringContent(JsonSerializer.Serialize(request, _SerializerOptions));
 		requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);

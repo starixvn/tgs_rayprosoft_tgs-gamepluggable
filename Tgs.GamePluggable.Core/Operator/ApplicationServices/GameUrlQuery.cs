@@ -9,4 +9,5 @@ public record GameUrlQuery(
 	int GameId,
 	string Language,
 	string IpAddress,
-	Uri? BackUrl);
+	Uri? BackUrl,
+	object? ExtraInfo);

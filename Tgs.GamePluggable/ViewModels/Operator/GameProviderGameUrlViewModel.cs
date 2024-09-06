@@ -26,4 +26,6 @@ public record GameProviderGameUrlViewModel
 	public string IpAddress { get; init; } = default!;
 	[DefaultValue(typeof(string), "https://dev-t1.rpgp.cc")]
 	public Uri? BackUrl { get; init; }
+
+	public object? ExtraInfo { get; init; }
 }

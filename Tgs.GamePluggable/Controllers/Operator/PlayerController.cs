@@ -107,7 +107,8 @@ public class PlayerController : ControllerBase
 			GameId: source.GameId,
 			Language: source.Language,
 			IpAddress: source.IpAddress,
-			BackUrl: source.BackUrl);
+			BackUrl: source.BackUrl,
+			ExtraInfo: source.ExtraInfo);
 
 		return service
 			.GetAsync(

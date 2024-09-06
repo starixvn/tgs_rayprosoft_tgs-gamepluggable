@@ -38,6 +38,7 @@ internal class GameUrlGetService(
 			platformType: query.PlatformType,
 			ipAddress: query.IpAddress,
 			backUrl: query.BackUrl,
+			extraInfo: query.ExtraInfo,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 	}
