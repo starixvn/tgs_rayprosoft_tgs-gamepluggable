@@ -15,8 +15,8 @@ internal class GameUrlRepository(
 		string ipAddress, Uri? backUrl,
 		object? extraInfo,
 		CancellationToken cancellationToken = default)
-			=> await gameProvidersClient.GameUrlAsync(
-				gameProviderCode: gameProviderCode,
+		=> await gameProvidersClient.GameUrlAsync(
+				gameProviderCode: gameProviderCode.Equals("SABASW02") ? "SABASW" : gameProviderCode,
 				playerCode: playerCode,
 				gameId: gameId,
 				loginRecordId: loginRecordId.ToString(),
