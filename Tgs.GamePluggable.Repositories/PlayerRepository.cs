@@ -24,16 +24,53 @@ internal class PlayerRepository(
 				WalletId = player.DefaultWalletId,
 				CurrencyCode = player.DefaultWalletCurrencyCode
 			})
+		.Join(
+			context.Licensees,
+			combine => combine.LicenseeId,
+			licensee => licensee.Id,
+			(combine, licensee) => new
+			{
+				licensee.ResellerId,
+				combine.LicenseeId,
+				LicenseeCode = licensee.Code,
+				combine.BrandId,
+				combine.BrandCode,
+				combine.PlayerCode,
+				combine.Username,
+				combine.WalletId,
+				combine.CurrencyCode
+			})
+		.Join(
+			context.Resellers,
+			combine => combine.ResellerId,
+			resellers => resellers.Id,
+			(combine, licensee) => new
+			{
+				combine.ResellerId,
+				ResellerCode = licensee.Code,
+				combine.LicenseeId,
+				combine.LicenseeCode,
+				combine.BrandId,
+				combine.BrandCode,
+				combine.PlayerCode,
+				combine.Username,
+				combine.WalletId,
+				combine.CurrencyCode
+			})
 		.Where(
 			player => player.PlayerCode == playerCode)
 		.Select(
-			selector: player => new PlayerInfo(
-				player.BrandId,
-				player.BrandCode,
-				player.PlayerCode,
-				player.Username,
-				player.WalletId,
-				player.CurrencyCode))
+			selector: combine => new PlayerInfo(
+				combine.ResellerId,
+				combine.ResellerCode,
+				combine.LicenseeId,
+				combine.LicenseeCode,
+				combine.BrandId,
+				combine.BrandCode,
+				combine.PlayerCode,
+				combine.Username,
+				combine.WalletId,
+				combine.CurrencyCode))
 		.FirstOrDefaultAsync(
 			cancellationToken: cancellationToken)
 		.ConfigureAwait(false)

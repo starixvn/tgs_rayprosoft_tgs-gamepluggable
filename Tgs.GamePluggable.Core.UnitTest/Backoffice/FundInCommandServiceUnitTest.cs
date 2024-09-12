@@ -25,6 +25,10 @@ public class FundInCommandServiceUnitTest
 			 GameProviderCode: "KY");
 
 		var playerInfo = new PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -100,6 +104,10 @@ public class FundInCommandServiceUnitTest
 			 GameProviderCode: "KY");
 
 		var playerInfo = new PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -178,6 +186,10 @@ public class FundInCommandServiceUnitTest
 			 GameProviderCode: "KY");
 
 		var playerInfo = new PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -256,6 +268,10 @@ public class FundInCommandServiceUnitTest
 			 GameProviderCode: "KY");
 
 		var playerInfo = new PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -334,6 +350,10 @@ public class FundInCommandServiceUnitTest
 			 GameProviderCode: "KY");
 
 		var playerInfo = new PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -412,6 +432,10 @@ public class FundInCommandServiceUnitTest
 			 GameProviderCode: "SM01");
 
 		var playerInfo = new PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -490,6 +514,10 @@ public class FundInCommandServiceUnitTest
 			 GameProviderCode: "SM01");
 
 		var playerInfo = new PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -568,6 +596,10 @@ public class FundInCommandServiceUnitTest
 			 GameProviderCode: "SM01");
 
 		var playerInfo = new PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -646,6 +678,10 @@ public class FundInCommandServiceUnitTest
 			 GameProviderCode: "KY");
 
 		var playerInfo = new PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",

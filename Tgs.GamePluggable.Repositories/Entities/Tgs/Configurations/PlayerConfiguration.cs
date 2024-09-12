@@ -28,161 +28,203 @@ namespace Tgs.GamePluggable.Entities.Configurations
             entity.HasIndex(e => e.VipId, "ix_players_vip_id");
 
             entity.HasIndex(e => e.Username, "ix_trgm_players_username")
-            .HasMethod("gin")
-            .HasOperators(new[] { "gin_trgm_ops" });
+                .HasMethod("gin")
+                .HasOperators(new[] { "gin_trgm_ops" });
 
-            entity.HasIndex(e => e.Username, "players_username_index");
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_21gen")
+                .IsUnique()
+                .HasFilter("(brand_id = '3897abaf-d203-40d9-8e07-67adc559f272'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_21genth")
+                .IsUnique()
+                .HasFilter("(brand_id = '5b2a397b-e335-40c0-bd36-879db76e4e22'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_28bet")
+                .IsUnique()
+                .HasFilter("(brand_id = '904952bb-0a6e-4f28-a850-15467d04e268'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_28win")
+                .IsUnique()
+                .HasFilter("(brand_id = '0189d435-7209-0000-0001-07e701fc9932'::uuid)");
 
             entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_bin")
-            .IsUnique()
-            .HasFilter("(brand_id = '48cf5556-de38-4b64-86cb-a96ed65a0e49'::uuid)");
+                .IsUnique()
+                .HasFilter("(brand_id = 'ee84d331-560d-406d-bf27-4aed88d2e1bd'::uuid)");
 
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi3")
-            .IsUnique()
-            .HasFilter("(brand_id = 'a752c0e5-537e-4353-987a-6f544c019a7c'::uuid)");
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_crmyr")
+                .IsUnique()
+                .HasFilter("(brand_id = 'fcf72615-89b5-44f2-b628-3ba4e5f7f64d'::uuid)");
 
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi_eur")
-            .IsUnique()
-            .HasFilter("(brand_id = '924dd987-c266-4b1f-b75b-3dec114d663a'::uuid)");
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gmo")
+                .IsUnique()
+                .HasFilter("(brand_id = '68b16666-7825-4674-994e-995fd3559835'::uuid)");
 
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi_gbp")
-            .IsUnique()
-            .HasFilter("(brand_id = 'e5f12c91-883e-447b-ae85-315ce7b57cb4'::uuid)");
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi")
+                .IsUnique()
+                .HasFilter("(brand_id = '4e86719f-243f-46f6-b010-5c758b7285af'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi2")
+                .IsUnique()
+                .HasFilter("(brand_id = '074acd8c-4b3c-4fdc-86fd-7a944f314247'::uuid)");
 
             entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi_hkd")
-            .IsUnique()
-            .HasFilter("(brand_id = '9f1ecf19-38cd-474f-b0d2-93638dc07d21'::uuid)");
+                .IsUnique()
+                .HasFilter("(brand_id = 'c24701f0-8a93-4011-ad50-0c57be14ca2d'::uuid)");
 
             entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi_idr")
-            .IsUnique()
-            .HasFilter("(brand_id = 'aab94b77-b99a-4454-a965-b0281c83ed60'::uuid)");
-
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi_idr_1000")
-            .IsUnique()
-            .HasFilter("(brand_id = 'f006bf29-77e3-4874-80c3-eb935c076c29'::uuid)");
-
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi_inr")
-            .IsUnique()
-            .HasFilter("(brand_id = 'da0ff933-34dd-4235-adcd-9d87aec9a797'::uuid)");
-
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi_jpy")
-            .IsUnique()
-            .HasFilter("(brand_id = '8e1d2452-32b6-4688-9be0-b9f3c9bc4da7'::uuid)");
-
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi_krw")
-            .IsUnique()
-            .HasFilter("(brand_id = '10b135d8-8859-412d-b146-ba22d0ec0647'::uuid)");
+                .IsUnique()
+                .HasFilter("(brand_id = '8e690525-735d-468d-9888-0eb2cc707d0f'::uuid)");
 
             entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi_myr")
-            .IsUnique()
-            .HasFilter("(brand_id = '9be4277d-f30a-435a-9bbf-3d79cce6d3c0'::uuid)");
-
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi_php")
-            .IsUnique()
-            .HasFilter("(brand_id = '5dea25ae-431d-4514-aa36-81ab9d81b1dc'::uuid)");
-
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi_sgd")
-            .IsUnique()
-            .HasFilter("(brand_id = 'b2d4e582-babc-492b-b9b4-ee8f8fab55bd'::uuid)");
+                .IsUnique()
+                .HasFilter("(brand_id = '3be9e58c-a35b-431a-a90c-dd7bfaabe941'::uuid)");
 
             entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi_thb")
-            .IsUnique()
-            .HasFilter("(brand_id = '4d5d1f56-2471-483a-9309-e26aa968089a'::uuid)");
+                .IsUnique()
+                .HasFilter("(brand_id = '1e2da6e7-d14c-4d36-af69-7d0601a8c3bc'::uuid)");
 
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi_vnd")
-            .IsUnique()
-            .HasFilter("(brand_id = '7fe50756-221e-4244-8c97-3529bd02ef0c'::uuid)");
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi_vndk")
+                .IsUnique()
+                .HasFilter("(brand_id = 'e889db8c-1753-4a70-9324-97e2fdfe5aa5'::uuid)");
 
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpi_vnd_1000")
-            .IsUnique()
-            .HasFilter("(brand_id = 'be9dc404-e959-415c-b8fb-43c62fb7c069'::uuid)");
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gpivndk")
+                .IsUnique()
+                .HasFilter("(brand_id = '83338b26-5f70-4b0a-bf80-a401962abf49'::uuid)");
 
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_temp2")
-            .IsUnique()
-            .HasFilter("(brand_id = 'ec53b68c-8e5f-4bc3-8436-3a77f5c60e59'::uuid)");
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_gptb")
+                .IsUnique()
+                .HasFilter("(brand_id = '36ec34e7-d6c7-4521-bcc5-a343c20c238f'::uuid)");
 
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_test")
-            .IsUnique()
-            .HasFilter("(brand_id = '3b48202a-38f5-4342-b5fe-5128feca4d76'::uuid)");
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_hk28")
+                .IsUnique()
+                .HasFilter("(brand_id = '55ee3ece-2818-40e9-add9-095aabd721cd'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_hkjp")
+                .IsUnique()
+                .HasFilter("(brand_id = '7afda97e-54a3-4c0f-b955-8c4b78b1f6b8'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_hkjp2")
+                .IsUnique()
+                .HasFilter("(brand_id = '4674b8d5-99f5-4ad3-83f5-9e65e2532be3'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_jiliph")
+                .IsUnique()
+                .HasFilter("(brand_id = '018e829d-3baa-0000-0001-07e86ea40957'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_m9th")
+                .IsUnique()
+                .HasFilter("(brand_id = '0e98b273-3a17-40b1-8dce-91373cf07873'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_m9thb")
+                .IsUnique()
+                .HasFilter("(brand_id = 'f0f6b216-f857-4bb1-93f1-8f361c92cd7e'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_mess8")
+                .IsUnique()
+                .HasFilter("(brand_id = 'c76d8585-46ce-4f1d-aba5-9149d9294224'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_mgm")
+                .IsUnique()
+                .HasFilter("(brand_id = '23cf2276-b895-44b3-a511-83a66228f29b'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_moph")
+                .IsUnique()
+                .HasFilter("(brand_id = '018c8032-7619-0000-0001-07e79a3a768c'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_movn2")
+                .IsUnique()
+                .HasFilter("(brand_id = '018c7b95-a0da-0000-0001-07e72b374e32'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_piso")
+                .IsUnique()
+                .HasFilter("(brand_id = '2c56e031-f470-4a4a-9f7d-9e61d7d1d89f'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_sky")
+                .IsUnique()
+                .HasFilter("(brand_id = 'f656b537-b7e8-43c3-9f22-bb87125a5a34'::uuid)");
 
             entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_test1")
-            .IsUnique()
-            .HasFilter("(brand_id = 'dc6540e7-685d-4022-aef4-37ff1b7e3a99'::uuid)");
-
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_test123")
-            .IsUnique()
-            .HasFilter("(brand_id = 'c0e1b447-cb16-41b4-b5dc-7935a46c2350'::uuid)");
+                .IsUnique()
+                .HasFilter("(brand_id = '4bcddfd4-658c-41a7-88cf-c4577fea90df'::uuid)");
 
             entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_tgs")
-            .IsUnique()
-            .HasFilter("(brand_id = 'd71ac5ed-b7d9-49f2-a129-8709fa4cc02a'::uuid)");
-
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_tgs1112")
-            .IsUnique()
-            .HasFilter("(brand_id = '210a79bb-76a9-4e6a-94b3-5ba26b9a63f0'::uuid)");
-
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_tgs1169")
-            .IsUnique()
-            .HasFilter("(brand_id = '86f8579a-ee13-4f1b-b788-908a4121f9bb'::uuid)");
+                .IsUnique()
+                .HasFilter("(brand_id = 'd71ac5ed-b7d9-49f2-a129-8709fa4cc02a'::uuid)");
 
             entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_tgs503")
-            .IsUnique()
-            .HasFilter("(brand_id = '421a9655-8183-4e80-b783-82eb23939138'::uuid)");
+                .IsUnique()
+                .HasFilter("(brand_id = '692bf3b6-17ea-4463-9e63-0f712363ac10'::uuid)");
 
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_tt2")
-            .IsUnique()
-            .HasFilter("(brand_id = 'c0affb22-5fd9-4817-94d0-98753eed01e3'::uuid)");
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_tgs_1169")
+                .IsUnique()
+                .HasFilter("(brand_id = '07d89dff-7111-4de6-8633-ebf6b222ebd7'::uuid)");
 
-            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_ufa01")
-            .IsUnique()
-            .HasFilter("(brand_id = '9d29867f-9f42-483d-a824-920aca72a054'::uuid)");
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_tiger")
+                .IsUnique()
+                .HasFilter("(brand_id = '46a5c7f4-bcbc-43c0-829f-b59e4bdd630f'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_v226")
+                .IsUnique()
+                .HasFilter("(brand_id = '018d10c4-2337-0000-0001-07e805d64aad'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_webet")
+                .IsUnique()
+                .HasFilter("(brand_id = '1c474540-b105-4dde-9ee2-5052464d86f2'::uuid)");
 
             entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_wlg")
-            .IsUnique()
-            .HasFilter("(brand_id = 'efff542a-e791-4413-9d73-e57e26e711be'::uuid)");
+                .IsUnique()
+                .HasFilter("(brand_id = '092e2abf-bb29-4ed5-9b17-e4d87c863c59'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_wlghk")
+                .IsUnique()
+                .HasFilter("(brand_id = '69d2e95c-4adb-4f86-be9b-5386c513ca9a'::uuid)");
+
+            entity.HasIndex(e => new { e.AreaCode, e.Phone, e.BrandId }, "ux_phone_wlgvn")
+                .IsUnique()
+                .HasFilter("(brand_id = 'c7102141-e08e-45cc-97a4-9225e07c5cd1'::uuid)");
 
             entity.Property(e => e.PlayerCode)
-            .HasMaxLength(16)
-            .HasColumnName("player_code");
+                .HasMaxLength(16)
+                .HasColumnName("player_code");
             entity.Property(e => e.AccumulatedDeposit)
-            .HasPrecision(18, 6)
-            .HasColumnName("accumulated_deposit");
+                .HasPrecision(18, 6)
+                .HasColumnName("accumulated_deposit");
             entity.Property(e => e.AgentId).HasColumnName("agent_id");
             entity.Property(e => e.AreaCode)
-            .HasMaxLength(10)
-            .HasColumnName("area_code");
+                .HasMaxLength(10)
+                .HasColumnName("area_code");
             entity.Property(e => e.BetLimitId).HasColumnName("bet_limit_id");
             entity.Property(e => e.Birthdate).HasColumnName("birthdate");
             entity.Property(e => e.Birthday)
-            .HasMaxLength(4)
-            .HasComputedColumnSql("(lpad((date_part('month'::text, birthdate))::text, 2, '0'::text) || lpad((date_part('day'::text, birthdate))::text, 2, '0'::text))", true)
-            .HasColumnName("birthday");
+                .HasMaxLength(4)
+                .HasComputedColumnSql("(lpad((date_part('month'::text, birthdate))::text, 2, '0'::text) || lpad((date_part('day'::text, birthdate))::text, 2, '0'::text))", true)
+                .HasColumnName("birthday");
             entity.Property(e => e.BrandId).HasColumnName("brand_id");
             entity.Property(e => e.DefaultWalletCurrencyCode)
-            .HasMaxLength(16)
-            .HasColumnName("default_wallet_currency_code");
+                .HasMaxLength(16)
+                .HasColumnName("default_wallet_currency_code");
             entity.Property(e => e.DefaultWalletId).HasColumnName("default_wallet_id");
             entity.Property(e => e.Email)
-            .HasMaxLength(64)
-            .HasColumnName("email");
+                .HasMaxLength(64)
+                .HasColumnName("email");
             entity.Property(e => e.FirstDepositOn).HasColumnName("first_deposit_on");
             entity.Property(e => e.FirstPromotionOn).HasColumnName("first_promotion_on");
             entity.Property(e => e.IdNumber)
-            .HasMaxLength(50)
-            .HasColumnName("id_number");
+                .HasMaxLength(50)
+                .HasColumnName("id_number");
             entity.Property(e => e.IdentityAuthentication).HasColumnName("identity_authentication");
             entity.Property(e => e.LastActiveOn).HasColumnName("last_active_on");
             entity.Property(e => e.Password).HasColumnName("password");
             entity.Property(e => e.Phone)
-            .HasMaxLength(32)
-            .HasColumnName("phone");
+                .HasMaxLength(32)
+                .HasColumnName("phone");
             entity.Property(e => e.PhoneAuthentication).HasColumnName("phone_authentication");
             entity.Property(e => e.Qq)
-            .HasMaxLength(64)
-            .HasColumnName("qq");
+                .HasMaxLength(64)
+                .HasColumnName("qq");
             entity.Property(e => e.RealName)
-            .HasMaxLength(256)
-            .HasColumnName("real_name");
+                .HasMaxLength(256)
+                .HasColumnName("real_name");
             entity.Property(e => e.RegisteredOn).HasColumnName("registered_on");
             entity.Property(e => e.Remark).HasColumnName("remark");
             entity.Property(e => e.Salt).HasColumnName("salt");
@@ -192,18 +234,18 @@ namespace Tgs.GamePluggable.Entities.Configurations
             entity.Property(e => e.UpdatedByUsername).HasColumnName("updated_by_username");
             entity.Property(e => e.UpdatedOn).HasColumnName("updated_on");
             entity.Property(e => e.Username)
-            .HasMaxLength(32)
-            .HasColumnName("username");
+                .HasMaxLength(32)
+                .HasColumnName("username");
             entity.Property(e => e.VipId).HasColumnName("vip_id");
             entity.Property(e => e.Wechat)
-            .HasMaxLength(64)
-            .HasColumnName("wechat");
+                .HasMaxLength(64)
+                .HasColumnName("wechat");
             entity.Property(e => e.WithdrawPassword).HasColumnName("withdraw_password");
             entity.Property(e => e.WithdrawSalt).HasColumnName("withdraw_salt");
 
             entity.HasOne(d => d.Brand).WithMany(p => p.Players)
-            .HasForeignKey(d => d.BrandId)
-            .HasConstraintName("fk_players_brands_brand_id");
+                .HasForeignKey(d => d.BrandId)
+                .HasConstraintName("fk_players_brands_brand_id");
 
             OnConfigurePartial(entity);
         }

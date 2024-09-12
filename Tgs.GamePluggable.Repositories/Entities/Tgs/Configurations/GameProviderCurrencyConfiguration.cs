@@ -21,15 +21,15 @@ namespace Tgs.GamePluggable.Entities.Configurations
 
             entity.Property(e => e.GameProviderId).HasColumnName("game_provider_id");
             entity.Property(e => e.CurrencyCode)
-            .HasMaxLength(16)
-            .HasColumnName("currency_code");
+                .HasMaxLength(16)
+                .HasColumnName("currency_code");
             entity.Property(e => e.GameProviderCurrencyCode)
-            .HasMaxLength(16)
-            .HasColumnName("game_provider_currency_code");
+                .HasMaxLength(16)
+                .HasColumnName("game_provider_currency_code");
 
             entity.HasOne(d => d.GameProvider).WithMany(p => p.GameProviderCurrencies)
-            .HasForeignKey(d => d.GameProviderId)
-            .HasConstraintName("fk_game_provider_currencies_game_providers_game_provider_id");
+                .HasForeignKey(d => d.GameProviderId)
+                .HasConstraintName("fk_game_provider_currencies_game_providers_game_provider_id");
 
             OnConfigurePartial(entity);
         }

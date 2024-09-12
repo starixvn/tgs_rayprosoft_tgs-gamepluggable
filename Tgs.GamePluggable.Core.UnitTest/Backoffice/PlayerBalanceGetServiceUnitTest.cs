@@ -24,6 +24,10 @@ public class PlayerBalanceGetServiceUnitTest
 			 GameProviderCode: "KY");
 
 		var playerInfo = new PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -98,6 +102,10 @@ public class PlayerBalanceGetServiceUnitTest
 			 GameProviderCode: "KY");
 
 		var playerInfo = new PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",

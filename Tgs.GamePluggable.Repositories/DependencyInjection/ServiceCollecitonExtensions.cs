@@ -19,6 +19,7 @@ public static class ServiceCollecitonExtensions
 		.AddTransient<IGameProviderRepository, GameProviderRepository>()
 		.Decorate<IGameProviderRepository>((innerRepository, sp) => ActivatorUtilities.CreateInstance<GameProviderCacheRepository>(sp, innerRepository))
 		.AddTransient<IBrandRepository, BrandRepository>()
+		.AddTransient<IBrandGameProviderRepository, BrandGameProviderRepository>()
 		.AddTransient<IGameUrl, GameUrlRepository>()
 		.AddScoped<IVerification, VerificationRepository>()
 		.Decorate<IVerification>((innerRepository, sp) => ActivatorUtilities.CreateInstance<VerificationCacheRepository>(sp, innerRepository, TimeSpan.FromMinutes(10)));

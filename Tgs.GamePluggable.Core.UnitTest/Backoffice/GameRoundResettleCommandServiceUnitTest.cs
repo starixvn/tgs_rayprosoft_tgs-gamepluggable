@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Tgs.CashService.Client;
+using Tgs.GameBets.Client;
+using Tgs.GameBets.RapidTest.Worker.Client;
 using Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
-using Tgs.GameRecord.Handle.Client;
-using Tgs.GameRounds.Client;
 
 namespace Tgs.GamePluggable.Core.UnitTest.Backoffice;
 
@@ -16,21 +17,24 @@ public class GameRoundResettleCommandServiceUnitTest
 	public async Task Normal_Process()
 	{
 		var faceLogger = NullLogger<GameRoundResettleCommandService>.Instance;
+		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+		var fakeGameRepository = Substitute.For<IGameRepository>();
+		var fakeGameBetsClient = Substitute.For<IGameBetsClient>();
+		var fakeGameBetsRapidTestWorkerClient = Substitute.For<IGameBetsRapidTestWorkerClient>();
 		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-		var fakeGameRoundsClient = Substitute.For<IGameRoundsClient>();
-		var fakeGameRecordHandleClient = Substitute.For<IGameRecordHandleClient>();
 
-		var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
-		var betAmount = 0.060000m;
-		var validBetAmount = 0.060000m;
-		var settleAmount = 0.120000m;
+		var roundId = Guid.Parse("0191e3f1-e185-0000-0001-07e8778bb552");
+		var betAmount = 0.8m;
+		var validBetAmount = 0.8m;
+		var settleAmount = 1.2m;
 		var commission = 0.0m;
-		var turnover = 0.06m;
-		var companyWinLoss = -0.06m;
+		var turnover = 0.8m;
+		var companyWinLoss = 0.4m;
 		var clientStatus = GameRounds.Common.Enums.RoundClientStatus.Win;
-		var externalClosedOn = DateTimeOffset.Parse("2021-06-03 13:57:05.000 +0800");
+		var externalClosedOn = DateTimeOffset.Parse("2024-09-12T09:55:15+08:00");
 		var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
-		var remark = "測試調整Closed Round";
+		var remark = "測試Resettle調整";
 		var adjustAmount = 100m;
 
 		var command = new GameRoundResettleCommand(
@@ -48,110 +52,180 @@ public class GameRoundResettleCommandServiceUnitTest
 			AdjustAmount: adjustAmount
 		);
 
-		var round = new GameRounds.Common.ViewModels.RoundViewModel
-		{
-			RoundId = roundId,
-			ExternalRoundId = "50-1636345294-40676339-2",
-			GameProviderId = Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
-			GameProviderCode = "EVO",
-			PlayerCode = "4uf6j0t01809",
-			GameId = 1000015,
-			ExternalGameId = "bacc",
-			CurrencyCode = "CNY",
-			Status = GameRounds.Common.Enums.RoundStatus.Closed,
-			GameProviderConfigurationId = Guid.Parse("fa0d7706-f910-4e98-bf71-bd7084140304"),
-			WalletId = Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9"),
-			CreatedOn = DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
-			ClosedOn = DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
-			UpdatedOn = DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
-			BrandId = Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
-			ExternalCreatedOn = DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
-			ExternalClosedOn = DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
-			BetAmount = 0.060000m,
-			ValidBetAmount = 0.060000m,
-			SettleAmount = 0.00000m,
-			Commission = 0.00000m,
-			Turnover = 0.060000m,
-			CompanyWinLoss = 0.060000m,
-			ClientStatus = GameRounds.Common.Enums.RoundClientStatus.Loss,
-			AdditionalData = "{}"
-		};
-
-		_ = fakeGameRoundsClient.RoundGetAsync(
-			roundId: Arg.Is(roundId),
+		var gameBetInfo = new GameBets.Common.ViewModels.GameBetInfoViewModel(
+			Id: Guid.Parse("0191e3f1-e185-0000-0001-07e8778bb552"),
+			GameProviderId: Guid.Parse("147cef56-4fcd-4ee3-b748-87ad398f2871"),
+			GameProviderConfigurationId: Guid.Parse("dec3dec2-ac0f-4f0d-a12e-eec0bc9e083a"),
+			GameId: 6700018,
+			ResellerId: Guid.Parse("b5a2c708-ab70-4316-9f4d-5d2ad0e77460"),
+			LicenseeId: Guid.Parse("66c5fef5-217b-4929-9a08-72c2479a8f4e"),
+			BrandId: Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
+			PlayerCode: "4unykr72x8d9",
+			CurrencyCode: "CNY",
+			WalletId: Guid.Parse("8bff49a2-66ff-4c66-81f6-c9b242f2b868"),
+			ExternalRoundId: "6323442723",
+			ExternalBetId: "6323442723-01",
+			ExternalCreatedOn: DateTimeOffset.Parse("2024-09-12T09:55:12+08:00"),
+			ExternalClosedOn: DateTimeOffset.Parse("2024-09-12T09:55:15+08:00"),
+			ExternalPayoffOn: DateTimeOffset.Parse("2024-09-12T09:55:15+08:00"),
+			ExternalResettleOn: DateTimeOffset.UnixEpoch,
+			BetState: GameBets.Common.Enums.BetState.Loss,
+			BetType: GameBets.Common.Enums.BetType.Normal,
+			FreeGameState: GameBets.Common.Enums.FreeGameState.None,
+			GambleState: GameBets.Common.Enums.GambleState.None,
+			CashoutState: GameBets.Common.Enums.CashoutState.None,
+			ResettleState: GameBets.Common.Enums.ResettleState.None,
+			JackpotState: GameBets.Common.Enums.JackpotState.None,
+			CurrencyRatio: 1.0m,
+			Bet: 0.8m,
+			ValidBet: 0.8m,
+			Settle: 0.0m,
+			Commission: 0.0m,
+			Turnover: 0.8m,
+			WinLoss: -0.8m,
+			Jackpot: 0.0m,
+			CreatedOn: DateTimeOffset.UtcNow,
+			ClosedOn: DateTimeOffset.UtcNow,
+			UpdatedOn: DateTimeOffset.UtcNow,
+			ResetState: GameBets.Common.Enums.ResetState.None,
+			ResetOn: DateTimeOffset.UnixEpoch,
+			AdditionalData: JsonNode.Parse("{\"bet\": 0.8, \"win\": 1.2, \"rake\": 0, \"round\": \"6323442723\", \"detail\": [{\"freegame\": 0}, {\"luckydraw\": 0}, {\"bonus\": 0}], \"donate\": 0, \"status\": \"complete\", \"account\": \"4unykr72x8d9\", \"balance\": 84.4, \"bettime\": \"2024-09-11T21:55:12.737-04:00\", \"bettype\": [], \"jackpot\": 0, \"roomfee\": 0, \"tableid\": \"\", \"currency\": \"CNY\", \"gamecode\": \"20\", \"gamehall\": \"cq9\", \"gameplat\": \"web\", \"gamerole\": \"\", \"gametype\": \"slot\", \"isdonate\": false, \"validbet\": 0, \"tabletype\": \"\", \"bankertype\": \"\", \"createtime\": \"2024-09-11T21:55:15.456-04:00\", \"gameresult\": {\"cards\": [], \"points\": []}, \"jackpottype\": \"\", \"roundnumber\": \"\", \"endroundtime\": \"2024-09-11T21:55:15.555-04:00\", \"singlerowbet\": false, \"jackpotcontribution\": []}"));
+		_ = fakeGameBetsClient.GameBetGetAsync(
+			id: Arg.Is(command.RoundId),
+			externalCreatedOn: Arg.Is(command.ExternalClosedOn.AddDays(-45)),
 			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(ValueTask.FromResult(round));
+			.Returns(gameBetInfo);
+
+		var playerInfo = new Models.PlayerInfo(
+			ResellerId: gameBetInfo.ResellerId,
+			ResellerCode: "DEMO",
+			LicenseeId: gameBetInfo.LicenseeId,
+			LicenseeCode: "TGS",
+			BrandId: gameBetInfo.BrandId,
+			BrandCode: "GPI",
+			PlayerCode: "4unykr72x8d9",
+			Username: "4unykr72x8d9",
+			WalletId: gameBetInfo.WalletId,
+			CurrencyCode: gameBetInfo.CurrencyCode);
+		_ = fakePlayerRepository.GetAsync(
+			Arg.Is(gameBetInfo.PlayerCode),
+			Arg.Any<CancellationToken>())
+			.Returns(playerInfo);
+
+		var gameProviderInfo = new Models.GameProviderInfo(
+			GameProviderId: gameBetInfo.GameProviderId,
+			GameProviderCode: "CQ9",
+			TransferWallet: true,
+			AllowKickPlayer: true);
+		_ = fakeGameProviderRepository.GetAsync(
+			Arg.Is(gameBetInfo.GameProviderId),
+			Arg.Any<CancellationToken>())
+			.Returns(gameProviderInfo);
+
+		var gameInfo = new Models.GameInfo(
+			GameId: gameBetInfo.GameId,
+			GameCode: "888",
+			GameProviderId: gameProviderInfo.GameProviderId,
+			GameProviderCode: gameProviderInfo.GameProviderCode,
+			ExternalGameId: "20",
+			Type: Enums.GameType.Slot,
+			PlatformType: Enums.GamePlatformType.DesktopAndMobile,
+			EndpointPath: string.Empty,
+			RuleUrl: string.Empty,
+			AvailableCurrencies: null,
+			SubGameProviderCode: gameProviderInfo.GameProviderCode);
+		_ = fakeGameRepository.GetAsync(
+			Arg.Is(gameBetInfo.GameId),
+			Arg.Any<CancellationToken>())
+			.Returns(gameInfo);
 
 		var sut = new GameRoundResettleCommandService(
 			faceLogger,
-			fakeCashServiceClient,
-			fakeGameRoundsClient,
-			fakeGameRecordHandleClient);
+			fakePlayerRepository,
+			fakeGameProviderRepository,
+			fakeGameRepository,
+			fakeGameBetsClient,
+			fakeGameBetsRapidTestWorkerClient,
+			fakeCashServiceClient);
 
 		await sut.ExecuteAsync(command);
 
-		_ = fakeGameRecordHandleClient
+		_ = fakeGameBetsRapidTestWorkerClient
 			.Received(1)
 			.HandleAsync(
-			source: Arg.Is(new GameRecord.Handle.Common.ViewModels.GameRecordHandleViewModel
-			{
-				GameProviderCode = round.GameProviderCode,
-				PlayerCode = round.PlayerCode,
-				ExternalRoundId = round.ExternalRoundId,
-				ExternalBetId = round.ExternalRoundId,
-				ExternalGameId = round.ExternalGameId,
-				ExternalCreatedOn = round.ExternalCreatedOn!.Value,
-				ExternalClosedOn = command.ExternalClosedOn,
-				ExternalPayoffOn = command.ExternalClosedOn,
-				ExternalResettleOn = DateTimeOffset.UnixEpoch,
-				BetState = GameRecord.Handle.Common.Protos.BetState.Win,
-				BetType = GameRecord.Handle.Common.Protos.BetType.Normal,
-				FreeGameState = GameRecord.Handle.Common.Protos.FreeGameState.None,
-				GambleState = GameRecord.Handle.Common.Protos.GambleState.None,
-				CashoutState = GameRecord.Handle.Common.Protos.CashoutState.None,
-				ResettleState = GameRecord.Handle.Common.Protos.ResettleState.None,
-				JackpotState = GameRecord.Handle.Common.Protos.JackpotState.None,
-				Bet = 0.060000m,
-				ValidBet = 0.060000m,
-				Settle = 0.120000m,
-				Commission = 0.00000m,
-				Turnover = 0.060000m,
-				WinLoss = 0.060000m,
-				Jackpot = 0.0M,
-				AdditionalData = round.AdditionalData
-			}),
+			source: Arg.Is<GameBets.RapidTest.Worker.Common.ViewModels.GameBetRapidTestWorkerHandleViewModel>(compare =>
+			compare.GameProviderId == gameProviderInfo.GameProviderId &&
+				compare.GameProviderCode == gameProviderInfo.GameProviderCode &&
+				compare.GameProviderConfigurationId == gameBetInfo.GameProviderConfigurationId &&
+				compare.SubGameProviderCode == gameInfo.SubGameProviderCode &&
+				compare.GameId == gameBetInfo.GameId &&
+				compare.ResellerId == gameBetInfo.ResellerId &&
+				compare.ResellerCode == playerInfo.ResellerCode &&
+				compare.LicenseeId == gameBetInfo.LicenseeId &&
+				compare.LicenseeCode == playerInfo.LicenseeCode &&
+				compare.BrandId == gameBetInfo.BrandId &&
+				compare.BrandCode == playerInfo.BrandCode &&
+				compare.PlayerCode == gameBetInfo.PlayerCode &&
+				compare.Username == playerInfo.Username &&
+				compare.CurrencyCode == gameBetInfo.CurrencyCode &&
+				compare.WalletId == gameBetInfo.WalletId &&
+				compare.ExternalRoundId == gameBetInfo.ExternalRoundId &&
+				compare.ExternalBetId == gameBetInfo.ExternalBetId &&
+				compare.ExternalGameId == gameInfo.ExternalGameId &&
+				compare.ExternalCreatedOn == gameBetInfo.ExternalCreatedOn &&
+				compare.ExternalClosedOn == command.ExternalClosedOn &&
+				compare.ExternalPayoffOn == command.ExternalClosedOn &&
+				compare.ExternalResettleOn == gameBetInfo.ExternalResettleOn &&
+				compare.BetState == GameBets.RapidTest.Worker.Common.Protos.BetState.Win &&
+				compare.BetType == GameBets.RapidTest.Worker.Common.Protos.BetType.Normal &&
+				compare.FreeGameState == GameBets.RapidTest.Worker.Common.Protos.FreeGameState.None &&
+				compare.GambleState == GameBets.RapidTest.Worker.Common.Protos.GambleState.None &&
+				compare.CashoutState == GameBets.RapidTest.Worker.Common.Protos.CashoutState.None &&
+				compare.ResettleState == GameBets.RapidTest.Worker.Common.Protos.ResettleState.None &&
+				compare.JackpotState == GameBets.RapidTest.Worker.Common.Protos.JackpotState.None &&
+				compare.CurrencyRatio == gameBetInfo.CurrencyRatio &&
+				compare.Bet == command.BetAmount &&
+				compare.ValidBet == command.ValidBetAmount &&
+				compare.Settle == command.SettleAmount &&
+				compare.Commission == command.Commission &&
+				compare.Turnover == command.Turnover &&
+				compare.WinLoss == -command.CompanyWinLoss &&
+				compare.Jackpot == gameBetInfo.Jackpot),
 			cancellationToken: Arg.Any<CancellationToken>());
 
 		_ = fakeCashServiceClient
 			.Received(1)
 			.AdjustResettledBetManualAsync(
-			walletId: Arg.Is(round.WalletId),
-			amount: Arg.Is(adjustAmount),
-			description: Arg.Is(remark),
-			externalId: Arg.Is(roundId.ToString()),
-			createdByUserId: Arg.Is(operatorId),
+			walletId: Arg.Is(gameBetInfo.WalletId),
+			amount: Arg.Is(command.AdjustAmount.Value),
+			description: Arg.Is(command.Remark),
+			externalId: Arg.Is(gameBetInfo.Id.ToString()),
+			createdByUserId: Arg.Is(command.OperatorId),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
 	[Fact]
-	public async Task This_games_bet_status_is_unsettled()
+	public async Task This_game_bet_betstate_is_waiting()
 	{
 		var faceLogger = NullLogger<GameRoundResettleCommandService>.Instance;
+		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+		var fakeGameRepository = Substitute.For<IGameRepository>();
+		var fakeGameBetsClient = Substitute.For<IGameBetsClient>();
+		var fakeGameBetsRapidTestWorkerClient = Substitute.For<IGameBetsRapidTestWorkerClient>();
 		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-		var fakeGameRoundsClient = Substitute.For<IGameRoundsClient>();
-		var fakeGameRecordHandleClient = Substitute.For<IGameRecordHandleClient>();
 
-		var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
-		var betAmount = 0.060000m;
-		var validBetAmount = 0.060000m;
-		var settleAmount = 0.120000m;
+		var roundId = Guid.Parse("0191e3f1-e185-0000-0001-07e8778bb552");
+		var betAmount = 0.8m;
+		var validBetAmount = 0.8m;
+		var settleAmount = 1.2m;
 		var commission = 0.0m;
-		var turnover = 0.06m;
-		var companyWinLoss = -0.06m;
+		var turnover = 0.8m;
+		var companyWinLoss = 0.4m;
 		var clientStatus = GameRounds.Common.Enums.RoundClientStatus.Win;
-		var externalClosedOn = DateTimeOffset.Parse("2021-06-03 13:57:05.000 +0800");
+		var externalClosedOn = DateTimeOffset.Parse("2024-09-12T09:55:15+08:00");
 		var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
-		var remark = "測試調整Closed Round";
+		var remark = "測試Resettle調整";
 		var adjustAmount = 100m;
 
 		var command = new GameRoundResettleCommand(
@@ -169,83 +243,211 @@ public class GameRoundResettleCommandServiceUnitTest
 			AdjustAmount: adjustAmount
 		);
 
-		var round = new GameRounds.Common.ViewModels.RoundViewModel
-		{
-			RoundId = roundId,
-			ExternalRoundId = "50-1636345294-40676339-2",
-			GameProviderId = Guid.Parse("a0f49ce0-2c1d-4f50-9fc5-58b610a30bf5"),
-			GameProviderCode = "EVO",
-			PlayerCode = "4uf6j0t01809",
-			GameId = 1000015,
-			ExternalGameId = "bacc",
-			CurrencyCode = "CNY",
-			Status = GameRounds.Common.Enums.RoundStatus.Open,
-			GameProviderConfigurationId = Guid.Parse("fa0d7706-f910-4e98-bf71-bd7084140304"),
-			WalletId = Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9"),
-			CreatedOn = DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
-			ClosedOn = null,
-			UpdatedOn = DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
-			BrandId = Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
-			ExternalCreatedOn = DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
-			ExternalClosedOn = null,
-			BetAmount = 0.060000m,
-			ValidBetAmount = 0.060000m,
-			SettleAmount = 0.00000m,
-			Commission = 0.00000m,
-			Turnover = 0.00000m,
-			CompanyWinLoss = 0.00000m,
-			ClientStatus = GameRounds.Common.Enums.RoundClientStatus.Open,
-			AdditionalData = "{}"
-		};
-
-		_ = fakeGameRoundsClient.RoundGetAsync(
-			roundId: Arg.Is(roundId),
+		var gameBetInfo = new GameBets.Common.ViewModels.GameBetInfoViewModel(
+			Id: Guid.Parse("0191e3f1-e185-0000-0001-07e8778bb552"),
+			GameProviderId: Guid.Parse("147cef56-4fcd-4ee3-b748-87ad398f2871"),
+			GameProviderConfigurationId: Guid.Parse("dec3dec2-ac0f-4f0d-a12e-eec0bc9e083a"),
+			GameId: 6700018,
+			ResellerId: Guid.Parse("b5a2c708-ab70-4316-9f4d-5d2ad0e77460"),
+			LicenseeId: Guid.Parse("66c5fef5-217b-4929-9a08-72c2479a8f4e"),
+			BrandId: Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
+			PlayerCode: "4unykr72x8d9",
+			CurrencyCode: "CNY",
+			WalletId: Guid.Parse("8bff49a2-66ff-4c66-81f6-c9b242f2b868"),
+			ExternalRoundId: "6323442723",
+			ExternalBetId: "6323442723-01",
+			ExternalCreatedOn: DateTimeOffset.Parse("2024-09-12T09:55:12+08:00"),
+			ExternalClosedOn: DateTimeOffset.UnixEpoch,
+			ExternalPayoffOn: DateTimeOffset.UnixEpoch,
+			ExternalResettleOn: DateTimeOffset.UnixEpoch,
+			BetState: GameBets.Common.Enums.BetState.Waiting,
+			BetType: GameBets.Common.Enums.BetType.Normal,
+			FreeGameState: GameBets.Common.Enums.FreeGameState.None,
+			GambleState: GameBets.Common.Enums.GambleState.None,
+			CashoutState: GameBets.Common.Enums.CashoutState.None,
+			ResettleState: GameBets.Common.Enums.ResettleState.None,
+			JackpotState: GameBets.Common.Enums.JackpotState.None,
+			CurrencyRatio: 1.0m,
+			Bet: 0.8m,
+			ValidBet: 0.8m,
+			Settle: 0.0m,
+			Commission: 0.0m,
+			Turnover: 0.0m,
+			WinLoss: 0.0m,
+			Jackpot: 0.0m,
+			CreatedOn: DateTimeOffset.UtcNow,
+			ClosedOn: DateTimeOffset.UnixEpoch,
+			UpdatedOn: DateTimeOffset.UtcNow,
+			ResetState: GameBets.Common.Enums.ResetState.None,
+			ResetOn: DateTimeOffset.UnixEpoch,
+			AdditionalData: JsonNode.Parse("{\"bet\": 0.8, \"win\": 1.2, \"rake\": 0, \"round\": \"6323442723\", \"detail\": [{\"freegame\": 0}, {\"luckydraw\": 0}, {\"bonus\": 0}], \"donate\": 0, \"status\": \"complete\", \"account\": \"4unykr72x8d9\", \"balance\": 84.4, \"bettime\": \"2024-09-11T21:55:12.737-04:00\", \"bettype\": [], \"jackpot\": 0, \"roomfee\": 0, \"tableid\": \"\", \"currency\": \"CNY\", \"gamecode\": \"20\", \"gamehall\": \"cq9\", \"gameplat\": \"web\", \"gamerole\": \"\", \"gametype\": \"slot\", \"isdonate\": false, \"validbet\": 0, \"tabletype\": \"\", \"bankertype\": \"\", \"createtime\": \"2024-09-11T21:55:15.456-04:00\", \"gameresult\": {\"cards\": [], \"points\": []}, \"jackpottype\": \"\", \"roundnumber\": \"\", \"endroundtime\": \"2024-09-11T21:55:15.555-04:00\", \"singlerowbet\": false, \"jackpotcontribution\": []}"));
+		_ = fakeGameBetsClient.GameBetGetAsync(
+			id: Arg.Is(command.RoundId),
+			externalCreatedOn: Arg.Is(command.ExternalClosedOn.AddDays(-45)),
 			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(ValueTask.FromResult(round));
+			.Returns(gameBetInfo);
 
 		var sut = new GameRoundResettleCommandService(
 			faceLogger,
-			fakeCashServiceClient,
-			fakeGameRoundsClient,
-			fakeGameRecordHandleClient);
+			fakePlayerRepository,
+			fakeGameProviderRepository,
+			fakeGameRepository,
+			fakeGameBetsClient,
+			fakeGameBetsRapidTestWorkerClient,
+			fakeCashServiceClient);
 
 		_ = await Assert.ThrowsAsync<Exception>(() => sut.ExecuteAsync(command).AsTask());
 
-		_ = fakeGameRecordHandleClient
+		_ = fakeGameBetsRapidTestWorkerClient
 			.Received(0)
 			.HandleAsync(
-			source: Arg.Any<GameRecord.Handle.Common.ViewModels.GameRecordHandleViewModel>(),
+			source: Arg.Any<GameBets.RapidTest.Worker.Common.ViewModels.GameBetRapidTestWorkerHandleViewModel>(),
 			cancellationToken: Arg.Any<CancellationToken>());
 
 		_ = fakeCashServiceClient
 			.Received(0)
-			.UnsettledBetManualAsync(
+			.AdjustResettledBetManualAsync(
 			walletId: Arg.Any<Guid>(),
 			amount: Arg.Any<decimal>(),
 			description: Arg.Any<string>(),
 			externalId: Arg.Any<string>(),
-			createdByUserId: Arg.Any<Guid>());
+			createdByUserId: Arg.Any<Guid>(),
+			cancellationToken: Arg.Any<CancellationToken>());
+	}
+
+	[Fact]
+	public async Task This_game_bet_betstate_is_running()
+	{
+		var faceLogger = NullLogger<GameRoundResettleCommandService>.Instance;
+		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+		var fakeGameRepository = Substitute.For<IGameRepository>();
+		var fakeGameBetsClient = Substitute.For<IGameBetsClient>();
+		var fakeGameBetsRapidTestWorkerClient = Substitute.For<IGameBetsRapidTestWorkerClient>();
+		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
+
+		var roundId = Guid.Parse("0191e3f1-e185-0000-0001-07e8778bb552");
+		var betAmount = 0.8m;
+		var validBetAmount = 0.8m;
+		var settleAmount = 1.2m;
+		var commission = 0.0m;
+		var turnover = 0.8m;
+		var companyWinLoss = 0.4m;
+		var clientStatus = GameRounds.Common.Enums.RoundClientStatus.Win;
+		var externalClosedOn = DateTimeOffset.Parse("2024-09-12T09:55:15+08:00");
+		var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
+		var remark = "測試Resettle調整";
+		var adjustAmount = 100m;
+
+		var command = new GameRoundResettleCommand(
+			RoundId: roundId,
+			BetAmount: betAmount,
+			ValidBetAmount: validBetAmount,
+			SettleAmount: settleAmount,
+			Commission: commission,
+			Turnover: turnover,
+			CompanyWinLoss: companyWinLoss,
+			ClientStatus: clientStatus,
+			ExternalClosedOn: externalClosedOn,
+			OperatorId: operatorId,
+			Remark: remark,
+			AdjustAmount: adjustAmount
+		);
+
+		var gameBetInfo = new GameBets.Common.ViewModels.GameBetInfoViewModel(
+			Id: Guid.Parse("0191e3f1-e185-0000-0001-07e8778bb552"),
+			GameProviderId: Guid.Parse("147cef56-4fcd-4ee3-b748-87ad398f2871"),
+			GameProviderConfigurationId: Guid.Parse("dec3dec2-ac0f-4f0d-a12e-eec0bc9e083a"),
+			GameId: 6700018,
+			ResellerId: Guid.Parse("b5a2c708-ab70-4316-9f4d-5d2ad0e77460"),
+			LicenseeId: Guid.Parse("66c5fef5-217b-4929-9a08-72c2479a8f4e"),
+			BrandId: Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af"),
+			PlayerCode: "4unykr72x8d9",
+			CurrencyCode: "CNY",
+			WalletId: Guid.Parse("8bff49a2-66ff-4c66-81f6-c9b242f2b868"),
+			ExternalRoundId: "6323442723",
+			ExternalBetId: "6323442723-01",
+			ExternalCreatedOn: DateTimeOffset.Parse("2024-09-12T09:55:12+08:00"),
+			ExternalClosedOn: DateTimeOffset.UnixEpoch,
+			ExternalPayoffOn: DateTimeOffset.UnixEpoch,
+			ExternalResettleOn: DateTimeOffset.UnixEpoch,
+			BetState: GameBets.Common.Enums.BetState.Running,
+			BetType: GameBets.Common.Enums.BetType.Normal,
+			FreeGameState: GameBets.Common.Enums.FreeGameState.None,
+			GambleState: GameBets.Common.Enums.GambleState.None,
+			CashoutState: GameBets.Common.Enums.CashoutState.None,
+			ResettleState: GameBets.Common.Enums.ResettleState.None,
+			JackpotState: GameBets.Common.Enums.JackpotState.None,
+			CurrencyRatio: 1.0m,
+			Bet: 0.8m,
+			ValidBet: 0.8m,
+			Settle: 0.0m,
+			Commission: 0.0m,
+			Turnover: 0.0m,
+			WinLoss: 0.0m,
+			Jackpot: 0.0m,
+			CreatedOn: DateTimeOffset.UtcNow,
+			ClosedOn: DateTimeOffset.UnixEpoch,
+			UpdatedOn: DateTimeOffset.UtcNow,
+			ResetState: GameBets.Common.Enums.ResetState.None,
+			ResetOn: DateTimeOffset.UnixEpoch,
+			AdditionalData: JsonNode.Parse("{\"bet\": 0.8, \"win\": 1.2, \"rake\": 0, \"round\": \"6323442723\", \"detail\": [{\"freegame\": 0}, {\"luckydraw\": 0}, {\"bonus\": 0}], \"donate\": 0, \"status\": \"complete\", \"account\": \"4unykr72x8d9\", \"balance\": 84.4, \"bettime\": \"2024-09-11T21:55:12.737-04:00\", \"bettype\": [], \"jackpot\": 0, \"roomfee\": 0, \"tableid\": \"\", \"currency\": \"CNY\", \"gamecode\": \"20\", \"gamehall\": \"cq9\", \"gameplat\": \"web\", \"gamerole\": \"\", \"gametype\": \"slot\", \"isdonate\": false, \"validbet\": 0, \"tabletype\": \"\", \"bankertype\": \"\", \"createtime\": \"2024-09-11T21:55:15.456-04:00\", \"gameresult\": {\"cards\": [], \"points\": []}, \"jackpottype\": \"\", \"roundnumber\": \"\", \"endroundtime\": \"2024-09-11T21:55:15.555-04:00\", \"singlerowbet\": false, \"jackpotcontribution\": []}"));
+		_ = fakeGameBetsClient.GameBetGetAsync(
+			id: Arg.Is(command.RoundId),
+			externalCreatedOn: Arg.Is(command.ExternalClosedOn.AddDays(-45)),
+			cancellationToken: Arg.Any<CancellationToken>())
+			.Returns(gameBetInfo);
+
+		var sut = new GameRoundResettleCommandService(
+			faceLogger,
+			fakePlayerRepository,
+			fakeGameProviderRepository,
+			fakeGameRepository,
+			fakeGameBetsClient,
+			fakeGameBetsRapidTestWorkerClient,
+			fakeCashServiceClient);
+
+		_ = await Assert.ThrowsAsync<Exception>(() => sut.ExecuteAsync(command).AsTask());
+
+		_ = fakeGameBetsRapidTestWorkerClient
+			.Received(0)
+			.HandleAsync(
+			source: Arg.Any<GameBets.RapidTest.Worker.Common.ViewModels.GameBetRapidTestWorkerHandleViewModel>(),
+			cancellationToken: Arg.Any<CancellationToken>());
+
+		_ = fakeCashServiceClient
+			.Received(0)
+			.AdjustResettledBetManualAsync(
+			walletId: Arg.Any<Guid>(),
+			amount: Arg.Any<decimal>(),
+			description: Arg.Any<string>(),
+			externalId: Arg.Any<string>(),
+			createdByUserId: Arg.Any<Guid>(),
+			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
 	[Fact]
 	public async Task This_game_bet_does_not_exist()
 	{
 		var faceLogger = NullLogger<GameRoundResettleCommandService>.Instance;
+		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
+		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
+		var fakeGameRepository = Substitute.For<IGameRepository>();
+		var fakeGameBetsClient = Substitute.For<IGameBetsClient>();
+		var fakeGameBetsRapidTestWorkerClient = Substitute.For<IGameBetsRapidTestWorkerClient>();
 		var fakeCashServiceClient = Substitute.For<ICashServiceClient>();
-		var fakeGameRoundsClient = Substitute.For<IGameRoundsClient>();
-		var fakeGameRecordHandleClient = Substitute.For<IGameRecordHandleClient>();
 
-		var roundId = Guid.Parse("583b7720-cc29-414b-217d-08d99fff6f02");
-		var betAmount = 0.060000m;
-		var validBetAmount = 0.060000m;
-		var settleAmount = 0.120000m;
+		var roundId = Guid.Parse("0191e3f1-e185-0000-0001-07e8778bb552");
+		var betAmount = 0.8m;
+		var validBetAmount = 0.8m;
+		var settleAmount = 1.2m;
 		var commission = 0.0m;
-		var turnover = 0.06m;
-		var companyWinLoss = -0.06m;
+		var turnover = 0.8m;
+		var companyWinLoss = 0.4m;
 		var clientStatus = GameRounds.Common.Enums.RoundClientStatus.Win;
-		var externalClosedOn = DateTimeOffset.Parse("2021-06-03 13:57:05.000 +0800");
+		var externalClosedOn = DateTimeOffset.Parse("2024-09-12T09:55:15+08:00");
 		var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
-		var remark = "測試調整Closed Round";
+		var remark = "測試Resettle調整";
 		var adjustAmount = 100m;
 
 		var command = new GameRoundResettleCommand(
@@ -263,32 +465,37 @@ public class GameRoundResettleCommandServiceUnitTest
 			AdjustAmount: adjustAmount
 		);
 
-		_ = fakeGameRoundsClient.RoundGetAsync(
-			roundId: Arg.Is(roundId),
+		_ = fakeGameBetsClient.GameBetGetAsync(
+			id: Arg.Is(command.RoundId),
+			externalCreatedOn: Arg.Is(command.ExternalClosedOn.AddDays(-45)),
 			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns((GameRounds.Common.ViewModels.RoundViewModel)null);
+			.Returns(ValueTask.FromResult<GameBets.Common.ViewModels.GameBetInfoViewModel>(null));
 
 		var sut = new GameRoundResettleCommandService(
 			faceLogger,
-			fakeCashServiceClient,
-			fakeGameRoundsClient,
-			fakeGameRecordHandleClient);
+			fakePlayerRepository,
+			fakeGameProviderRepository,
+			fakeGameRepository,
+			fakeGameBetsClient,
+			fakeGameBetsRapidTestWorkerClient,
+			fakeCashServiceClient);
 
 		_ = await Assert.ThrowsAsync<ArgumentNullException>(() => sut.ExecuteAsync(command).AsTask());
 
-		_ = fakeGameRecordHandleClient
+		_ = fakeGameBetsRapidTestWorkerClient
 			.Received(0)
 			.HandleAsync(
-			source: Arg.Any<GameRecord.Handle.Common.ViewModels.GameRecordHandleViewModel>(),
+			source: Arg.Any<GameBets.RapidTest.Worker.Common.ViewModels.GameBetRapidTestWorkerHandleViewModel>(),
 			cancellationToken: Arg.Any<CancellationToken>());
 
 		_ = fakeCashServiceClient
 			.Received(0)
-			.UnsettledBetManualAsync(
+			.AdjustResettledBetManualAsync(
 			walletId: Arg.Any<Guid>(),
 			amount: Arg.Any<decimal>(),
 			description: Arg.Any<string>(),
 			externalId: Arg.Any<string>(),
-			createdByUserId: Arg.Any<Guid>());
+			createdByUserId: Arg.Any<Guid>(),
+			cancellationToken: Arg.Any<CancellationToken>());
 	}
 }

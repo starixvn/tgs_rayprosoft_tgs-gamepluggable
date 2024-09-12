@@ -1,20 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Net.Mime;
+﻿using System.Net.Mime;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NATS.Client.Core;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using Tgs.CashService.Client;
 using Tgs.MessageQueue.Nats.Serializers;
 
 var filterInstrumentations = new[] { "html", "ico", "png", "jpg" };
@@ -81,10 +73,15 @@ builder.Services
 		var config = sp.GetRequiredService<IConfiguration>();
 		http.BaseAddress = config.GetValue<Uri>("GamePluggableConnectionStrings:GamePlayerLogOutClientBaseUrl");
 	}))
-	.AddGameRecordHandleClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
+	.AddGameBetsClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
 	{
 		var config = sp.GetRequiredService<IConfiguration>();
-		http.BaseAddress = config.GetValue<Uri>("GameRecord:GameRecordHandleClientBaseUrl");
+		http.BaseAddress = config.GetValue<Uri>("GameRecord:GameBetsClientBaseUrl");
+	}))
+	.AddGameBetsRapidTestWorkerClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
+	{
+		var config = sp.GetRequiredService<IConfiguration>();
+		http.BaseAddress = config.GetValue<Uri>("GameRecord:GameBetsRapidTestWorkerClientBaseUrl");
 	}))
 	.AddGamePluggableCore()
 	.AddGamePluggableRepositories((sp, dbBuilder) =>

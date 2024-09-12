@@ -22,7 +22,7 @@ public class PlayerRepositoryUnitTest
 		var fakeRepository = new PlayerRepository(context);
 
 		var resellerId = Guid.NewGuid();
-		var resellerCode = "TGS";
+		var resellerCode = "DEMO";
 		var reseller = new Reseller()
 		{
 			Id = resellerId,
@@ -93,6 +93,10 @@ public class PlayerRepositoryUnitTest
 		var actual = await repository.GetAsync("4ucmqplxb029");
 
 		Assert.NotNull(actual);
+		Assert.Equal(reseller.Id, actual.ResellerId);
+		Assert.Equal(reseller.Code, actual.ResellerCode);
+		Assert.Equal(licensee.Id, actual.LicenseeId);
+		Assert.Equal(licensee.Code, actual.LicenseeCode);
 		Assert.Equal(brand.Id, actual.BrandId);
 		Assert.Equal(brand.Code, actual.BrandCode);
 		Assert.Equal(player.PlayerCode, actual.PlayerCode);
@@ -114,7 +118,7 @@ public class PlayerRepositoryUnitTest
 		var fakeRepository = new PlayerRepository(context);
 
 		var resellerId = Guid.NewGuid();
-		var resellerCode = "TGS";
+		var resellerCode = "DEMO";
 		var reseller = new Reseller()
 		{
 			Id = resellerId,
@@ -199,7 +203,7 @@ public class PlayerRepositoryUnitTest
 		var fakeRepository = new PlayerRepository(context);
 
 		var resellerId = Guid.NewGuid();
-		var resellerCode = "TGS";
+		var resellerCode = "DEMO";
 		var reseller = new Reseller()
 		{
 			Id = resellerId,
@@ -285,7 +289,7 @@ public class PlayerRepositoryUnitTest
 		var fakeRepository = new PlayerRepository(context);
 
 		var resellerId = Guid.NewGuid();
-		var resellerCode = "TGS";
+		var resellerCode = "DEMO";
 		var reseller = new Reseller()
 		{
 			Id = resellerId,
@@ -371,7 +375,7 @@ public class PlayerRepositoryUnitTest
 		var fakeRepository = new PlayerRepository(context);
 
 		var resellerId = Guid.NewGuid();
-		var resellerCode = "TGS";
+		var resellerCode = "DEMO";
 		var reseller = new Reseller()
 		{
 			Id = resellerId,
@@ -457,7 +461,7 @@ public class PlayerRepositoryUnitTest
 		var fakeRepository = new PlayerRepository(context);
 
 		var resellerId = Guid.NewGuid();
-		var resellerCode = "TGS";
+		var resellerCode = "DEMO";
 		var reseller = new Reseller()
 		{
 			Id = resellerId,
@@ -543,7 +547,7 @@ public class PlayerRepositoryUnitTest
 		var fakeRepository = new PlayerRepository(context);
 
 		var resellerId = Guid.NewGuid();
-		var resellerCode = "TGS";
+		var resellerCode = "DEMO";
 		var reseller = new Reseller()
 		{
 			Id = resellerId,

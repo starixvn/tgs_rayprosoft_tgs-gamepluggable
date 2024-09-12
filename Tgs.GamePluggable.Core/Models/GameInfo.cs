@@ -11,4 +11,5 @@ public record GameInfo(
 	Enums.GamePlatformType PlatformType,
 	string? EndpointPath,
 	string? RuleUrl,
-	string[]? AvailableCurrencies);
+	string[]? AvailableCurrencies,
+	string SubGameProviderCode);

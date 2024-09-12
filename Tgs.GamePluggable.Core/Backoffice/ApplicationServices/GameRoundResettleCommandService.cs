@@ -1,87 +1,99 @@
 ﻿using System;
-using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Tgs.CashService.Client;
-using Tgs.GameRecord.Handle.Client;
-using Tgs.GameRounds.Client;
+using Tgs.GameBets.Client;
+using Tgs.GameBets.RapidTest.Worker.Client;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 
 internal class GameRoundResettleCommandService(
 	ILogger<GameRoundResettleCommandService> logger,
-	ICashServiceClient cashServiceClient,
-	IGameRoundsClient gameRoundsClient,
-	IGameRecordHandleClient gameRecordHandleClient) : ICommandService<GameRoundResettleCommand>
+	IPlayerRepository playerRepository,
+	IGameProviderRepository gameProviderRepository,
+	IGameRepository gameRepository,
+	IGameBetsClient gameBetsClient,
+	IGameBetsRapidTestWorkerClient gameBetsRapidTestWorkerClient,
+	ICashServiceClient cashServiceClient) : ICommandService<GameRoundResettleCommand>
 {
 	public async ValueTask ExecuteAsync(GameRoundResettleCommand command, CancellationToken cancellationToken = default)
 	{
-		var round = await gameRoundsClient.RoundGetAsync(
-			roundId: command.RoundId,
+		var gameBetInfo = await gameBetsClient.GameBetGetAsync(
+			id: command.RoundId,
+			externalCreatedOn: command.ExternalClosedOn.AddDays(-45),
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false)
 			?? throw new ArgumentNullException(command.RoundId.ToString(), $"This game bet does not exist.");
 
-		if (round.Status != GameRounds.Common.Enums.RoundStatus.Closed)
+		if (gameBetInfo.BetState is GameBets.Common.Enums.BetState.Waiting or GameBets.Common.Enums.BetState.Running)
 		{
-			throw new Exception($"This game's bet status is unsettled.({command.RoundId})");
+			throw new Exception($"This game's bet status has been unsettled.({command.RoundId})");
 		}
 
 		var betState = command.ClientStatus switch
 		{
-			GameRounds.Common.Enums.RoundClientStatus.Win => GameRecord.Handle.Common.Protos.BetState.Win,
-			GameRounds.Common.Enums.RoundClientStatus.Loss => GameRecord.Handle.Common.Protos.BetState.Loss,
-			GameRounds.Common.Enums.RoundClientStatus.Void => GameRecord.Handle.Common.Protos.BetState.Void,
-			GameRounds.Common.Enums.RoundClientStatus.Draw => GameRecord.Handle.Common.Protos.BetState.Draw,
-			_ => GameRecord.Handle.Common.Protos.BetState.Running
+			GameRounds.Common.Enums.RoundClientStatus.Win => GameBets.RapidTest.Worker.Common.Protos.BetState.Win,
+			GameRounds.Common.Enums.RoundClientStatus.Loss => GameBets.RapidTest.Worker.Common.Protos.BetState.Loss,
+			GameRounds.Common.Enums.RoundClientStatus.Void => GameBets.RapidTest.Worker.Common.Protos.BetState.Void,
+			GameRounds.Common.Enums.RoundClientStatus.Draw => GameBets.RapidTest.Worker.Common.Protos.BetState.Draw,
+			_ => GameBets.RapidTest.Worker.Common.Protos.BetState.Running
 		};
 
-		JsonNode additionalData;
-		try
-		{
-			additionalData = JsonNode.Parse(round.AdditionalData)!;
-		}
-		catch
-		{
-			additionalData = JsonNode.Parse("{}")!;
-		}
+		var playerInfo = await playerRepository.GetAsync(gameBetInfo.PlayerCode, cancellationToken).ConfigureAwait(false);
+		var gameProviderInfo = await gameProviderRepository.GetAsync(gameBetInfo.GameProviderId, cancellationToken).ConfigureAwait(false);
+		var gameInfo = await gameRepository.GetAsync(gameBetInfo.GameId, cancellationToken).ConfigureAwait(false);
 
-		var source = new GameRecord.Handle.Common.ViewModels.GameRecordHandleViewModel
+		var source = new GameBets.RapidTest.Worker.Common.ViewModels.GameBetRapidTestWorkerHandleViewModel
 		{
-			GameProviderCode = round.GameProviderCode,
-			PlayerCode = round.PlayerCode,
-			ExternalRoundId = round.ExternalRoundId,
-			ExternalBetId = round.ExternalRoundId,
-			ExternalGameId = round.ExternalGameId,
-			ExternalCreatedOn = round.ExternalCreatedOn!.Value,
+			GameProviderId = gameProviderInfo.GameProviderId,
+			GameProviderCode = gameProviderInfo.GameProviderCode,
+			GameProviderConfigurationId = gameBetInfo.GameProviderConfigurationId,
+			SubGameProviderCode = gameInfo.SubGameProviderCode,
+			GameId = gameBetInfo.GameId,
+			ResellerId = gameBetInfo.ResellerId,
+			ResellerCode = playerInfo.ResellerCode,
+			LicenseeId = gameBetInfo.LicenseeId,
+			LicenseeCode = playerInfo.LicenseeCode,
+			BrandId = gameBetInfo.BrandId,
+			BrandCode = playerInfo.BrandCode,
+			PlayerCode = gameBetInfo.PlayerCode,
+			Username = playerInfo.Username,
+			CurrencyCode = gameBetInfo.CurrencyCode,
+			WalletId = gameBetInfo.WalletId,
+			ExternalRoundId = gameBetInfo.ExternalRoundId,
+			ExternalBetId = gameBetInfo.ExternalBetId,
+			ExternalGameId = gameInfo.ExternalGameId,
+			ExternalCreatedOn = gameBetInfo.ExternalCreatedOn,
 			ExternalClosedOn = command.ExternalClosedOn,
 			ExternalPayoffOn = command.ExternalClosedOn,
-			ExternalResettleOn = DateTimeOffset.UnixEpoch,
+			ExternalResettleOn = gameBetInfo.ExternalResettleOn,
 			BetState = betState,
-			BetType = GameRecord.Handle.Common.Protos.BetType.Normal,
-			FreeGameState = GameRecord.Handle.Common.Protos.FreeGameState.None,
-			GambleState = GameRecord.Handle.Common.Protos.GambleState.None,
-			CashoutState = GameRecord.Handle.Common.Protos.CashoutState.None,
-			ResettleState = GameRecord.Handle.Common.Protos.ResettleState.None,
-			JackpotState = GameRecord.Handle.Common.Protos.JackpotState.None,
+			BetType = GameBets.RapidTest.Worker.Common.Protos.BetType.Normal,
+			FreeGameState = GameBets.RapidTest.Worker.Common.Protos.FreeGameState.None,
+			GambleState = GameBets.RapidTest.Worker.Common.Protos.GambleState.None,
+			CashoutState = GameBets.RapidTest.Worker.Common.Protos.CashoutState.None,
+			ResettleState = GameBets.RapidTest.Worker.Common.Protos.ResettleState.None,
+			JackpotState = GameBets.RapidTest.Worker.Common.Protos.JackpotState.None,
+			CurrencyRatio = gameBetInfo.CurrencyRatio,
 			Bet = command.BetAmount,
 			ValidBet = command.ValidBetAmount,
 			Settle = command.SettleAmount,
 			Commission = command.Commission,
 			Turnover = command.Turnover,
 			WinLoss = -command.CompanyWinLoss,
-			Jackpot = 0.0M,
-			AdditionalData = additionalData.ToJsonString()
+			Jackpot = gameBetInfo.Jackpot,
+			AdditionalData = gameBetInfo.AdditionalData.ToJsonString()
 		};
+		;
 
-		await gameRecordHandleClient.HandleAsync(
+		await gameBetsRapidTestWorkerClient.HandleAsync(
 			source: source,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		logger.LogInformation("{logWarning}",
+		logger.LogWarning("{logWarning}",
 			new
 			{
 				LogOn = DateTime.Now.ToString("u"),
@@ -101,10 +113,10 @@ internal class GameRoundResettleCommandService(
 		if (command.AdjustAmount.HasValue)
 		{
 			_ = await cashServiceClient.AdjustResettledBetManualAsync(
-				walletId: round.WalletId,
+				walletId: gameBetInfo.WalletId,
 				amount: command.AdjustAmount.Value,
 				description: command.Remark,
-				externalId: round.RoundId.ToString(),
+				externalId: gameBetInfo.Id.ToString(),
 				createdByUserId: command.OperatorId,
 				cancellationToken: cancellationToken)
 				.ConfigureAwait(false);

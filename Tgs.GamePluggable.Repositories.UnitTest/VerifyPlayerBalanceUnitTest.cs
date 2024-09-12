@@ -14,6 +14,10 @@ public class VerifyPlayerBalanceUnitTest
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -70,6 +74,10 @@ public class VerifyPlayerBalanceUnitTest
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -126,6 +134,10 @@ public class VerifyPlayerBalanceUnitTest
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -182,6 +194,10 @@ public class VerifyPlayerBalanceUnitTest
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -238,6 +254,10 @@ public class VerifyPlayerBalanceUnitTest
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",

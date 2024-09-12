@@ -26,38 +26,38 @@ namespace Tgs.GamePluggable.Entities.Configurations
             entity.HasIndex(e => new { e.BrandId, e.GameProviderId }, "ux_brand_game_providers_brand_id_game_provider_id").IsUnique();
 
             entity.Property(e => e.Id)
-            .ValueGeneratedNever()
-            .HasColumnName("id");
+                .ValueGeneratedNever()
+                .HasColumnName("id");
             entity.Property(e => e.BrandId).HasColumnName("brand_id");
             entity.Property(e => e.DefaultLanguageCode)
-            .HasMaxLength(6)
-            .HasColumnName("default_language_code");
+                .HasMaxLength(6)
+                .HasColumnName("default_language_code");
             entity.Property(e => e.DesktopQueryString)
-            .HasMaxLength(512)
-            .HasDefaultValueSql("''::character varying")
-            .HasColumnName("desktop_query_string");
+                .HasMaxLength(512)
+                .HasDefaultValueSql("''::character varying")
+                .HasColumnName("desktop_query_string");
             entity.Property(e => e.GameProviderConfigurationId).HasColumnName("game_provider_configuration_id");
             entity.Property(e => e.GameProviderId).HasColumnName("game_provider_id");
             entity.Property(e => e.IsManualChangeStatus).HasColumnName("is_manual_change_status");
             entity.Property(e => e.MobileQueryString)
-            .HasMaxLength(512)
-            .HasDefaultValueSql("''::character varying")
-            .HasColumnName("mobile_query_string");
+                .HasMaxLength(512)
+                .HasDefaultValueSql("''::character varying")
+                .HasColumnName("mobile_query_string");
             entity.Property(e => e.Status).HasColumnName("status");
 
             entity.HasOne(d => d.Brand).WithMany(p => p.BrandGameProviders)
-            .HasForeignKey(d => d.BrandId)
-            .HasConstraintName("fk_brand_game_providers_brands_brand_id");
+                .HasForeignKey(d => d.BrandId)
+                .HasConstraintName("fk_brand_game_providers_brands_brand_id");
 
             entity.HasOne(d => d.GameProviderConfiguration).WithMany(p => p.BrandGameProviders)
-            .HasForeignKey(d => d.GameProviderConfigurationId)
-            .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("fk_brand_game_providers_game_provider_configurations_game_provi");
+                .HasForeignKey(d => d.GameProviderConfigurationId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_brand_game_providers_game_provider_configurations_game_provi");
 
             entity.HasOne(d => d.GameProvider).WithMany(p => p.BrandGameProviders)
-            .HasForeignKey(d => d.GameProviderId)
-            .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("fk_brand_game_providers_game_providers_game_provider_id");
+                .HasForeignKey(d => d.GameProviderId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_brand_game_providers_game_providers_game_provider_id");
 
             OnConfigurePartial(entity);
         }

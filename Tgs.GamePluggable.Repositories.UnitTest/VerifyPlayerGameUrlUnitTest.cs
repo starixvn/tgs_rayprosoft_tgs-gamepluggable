@@ -14,6 +14,10 @@ public class VerifyPlayerGameUrlUnitTest
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -31,7 +35,8 @@ public class VerifyPlayerGameUrlUnitTest
 			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: null,
 			RuleUrl: null,
-			AvailableCurrencies: null);
+			AvailableCurrencies: null,
+			SubGameProviderCode: "KY");
 
 		_ = fakePlayerRepository.GetStatusAsync(
 			playerCode: Arg.Is(player.PlayerCode),
@@ -76,6 +81,10 @@ public class VerifyPlayerGameUrlUnitTest
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -93,7 +102,8 @@ public class VerifyPlayerGameUrlUnitTest
 			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: null,
 			RuleUrl: null,
-			AvailableCurrencies: null);
+			AvailableCurrencies: null,
+			SubGameProviderCode: "KY");
 
 		_ = fakePlayerRepository.GetStatusAsync(
 			playerCode: Arg.Is(player.PlayerCode),
@@ -138,6 +148,10 @@ public class VerifyPlayerGameUrlUnitTest
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -155,7 +169,8 @@ public class VerifyPlayerGameUrlUnitTest
 			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: null,
 			RuleUrl: null,
-			AvailableCurrencies: null);
+			AvailableCurrencies: null,
+			SubGameProviderCode: "KY");
 
 		_ = fakePlayerRepository.GetStatusAsync(
 			playerCode: Arg.Is(player.PlayerCode),
@@ -200,6 +215,10 @@ public class VerifyPlayerGameUrlUnitTest
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -217,7 +236,8 @@ public class VerifyPlayerGameUrlUnitTest
 			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: null,
 			RuleUrl: null,
-			AvailableCurrencies: null);
+			AvailableCurrencies: null,
+			SubGameProviderCode: "KY");
 
 		_ = fakePlayerRepository.GetStatusAsync(
 			playerCode: Arg.Is(player.PlayerCode),
@@ -262,6 +282,10 @@ public class VerifyPlayerGameUrlUnitTest
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -279,7 +303,8 @@ public class VerifyPlayerGameUrlUnitTest
 			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: null,
 			RuleUrl: null,
-			AvailableCurrencies: ["PHP", "HKD"]);
+			AvailableCurrencies: ["PHP", "HKD"],
+			SubGameProviderCode: "KY");
 
 		_ = fakePlayerRepository.GetStatusAsync(
 			playerCode: Arg.Is(player.PlayerCode),
@@ -324,6 +349,10 @@ public class VerifyPlayerGameUrlUnitTest
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -341,7 +370,8 @@ public class VerifyPlayerGameUrlUnitTest
 			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: null,
 			RuleUrl: null,
-			AvailableCurrencies: ["PHP", "HKD", "CNY"]);
+			AvailableCurrencies: ["PHP", "HKD", "CNY"],
+			SubGameProviderCode: "KY");
 
 		_ = fakePlayerRepository.GetStatusAsync(
 			playerCode: Arg.Is(player.PlayerCode),
@@ -384,6 +414,10 @@ public class VerifyPlayerGameUrlUnitTest
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -401,7 +435,8 @@ public class VerifyPlayerGameUrlUnitTest
 			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: null,
 			RuleUrl: null,
-			AvailableCurrencies: null);
+			AvailableCurrencies: null,
+			SubGameProviderCode: "KY");
 
 		_ = fakePlayerRepository.GetStatusAsync(
 			playerCode: Arg.Is(player.PlayerCode),
