@@ -76,12 +76,12 @@ builder.Services
 	.AddGameBetsClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
 	{
 		var config = sp.GetRequiredService<IConfiguration>();
-		http.BaseAddress = config.GetValue<Uri>("GameRecord:GameBetsClientBaseUrl");
+		http.BaseAddress = config.GetValue<Uri>("GamePluggableConnectionStrings:GameBetsClientBaseUrl");
 	}))
 	.AddGameBetsRapidTestWorkerClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
 	{
 		var config = sp.GetRequiredService<IConfiguration>();
-		http.BaseAddress = config.GetValue<Uri>("GameRecord:GameBetsRapidTestWorkerClientBaseUrl");
+		http.BaseAddress = config.GetValue<Uri>("GamePluggableConnectionStrings:GameBetsRapidTestWorkerClientBaseUrl");
 	}))
 	.AddGamePluggableCore()
 	.AddGamePluggableRepositories((sp, dbBuilder) =>
