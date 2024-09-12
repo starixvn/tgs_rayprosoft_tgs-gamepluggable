@@ -21,7 +21,8 @@ data:
         "GameFundTransferClientBaseUrl": "http://game-gamefundtransfer/",
         "GameRoundsClientBaseUrl": "http://game-gamerounds",
         "CashServiceClientBaseUrl": "http://cashservice-api/",
-        "GameRecordHandleClientBaseUrl": "http://game-gamerecord-handle/"
+        "GameBetsClientBaseUrl": "http://game-gamebets/",
+        "GameBetsRapidTestWorkerClientBaseUrl": "http://game-gamebets-rapidtest-worker/"
       }
     }
   otel-collector-config.yaml: |

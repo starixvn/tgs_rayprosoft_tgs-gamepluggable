@@ -27,6 +27,10 @@ public class GameUrlGetServiceUnitTest
 			 BackUrl: new("https://dev-t1.rpgp.cc/"));
 
 		var player = new Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -48,7 +52,8 @@ public class GameUrlGetServiceUnitTest
 			PlatformType: Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: null,
 			RuleUrl: null,
-			AvailableCurrencies: null);
+			AvailableCurrencies: null,
+			SubGameProviderCode: GameProviderType.Kaiyuan);
 		_ = fakeGame.GetAsync(
 			id: Arg.Is(query.GameId),
 			cancellationToken: Arg.Any<CancellationToken>())

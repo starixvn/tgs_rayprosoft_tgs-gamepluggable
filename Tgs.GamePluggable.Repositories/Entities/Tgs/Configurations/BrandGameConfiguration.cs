@@ -19,28 +19,34 @@ namespace Tgs.GamePluggable.Entities.Configurations
 
             entity.HasIndex(e => new { e.BrandId, e.GameId }, "ak_brand_games_brand_id_game_id").IsUnique();
 
+            entity.HasIndex(e => new { e.BrandId, e.GameId }, "ak_brand_games_brand_id_game_id_ccnew").IsUnique();
+
             entity.HasIndex(e => e.GameId, "ix_brand_games_game_id");
 
+            entity.HasIndex(e => e.GameId, "ix_brand_games_game_id_ccnew");
+
+            entity.HasIndex(e => e.Id, "pk_brand_games_ccnew").IsUnique();
+
             entity.Property(e => e.Id)
-            .ValueGeneratedNever()
-            .HasColumnName("id");
+                .ValueGeneratedNever()
+                .HasColumnName("id");
             entity.Property(e => e.BrandId).HasColumnName("brand_id");
             entity.Property(e => e.DisplayOrder).HasColumnName("display_order");
             entity.Property(e => e.EffectiveBettingPercentage)
-            .HasPrecision(18, 6)
-            .HasColumnName("effective_betting_percentage");
+                .HasPrecision(18, 6)
+                .HasColumnName("effective_betting_percentage");
             entity.Property(e => e.GameId).HasColumnName("game_id");
             entity.Property(e => e.Rebate).HasColumnName("rebate");
             entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.Tag).HasColumnName("tag");
 
             entity.HasOne(d => d.Brand).WithMany(p => p.BrandGames)
-            .HasForeignKey(d => d.BrandId)
-            .HasConstraintName("fk_brand_games_brands_brand_id");
+                .HasForeignKey(d => d.BrandId)
+                .HasConstraintName("fk_brand_games_brands_brand_id");
 
             entity.HasOne(d => d.Game).WithMany(p => p.BrandGames)
-            .HasForeignKey(d => d.GameId)
-            .HasConstraintName("fk_brand_games_games_game_id");
+                .HasForeignKey(d => d.GameId)
+                .HasConstraintName("fk_brand_games_games_game_id");
 
             OnConfigurePartial(entity);
         }

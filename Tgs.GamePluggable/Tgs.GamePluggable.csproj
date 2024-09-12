@@ -7,8 +7,6 @@
 		<ServerGarbageCollection>true</ServerGarbageCollection>
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 		<NoWarn>$(NoWarn);1591;0063</NoWarn>
-		<UserSecretsId>5d3734fe-3ebc-4b5c-a1ad-701eec964128</UserSecretsId>
-		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 
 	<ItemGroup>

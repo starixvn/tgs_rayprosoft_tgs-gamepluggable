@@ -5,9 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
+using Tgs.GameBets.Client;
+using Tgs.GameBets.RapidTest.Worker.Client;
 using Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
-using Tgs.GameRecord.Handle.Client;
-using Tgs.GameRounds.Client;
 
 namespace Tgs.GamePluggable.Core.UnitTest.Backoffice;
 
@@ -20,8 +20,9 @@ public class GameRoundAddCommandServiceUnitTest
 		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 		var fakeGameRepository = Substitute.For<IGameRepository>();
-		var fakeGameRoundsClient = Substitute.For<IGameRoundsClient>();
-		var fakeGameRecordHandleClient = Substitute.For<IGameRecordHandleClient>();
+		var fakeBrandGameProviderRepository = Substitute.For<IBrandGameProviderRepository>();
+		var fakeGameBetsClient = Substitute.For<IGameBetsClient>();
+		var fakeGameBetsRapidTestWorkerClient = Substitute.For<IGameBetsRapidTestWorkerClient>();
 
 		var command = new GameRoundAddCommand(
 			ExternalRoundId: Guid.NewGuid().ToString("N"),
@@ -44,6 +45,10 @@ public class GameRoundAddCommandServiceUnitTest
 			Remark: "手動建立");
 
 		var playerInfo = new Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: command.BrandId,
 			BrandCode: "GPI",
 			PlayerCode: "4uf6j0t01809",
@@ -75,37 +80,60 @@ public class GameRoundAddCommandServiceUnitTest
 			PlatformType: Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: string.Empty,
 			RuleUrl: string.Empty,
-			AvailableCurrencies: null);
+			AvailableCurrencies: null,
+			SubGameProviderCode: gameProviderInfo.GameProviderCode);
 		_ = fakeGameRepository.GetAsync(
 			Arg.Is(command.GameId),
 			Arg.Any<CancellationToken>())
 			.Returns(gameInfo);
 
-		_ = fakeGameRoundsClient.RoundGetAsync(
+		var gameProviderConfigurationId = Guid.NewGuid();
+		_ = fakeBrandGameProviderRepository.GetGameProviderConfigurationIdAsync(
+			Arg.Is(playerInfo.BrandId),
+			Arg.Is(gameProviderInfo.GameProviderId),
+			Arg.Any<CancellationToken>())
+			.Returns(gameProviderConfigurationId);
+
+		_ = fakeGameBetsClient.GameBetGetByExternalBetAsync(
 			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
 			gameId: Arg.Is(gameInfo.GameId),
 			walletId: Arg.Is(playerInfo.WalletId),
-			externalRoundId: Arg.Is(command.ExternalRoundId),
+			externalBetId: Arg.Is(command.ExternalRoundId),
+			externalCreatedOn: Arg.Is(command.ExternalCreatedOn),
 			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns((GameRounds.Common.ViewModels.RoundViewModel)null);
+			.Returns(ValueTask.FromResult<GameBets.Common.ViewModels.GameBetInfoViewModel>(null));
 
 		var sut = new GameRoundAddCommandService(
 			faceLogger,
 			fakePlayerRepository,
 			fakeGameProviderRepository,
 			fakeGameRepository,
-			fakeGameRoundsClient,
-			fakeGameRecordHandleClient);
+			fakeBrandGameProviderRepository,
+			fakeGameBetsClient,
+			fakeGameBetsRapidTestWorkerClient);
 
 		await sut.ExecuteAsync(command);
 
-		_ = fakeGameRecordHandleClient
+		_ = fakeGameBetsRapidTestWorkerClient
 			.Received(1)
 			.HandleAsync(
-			source: Arg.Is(new GameRecord.Handle.Common.ViewModels.GameRecordHandleViewModel
+			source: Arg.Is(new GameBets.RapidTest.Worker.Common.ViewModels.GameBetRapidTestWorkerHandleViewModel
 			{
+				GameProviderId = gameProviderInfo.GameProviderId,
 				GameProviderCode = gameProviderInfo.GameProviderCode,
-				PlayerCode = command.PlayerCode,
+				GameProviderConfigurationId = gameProviderConfigurationId,
+				SubGameProviderCode = gameInfo.SubGameProviderCode,
+				GameId = gameInfo.GameId,
+				ResellerId = playerInfo.ResellerId,
+				ResellerCode = playerInfo.ResellerCode,
+				LicenseeId = playerInfo.LicenseeId,
+				LicenseeCode = playerInfo.LicenseeCode,
+				BrandId = playerInfo.BrandId,
+				BrandCode = playerInfo.BrandCode,
+				PlayerCode = playerInfo.PlayerCode,
+				Username = playerInfo.Username,
+				CurrencyCode = playerInfo.CurrencyCode,
+				WalletId = playerInfo.WalletId,
 				ExternalRoundId = command.ExternalRoundId,
 				ExternalBetId = command.ExternalRoundId,
 				ExternalGameId = gameInfo.ExternalGameId,
@@ -113,13 +141,14 @@ public class GameRoundAddCommandServiceUnitTest
 				ExternalClosedOn = command.ExternalClosedOn,
 				ExternalPayoffOn = command.ExternalClosedOn,
 				ExternalResettleOn = DateTimeOffset.UnixEpoch,
-				BetState = GameRecord.Handle.Common.Protos.BetState.Win,
-				BetType = GameRecord.Handle.Common.Protos.BetType.Normal,
-				FreeGameState = GameRecord.Handle.Common.Protos.FreeGameState.None,
-				GambleState = GameRecord.Handle.Common.Protos.GambleState.None,
-				CashoutState = GameRecord.Handle.Common.Protos.CashoutState.None,
-				ResettleState = GameRecord.Handle.Common.Protos.ResettleState.None,
-				JackpotState = GameRecord.Handle.Common.Protos.JackpotState.None,
+				BetState = GameBets.RapidTest.Worker.Common.Protos.BetState.Win,
+				BetType = GameBets.RapidTest.Worker.Common.Protos.BetType.Normal,
+				FreeGameState = GameBets.RapidTest.Worker.Common.Protos.FreeGameState.None,
+				GambleState = GameBets.RapidTest.Worker.Common.Protos.GambleState.None,
+				CashoutState = GameBets.RapidTest.Worker.Common.Protos.CashoutState.None,
+				ResettleState = GameBets.RapidTest.Worker.Common.Protos.ResettleState.None,
+				JackpotState = GameBets.RapidTest.Worker.Common.Protos.JackpotState.None,
+				CurrencyRatio = 1.0m,
 				Bet = command.BetAmount,
 				ValidBet = command.ValidBetAmount,
 				Settle = command.SettleAmount,
@@ -139,8 +168,9 @@ public class GameRoundAddCommandServiceUnitTest
 		var fakePlayerRepository = Substitute.For<IPlayerRepository>();
 		var fakeGameProviderRepository = Substitute.For<IGameProviderRepository>();
 		var fakeGameRepository = Substitute.For<IGameRepository>();
-		var fakeGameRoundsClient = Substitute.For<IGameRoundsClient>();
-		var fakeGameRecordHandleClient = Substitute.For<IGameRecordHandleClient>();
+		var fakeBrandGameProviderRepository = Substitute.For<IBrandGameProviderRepository>();
+		var fakeGameBetsClient = Substitute.For<IGameBetsClient>();
+		var fakeGameBetsRapidTestWorkerClient = Substitute.For<IGameBetsRapidTestWorkerClient>();
 
 		var command = new GameRoundAddCommand(
 			ExternalRoundId: Guid.NewGuid().ToString("N"),
@@ -163,6 +193,10 @@ public class GameRoundAddCommandServiceUnitTest
 			Remark: "手動建立");
 
 		var playerInfo = new Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: command.BrandId,
 			BrandCode: "GPI",
 			PlayerCode: "4uf6j0t01809",
@@ -194,61 +228,82 @@ public class GameRoundAddCommandServiceUnitTest
 			PlatformType: Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: string.Empty,
 			RuleUrl: string.Empty,
-			AvailableCurrencies: null);
+			AvailableCurrencies: null,
+			SubGameProviderCode: gameProviderInfo.GameProviderCode);
 		_ = fakeGameRepository.GetAsync(
 			Arg.Is(command.GameId),
 			Arg.Any<CancellationToken>())
 			.Returns(gameInfo);
 
-		var round = new GameRounds.Common.ViewModels.RoundViewModel
-		{
-			RoundId = Guid.NewGuid(),
-			ExternalRoundId = command.ExternalRoundId,
-			GameProviderId = gameProviderInfo.GameProviderId,
-			GameProviderCode = gameProviderInfo.GameProviderCode,
-			PlayerCode = playerInfo.PlayerCode,
-			GameId = gameInfo.GameId,
-			ExternalGameId = gameInfo.ExternalGameId,
-			CurrencyCode = playerInfo.CurrencyCode,
-			Status = GameRounds.Common.Enums.RoundStatus.Closed,
-			GameProviderConfigurationId = Guid.NewGuid(),
-			WalletId = playerInfo.WalletId,
-			CreatedOn = DateTimeOffset.UtcNow,
-			ClosedOn = DateTimeOffset.UtcNow,
-			UpdatedOn = DateTimeOffset.UtcNow,
-			BrandId = playerInfo.BrandId,
-			ExternalCreatedOn = command.ExternalCreatedOn,
-			ExternalClosedOn = command.ExternalClosedOn,
-			BetAmount = command.BetAmount,
-			ValidBetAmount = command.ValidBetAmount,
-			SettleAmount = command.SettleAmount,
-			Commission = command.Commission,
-			Turnover = command.Turnover,
-			CompanyWinLoss = command.CompanyWinLoss,
-			AdditionalData = "{}"
-		};
-		_ = fakeGameRoundsClient.RoundGetAsync(
+		var gameProviderConfigurationId = Guid.NewGuid();
+		_ = fakeBrandGameProviderRepository.GetGameProviderConfigurationIdAsync(
+			Arg.Is(playerInfo.BrandId),
+			Arg.Is(gameProviderInfo.GameProviderId),
+			Arg.Any<CancellationToken>())
+			.Returns(gameProviderConfigurationId);
+
+		var gameBetInfo = new GameBets.Common.ViewModels.GameBetInfoViewModel(
+			Id: Guid.NewGuid(),
+			GameProviderId: gameProviderInfo.GameProviderId,
+			GameProviderConfigurationId: gameProviderConfigurationId,
+			GameId: gameInfo.GameId,
+			ResellerId: playerInfo.ResellerId,
+			LicenseeId: playerInfo.LicenseeId,
+			BrandId: playerInfo.BrandId,
+			PlayerCode: playerInfo.PlayerCode,
+			CurrencyCode: playerInfo.CurrencyCode,
+			WalletId: playerInfo.WalletId,
+			ExternalRoundId: command.ExternalRoundId,
+			ExternalBetId: command.ExternalRoundId,
+			ExternalCreatedOn: command.ExternalCreatedOn,
+			ExternalClosedOn: command.ExternalClosedOn,
+			ExternalPayoffOn: command.ExternalClosedOn,
+			ExternalResettleOn: DateTimeOffset.UnixEpoch,
+			BetState: GameBets.Common.Enums.BetState.Win,
+			BetType: GameBets.Common.Enums.BetType.Normal,
+			FreeGameState: GameBets.Common.Enums.FreeGameState.None,
+			GambleState: GameBets.Common.Enums.GambleState.None,
+			CashoutState: GameBets.Common.Enums.CashoutState.None,
+			ResettleState: GameBets.Common.Enums.ResettleState.None,
+			JackpotState: GameBets.Common.Enums.JackpotState.None,
+			CurrencyRatio: 1.0m,
+			Bet: 1.0m,
+			ValidBet: 1.0m,
+			Settle: 2.0m,
+			Commission: 0.0m,
+			Turnover: 1.0m,
+			WinLoss: 1.0m,
+			Jackpot: 0.0m,
+			CreatedOn: DateTimeOffset.UtcNow,
+			ClosedOn: DateTimeOffset.UtcNow,
+			UpdatedOn: DateTimeOffset.UtcNow,
+			ResetState: GameBets.Common.Enums.ResetState.None,
+			ResetOn: DateTimeOffset.UnixEpoch,
+			AdditionalData: "{}");
+		_ = fakeGameBetsClient.GameBetGetByExternalBetAsync(
 			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
 			gameId: Arg.Is(gameInfo.GameId),
 			walletId: Arg.Is(playerInfo.WalletId),
-			externalRoundId: Arg.Is(command.ExternalRoundId),
+			externalBetId: Arg.Is(command.ExternalRoundId),
+			externalCreatedOn: Arg.Is(command.ExternalCreatedOn),
 			cancellationToken: Arg.Any<CancellationToken>())
-			.Returns(round);
+			.Returns(gameBetInfo);
 
 		var sut = new GameRoundAddCommandService(
 			faceLogger,
 			fakePlayerRepository,
 			fakeGameProviderRepository,
 			fakeGameRepository,
-			fakeGameRoundsClient,
-			fakeGameRecordHandleClient);
+			fakeBrandGameProviderRepository,
+			fakeGameBetsClient,
+			fakeGameBetsRapidTestWorkerClient);
 
 		_ = await Assert.ThrowsAsync<DuplicateNameException>(() => sut.ExecuteAsync(command).AsTask());
 
-		_ = fakeGameRecordHandleClient
+		_ = fakeGameBetsRapidTestWorkerClient
 			.Received(0)
 			.HandleAsync(
-			source: Arg.Any<GameRecord.Handle.Common.ViewModels.GameRecordHandleViewModel>(),
+			source: Arg.Any<GameBets.RapidTest.Worker.Common.ViewModels.GameBetRapidTestWorkerHandleViewModel>(),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 }

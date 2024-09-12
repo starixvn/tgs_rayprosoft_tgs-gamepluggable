@@ -106,6 +106,10 @@ public class VerificationCacheRepositoryUnitTest
 		var absoluteExpiration = TimeSpan.FromMinutes(10);
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -155,6 +159,10 @@ public class VerificationCacheRepositoryUnitTest
 		var absoluteExpiration = TimeSpan.FromMinutes(10);
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -204,6 +212,10 @@ public class VerificationCacheRepositoryUnitTest
 		var absoluteExpiration = TimeSpan.FromMinutes(10);
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -253,6 +265,10 @@ public class VerificationCacheRepositoryUnitTest
 		var absoluteExpiration = TimeSpan.FromMinutes(10);
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -302,6 +318,10 @@ public class VerificationCacheRepositoryUnitTest
 		var absoluteExpiration = TimeSpan.FromMinutes(10);
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -319,7 +339,8 @@ public class VerificationCacheRepositoryUnitTest
 			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: null,
 			RuleUrl: null,
-			AvailableCurrencies: null);
+			AvailableCurrencies: null,
+			SubGameProviderCode: "KY");
 
 		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "player", ":", "gameurl", ":", player.PlayerCode, ":", game.GameProviderCode, ":", game.GameId);
 
@@ -357,6 +378,10 @@ public class VerificationCacheRepositoryUnitTest
 		var absoluteExpiration = TimeSpan.FromMinutes(10);
 
 		var player = new Core.Models.PlayerInfo(
+			ResellerId: Guid.NewGuid(),
+			ResellerCode: "DEMO",
+			LicenseeId: Guid.NewGuid(),
+			LicenseeCode: "TGS",
 			BrandId: Guid.NewGuid(),
 			BrandCode: "GPI",
 			PlayerCode: "4ucmqplxb029",
@@ -374,7 +399,8 @@ public class VerificationCacheRepositoryUnitTest
 			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: null,
 			RuleUrl: null,
-			AvailableCurrencies: null);
+			AvailableCurrencies: null,
+			SubGameProviderCode: "KY");
 
 		var key = string.Concat(typeof(VerificationCacheRepository).Namespace!.Replace(".", "-").ToLower(), ":", "verify", ":", "player", ":", "gameurl", ":", player.PlayerCode, ":", game.GameProviderCode, ":", game.GameId);
 

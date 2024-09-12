@@ -24,7 +24,8 @@ internal class GameRepository(
 				(Core.Enums.GamePlatformType)game.PlatformType,
 				game.EndpointPath,
 				game.RuleUrl,
-				string.IsNullOrEmpty(game.AvailableCurrencies) ? null : game.AvailableCurrencies.Split(",", StringSplitOptions.RemoveEmptyEntries))
+				string.IsNullOrEmpty(game.AvailableCurrencies) ? null : game.AvailableCurrencies.Split(",", StringSplitOptions.RemoveEmptyEntries),
+				game.SubGameProviderCode ?? gameProvider.Code)
 			)
 		.FirstOrDefaultAsync(
 			cancellationToken: cancellationToken)

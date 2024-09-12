@@ -23,12 +23,12 @@ namespace Tgs.GamePluggable.Entities.Configurations
             entity.Property(e => e.GameProviderId).HasColumnName("game_provider_id");
 
             entity.HasOne(d => d.GameProvider).WithMany(p => p.LicenseeGameProviders)
-            .HasForeignKey(d => d.GameProviderId)
-            .HasConstraintName("fk_licensee_game_providers_game_providers_game_provider_id");
+                .HasForeignKey(d => d.GameProviderId)
+                .HasConstraintName("fk_licensee_game_providers_game_providers_game_provider_id");
 
             entity.HasOne(d => d.Licensee).WithMany(p => p.LicenseeGameProviders)
-            .HasForeignKey(d => d.LicenseeId)
-            .HasConstraintName("fk_licensee_game_providers_licensees_licensee_id");
+                .HasForeignKey(d => d.LicenseeId)
+                .HasConstraintName("fk_licensee_game_providers_licensees_licensee_id");
 
             OnConfigurePartial(entity);
         }

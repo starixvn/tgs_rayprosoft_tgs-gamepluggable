@@ -20,42 +20,42 @@ namespace Tgs.GamePluggable.Entities.Configurations
             entity.HasIndex(e => e.GameProviderId, "ix_game_provider_configurations_game_provider_id");
 
             entity.Property(e => e.Id)
-            .ValueGeneratedNever()
-            .HasColumnName("id");
+                .ValueGeneratedNever()
+                .HasColumnName("id");
             entity.Property(e => e.ClientId)
-            .HasMaxLength(128)
-            .HasColumnName("client_id");
+                .HasMaxLength(128)
+                .HasColumnName("client_id");
             entity.Property(e => e.ConfigurationData).HasColumnName("configuration_data");
             entity.Property(e => e.CreatedByUsername)
-            .HasMaxLength(32)
-            .HasColumnName("created_by_username");
+                .HasMaxLength(32)
+                .HasColumnName("created_by_username");
             entity.Property(e => e.CreatedOn).HasColumnName("created_on");
             entity.Property(e => e.Description)
-            .HasMaxLength(256)
-            .HasColumnName("description");
+                .HasMaxLength(256)
+                .HasColumnName("description");
             entity.Property(e => e.DesktopEndpoint)
-            .HasMaxLength(1024)
-            .HasColumnName("desktop_endpoint");
+                .HasMaxLength(1024)
+                .HasColumnName("desktop_endpoint");
             entity.Property(e => e.GameProviderId).HasColumnName("game_provider_id");
             entity.Property(e => e.IsDefault).HasColumnName("is_default");
             entity.Property(e => e.MobileEndpoint)
-            .HasMaxLength(1024)
-            .HasColumnName("mobile_endpoint");
+                .HasMaxLength(1024)
+                .HasColumnName("mobile_endpoint");
             entity.Property(e => e.Name)
-            .HasMaxLength(64)
-            .HasColumnName("name");
+                .HasMaxLength(64)
+                .HasColumnName("name");
             entity.Property(e => e.SecretKey)
-            .HasMaxLength(64)
-            .HasColumnName("secret_key");
+                .HasMaxLength(64)
+                .HasColumnName("secret_key");
             entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.UpdatedByUsername)
-            .HasMaxLength(32)
-            .HasColumnName("updated_by_username");
+                .HasMaxLength(32)
+                .HasColumnName("updated_by_username");
             entity.Property(e => e.UpdatedOn).HasColumnName("updated_on");
 
             entity.HasOne(d => d.GameProvider).WithMany(p => p.GameProviderConfigs)
-            .HasForeignKey(d => d.GameProviderId)
-            .HasConstraintName("fk_game_provider_configurations_game_providers_game_provider_id");
+                .HasForeignKey(d => d.GameProviderId)
+                .HasConstraintName("fk_game_provider_configurations_game_providers_game_provider_id");
 
             OnConfigurePartial(entity);
         }

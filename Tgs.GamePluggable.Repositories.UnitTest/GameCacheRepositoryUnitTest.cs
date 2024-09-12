@@ -33,7 +33,8 @@ public class GameCacheRepositoryUnitTest
 			PlatformType: Core.Enums.GamePlatformType.DesktopAndMobile,
 			EndpointPath: null,
 			RuleUrl: null,
-			AvailableCurrencies: null);
+			AvailableCurrencies: null,
+			SubGameProviderCode: GameProviderType.Kaiyuan);
 		_ = fakeGame
 			.GetAsync(
 				id: Arg.Is(gameId))
