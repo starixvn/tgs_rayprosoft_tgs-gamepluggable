@@ -20,9 +20,9 @@ internal class GameRoundClosedCommandService(
 {
 	public async ValueTask ExecuteAsync(GameRoundClosedCommand command, CancellationToken cancellationToken = default)
 	{
-		var gameBetInfo = await gameBetsClient.GameBetGetAsync(
-			id: command.RoundId,
+		var gameBetInfo = await gameBetsClient.GameBetMajorGetAsync(
 			externalCreatedOn: command.ExternalClosedOn.AddDays(-45),
+			id: command.RoundId,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false)
 			?? throw new ArgumentNullException(command.RoundId.ToString(), $"This game bet does not exist.");
@@ -80,9 +80,10 @@ internal class GameRoundClosedCommandService(
 			Bet = command.BetAmount,
 			ValidBet = command.ValidBetAmount,
 			Settle = command.SettleAmount,
-			Commission = command.Commission,
-			Turnover = command.Turnover,
 			WinLoss = -command.CompanyWinLoss,
+			Turnover = command.Turnover,
+			Commission = command.Commission,
+			Contribute = gameBetInfo.Contribute,
 			Jackpot = gameBetInfo.Jackpot,
 			AdditionalData = gameBetInfo.AdditionalData.ToJsonString()
 		};
