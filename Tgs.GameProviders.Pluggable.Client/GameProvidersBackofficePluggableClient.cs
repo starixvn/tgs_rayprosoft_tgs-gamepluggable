@@ -54,6 +54,21 @@ internal class GameProvidersBackofficePluggableClient(HttpClient httpClient) : I
 		_ = response.EnsureSuccessStatusCode();
 	}
 
+	public async ValueTask TicketDetailUrlAsync(TicketDetailViewModel viewModel, CancellationToken cancellationToken = default)
+	{
+		var requestContent = new StringContent(JsonSerializer.Serialize(viewModel, _SerializerOptions));
+		requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
+
+		var response = await httpClient
+		   .PutAsync(
+			requestUri: $"/bo/round/ticketdetailurl",
+			content: requestContent,
+			cancellationToken)
+		   .ConfigureAwait(false);
+
+		_ = response.EnsureSuccessStatusCode();
+	}
+
 	public async ValueTask FundInAsync(string playerCode, string gameProviderCode, CancellationToken cancellationToken = default)
 	{
 		var request = new

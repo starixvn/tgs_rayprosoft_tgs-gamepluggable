@@ -193,6 +193,23 @@ public class RoundController : ControllerBase
 			.ConfigureAwait(false);
 
 	/// <summary>
+	/// Games the round's ticket detail url get asynchronous.
+	/// </summary>
+	/// <param name="service">The service.</param>
+	/// <param name="query"></param>
+	/// <returns></returns>
+	/// <remarks>
+	/// <b>Example</b><br />
+	///
+	///     PostAsync /bo/round/ticketdetailurl
+	/// </remarks>
+	[HttpPost("ticketdetailurl")]
+	public async ValueTask<Uri?> GameRoundTicketDetailGetAsync(
+		[FromServices] IGetService<GetRoundTicketDetailQuery, Uri?> service,
+		[FromBody] GetRoundTicketDetailQuery query)
+		=> await service.GetAsync(query).ConfigureAwait(false);
+
+	/// <summary>
 	/// Games the round get asynchronous.
 	/// </summary>
 	/// <param name="service">The service.</param>
