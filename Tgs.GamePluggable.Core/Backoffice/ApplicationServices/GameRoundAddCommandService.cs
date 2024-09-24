@@ -27,12 +27,12 @@ internal class GameRoundAddCommandService(
 		var gameInfo = await gameRepository.GetAsync(command.GameId, cancellationToken).ConfigureAwait(false);
 		var gameProviderConfigurationId = await brandGameProviderRepository.GetGameProviderConfigurationIdAsync(playerInfo.BrandId, gameProviderInfo.GameProviderId, cancellationToken).ConfigureAwait(false);
 
-		var gameBetInfo = await gameBetsClient.GameBetGetByExternalBetAsync(
+		var gameBetInfo = await gameBetsClient.GameBetMajorGetAsync(
+			externalCreatedOn: command.ExternalCreatedOn,
 			gameProviderId: gameProviderInfo.GameProviderId,
 			gameId: gameInfo.GameId,
 			walletId: playerInfo.WalletId,
 			externalBetId: command.ExternalRoundId,
-			externalCreatedOn: command.ExternalCreatedOn,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
@@ -93,10 +93,11 @@ internal class GameRoundAddCommandService(
 			Bet = command.BetAmount,
 			ValidBet = command.ValidBetAmount,
 			Settle = command.SettleAmount,
-			Commission = command.Commission,
-			Turnover = command.Turnover,
 			WinLoss = -command.CompanyWinLoss,
-			Jackpot = 0.0M,
+			Turnover = command.Turnover,
+			Commission = command.Commission,
+			Contribute = 0.0m,
+			Jackpot = 0.0m,
 			AdditionalData = new JsonObject().ToJsonString()
 		};
 

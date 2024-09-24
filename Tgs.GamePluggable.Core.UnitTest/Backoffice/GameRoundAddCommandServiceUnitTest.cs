@@ -94,12 +94,12 @@ public class GameRoundAddCommandServiceUnitTest
 			Arg.Any<CancellationToken>())
 			.Returns(gameProviderConfigurationId);
 
-		_ = fakeGameBetsClient.GameBetGetByExternalBetAsync(
+		_ = fakeGameBetsClient.GameBetMajorGetAsync(
+			externalCreatedOn: Arg.Is(command.ExternalCreatedOn),
 			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
 			gameId: Arg.Is(gameInfo.GameId),
 			walletId: Arg.Is(playerInfo.WalletId),
 			externalBetId: Arg.Is(command.ExternalRoundId),
-			externalCreatedOn: Arg.Is(command.ExternalCreatedOn),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(ValueTask.FromResult<GameBets.Common.ViewModels.GameBetInfoViewModel>(null));
 
@@ -152,10 +152,11 @@ public class GameRoundAddCommandServiceUnitTest
 				Bet = command.BetAmount,
 				ValidBet = command.ValidBetAmount,
 				Settle = command.SettleAmount,
-				Commission = command.Commission,
-				Turnover = command.Turnover,
 				WinLoss = -command.CompanyWinLoss,
-				Jackpot = 0.0M,
+				Turnover = command.Turnover,
+				Commission = command.Commission,
+				Contribute = 0.0m,
+				Jackpot = 0.0m,
 				AdditionalData = JsonNode.Parse("{}")!.ToJsonString()
 			}),
 			cancellationToken: Arg.Any<CancellationToken>());
@@ -270,22 +271,24 @@ public class GameRoundAddCommandServiceUnitTest
 			Bet: 1.0m,
 			ValidBet: 1.0m,
 			Settle: 2.0m,
-			Commission: 0.0m,
-			Turnover: 1.0m,
 			WinLoss: 1.0m,
+			Turnover: 1.0m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 0.0m,
 			CreatedOn: DateTimeOffset.UtcNow,
 			ClosedOn: DateTimeOffset.UtcNow,
 			UpdatedOn: DateTimeOffset.UtcNow,
 			ResetState: GameBets.Common.Enums.ResetState.None,
 			ResetOn: DateTimeOffset.UnixEpoch,
-			AdditionalData: "{}");
-		_ = fakeGameBetsClient.GameBetGetByExternalBetAsync(
+			AdditionalData: new JsonObject { },
+			ExtendedData: new JsonObject { });
+		_ = fakeGameBetsClient.GameBetMajorGetAsync(
+			externalCreatedOn: Arg.Is(command.ExternalCreatedOn),
 			gameProviderId: Arg.Is(gameProviderInfo.GameProviderId),
 			gameId: Arg.Is(gameInfo.GameId),
 			walletId: Arg.Is(playerInfo.WalletId),
 			externalBetId: Arg.Is(command.ExternalRoundId),
-			externalCreatedOn: Arg.Is(command.ExternalCreatedOn),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(gameBetInfo);
 

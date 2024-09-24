@@ -80,19 +80,21 @@ public class GameRoundResettleCommandServiceUnitTest
 			Bet: 0.8m,
 			ValidBet: 0.8m,
 			Settle: 0.0m,
-			Commission: 0.0m,
-			Turnover: 0.8m,
 			WinLoss: -0.8m,
+			Turnover: 0.8m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 0.0m,
 			CreatedOn: DateTimeOffset.UtcNow,
 			ClosedOn: DateTimeOffset.UtcNow,
 			UpdatedOn: DateTimeOffset.UtcNow,
 			ResetState: GameBets.Common.Enums.ResetState.None,
 			ResetOn: DateTimeOffset.UnixEpoch,
-			AdditionalData: JsonNode.Parse("{\"bet\": 0.8, \"win\": 1.2, \"rake\": 0, \"round\": \"6323442723\", \"detail\": [{\"freegame\": 0}, {\"luckydraw\": 0}, {\"bonus\": 0}], \"donate\": 0, \"status\": \"complete\", \"account\": \"4unykr72x8d9\", \"balance\": 84.4, \"bettime\": \"2024-09-11T21:55:12.737-04:00\", \"bettype\": [], \"jackpot\": 0, \"roomfee\": 0, \"tableid\": \"\", \"currency\": \"CNY\", \"gamecode\": \"20\", \"gamehall\": \"cq9\", \"gameplat\": \"web\", \"gamerole\": \"\", \"gametype\": \"slot\", \"isdonate\": false, \"validbet\": 0, \"tabletype\": \"\", \"bankertype\": \"\", \"createtime\": \"2024-09-11T21:55:15.456-04:00\", \"gameresult\": {\"cards\": [], \"points\": []}, \"jackpottype\": \"\", \"roundnumber\": \"\", \"endroundtime\": \"2024-09-11T21:55:15.555-04:00\", \"singlerowbet\": false, \"jackpotcontribution\": []}"));
-		_ = fakeGameBetsClient.GameBetGetAsync(
-			id: Arg.Is(command.RoundId),
+			AdditionalData: JsonNode.Parse("{\"bet\": 0.8, \"win\": 1.2, \"rake\": 0, \"round\": \"6323442723\", \"detail\": [{\"freegame\": 0}, {\"luckydraw\": 0}, {\"bonus\": 0}], \"donate\": 0, \"status\": \"complete\", \"account\": \"4unykr72x8d9\", \"balance\": 84.4, \"bettime\": \"2024-09-11T21:55:12.737-04:00\", \"bettype\": [], \"jackpot\": 0, \"roomfee\": 0, \"tableid\": \"\", \"currency\": \"CNY\", \"gamecode\": \"20\", \"gamehall\": \"cq9\", \"gameplat\": \"web\", \"gamerole\": \"\", \"gametype\": \"slot\", \"isdonate\": false, \"validbet\": 0, \"tabletype\": \"\", \"bankertype\": \"\", \"createtime\": \"2024-09-11T21:55:15.456-04:00\", \"gameresult\": {\"cards\": [], \"points\": []}, \"jackpottype\": \"\", \"roundnumber\": \"\", \"endroundtime\": \"2024-09-11T21:55:15.555-04:00\", \"singlerowbet\": false, \"jackpotcontribution\": []}"),
+			ExtendedData: new JsonObject { });
+		_ = fakeGameBetsClient.GameBetMajorGetAsync(
 			externalCreatedOn: Arg.Is(command.ExternalClosedOn.AddDays(-45)),
+			id: Arg.Is(command.RoundId),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(gameBetInfo);
 
@@ -187,9 +189,10 @@ public class GameRoundResettleCommandServiceUnitTest
 				compare.Bet == command.BetAmount &&
 				compare.ValidBet == command.ValidBetAmount &&
 				compare.Settle == command.SettleAmount &&
-				compare.Commission == command.Commission &&
-				compare.Turnover == command.Turnover &&
 				compare.WinLoss == -command.CompanyWinLoss &&
+				compare.Turnover == command.Turnover &&
+				compare.Commission == command.Commission &&
+				compare.Contribute == gameBetInfo.Contribute &&
 				compare.Jackpot == gameBetInfo.Jackpot),
 			cancellationToken: Arg.Any<CancellationToken>());
 
@@ -271,19 +274,21 @@ public class GameRoundResettleCommandServiceUnitTest
 			Bet: 0.8m,
 			ValidBet: 0.8m,
 			Settle: 0.0m,
-			Commission: 0.0m,
-			Turnover: 0.0m,
 			WinLoss: 0.0m,
+			Turnover: 0.0m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 0.0m,
 			CreatedOn: DateTimeOffset.UtcNow,
 			ClosedOn: DateTimeOffset.UnixEpoch,
 			UpdatedOn: DateTimeOffset.UtcNow,
 			ResetState: GameBets.Common.Enums.ResetState.None,
 			ResetOn: DateTimeOffset.UnixEpoch,
-			AdditionalData: JsonNode.Parse("{\"bet\": 0.8, \"win\": 1.2, \"rake\": 0, \"round\": \"6323442723\", \"detail\": [{\"freegame\": 0}, {\"luckydraw\": 0}, {\"bonus\": 0}], \"donate\": 0, \"status\": \"complete\", \"account\": \"4unykr72x8d9\", \"balance\": 84.4, \"bettime\": \"2024-09-11T21:55:12.737-04:00\", \"bettype\": [], \"jackpot\": 0, \"roomfee\": 0, \"tableid\": \"\", \"currency\": \"CNY\", \"gamecode\": \"20\", \"gamehall\": \"cq9\", \"gameplat\": \"web\", \"gamerole\": \"\", \"gametype\": \"slot\", \"isdonate\": false, \"validbet\": 0, \"tabletype\": \"\", \"bankertype\": \"\", \"createtime\": \"2024-09-11T21:55:15.456-04:00\", \"gameresult\": {\"cards\": [], \"points\": []}, \"jackpottype\": \"\", \"roundnumber\": \"\", \"endroundtime\": \"2024-09-11T21:55:15.555-04:00\", \"singlerowbet\": false, \"jackpotcontribution\": []}"));
-		_ = fakeGameBetsClient.GameBetGetAsync(
-			id: Arg.Is(command.RoundId),
+			AdditionalData: JsonNode.Parse("{\"bet\": 0.8, \"win\": 1.2, \"rake\": 0, \"round\": \"6323442723\", \"detail\": [{\"freegame\": 0}, {\"luckydraw\": 0}, {\"bonus\": 0}], \"donate\": 0, \"status\": \"complete\", \"account\": \"4unykr72x8d9\", \"balance\": 84.4, \"bettime\": \"2024-09-11T21:55:12.737-04:00\", \"bettype\": [], \"jackpot\": 0, \"roomfee\": 0, \"tableid\": \"\", \"currency\": \"CNY\", \"gamecode\": \"20\", \"gamehall\": \"cq9\", \"gameplat\": \"web\", \"gamerole\": \"\", \"gametype\": \"slot\", \"isdonate\": false, \"validbet\": 0, \"tabletype\": \"\", \"bankertype\": \"\", \"createtime\": \"2024-09-11T21:55:15.456-04:00\", \"gameresult\": {\"cards\": [], \"points\": []}, \"jackpottype\": \"\", \"roundnumber\": \"\", \"endroundtime\": \"2024-09-11T21:55:15.555-04:00\", \"singlerowbet\": false, \"jackpotcontribution\": []}"),
+			ExtendedData: new JsonObject { });
+		_ = fakeGameBetsClient.GameBetMajorGetAsync(
 			externalCreatedOn: Arg.Is(command.ExternalClosedOn.AddDays(-45)),
+			id: Arg.Is(command.RoundId),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(gameBetInfo);
 
@@ -382,19 +387,21 @@ public class GameRoundResettleCommandServiceUnitTest
 			Bet: 0.8m,
 			ValidBet: 0.8m,
 			Settle: 0.0m,
-			Commission: 0.0m,
-			Turnover: 0.0m,
 			WinLoss: 0.0m,
+			Turnover: 0.0m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 0.0m,
 			CreatedOn: DateTimeOffset.UtcNow,
 			ClosedOn: DateTimeOffset.UnixEpoch,
 			UpdatedOn: DateTimeOffset.UtcNow,
 			ResetState: GameBets.Common.Enums.ResetState.None,
 			ResetOn: DateTimeOffset.UnixEpoch,
-			AdditionalData: JsonNode.Parse("{\"bet\": 0.8, \"win\": 1.2, \"rake\": 0, \"round\": \"6323442723\", \"detail\": [{\"freegame\": 0}, {\"luckydraw\": 0}, {\"bonus\": 0}], \"donate\": 0, \"status\": \"complete\", \"account\": \"4unykr72x8d9\", \"balance\": 84.4, \"bettime\": \"2024-09-11T21:55:12.737-04:00\", \"bettype\": [], \"jackpot\": 0, \"roomfee\": 0, \"tableid\": \"\", \"currency\": \"CNY\", \"gamecode\": \"20\", \"gamehall\": \"cq9\", \"gameplat\": \"web\", \"gamerole\": \"\", \"gametype\": \"slot\", \"isdonate\": false, \"validbet\": 0, \"tabletype\": \"\", \"bankertype\": \"\", \"createtime\": \"2024-09-11T21:55:15.456-04:00\", \"gameresult\": {\"cards\": [], \"points\": []}, \"jackpottype\": \"\", \"roundnumber\": \"\", \"endroundtime\": \"2024-09-11T21:55:15.555-04:00\", \"singlerowbet\": false, \"jackpotcontribution\": []}"));
-		_ = fakeGameBetsClient.GameBetGetAsync(
-			id: Arg.Is(command.RoundId),
+			AdditionalData: JsonNode.Parse("{\"bet\": 0.8, \"win\": 1.2, \"rake\": 0, \"round\": \"6323442723\", \"detail\": [{\"freegame\": 0}, {\"luckydraw\": 0}, {\"bonus\": 0}], \"donate\": 0, \"status\": \"complete\", \"account\": \"4unykr72x8d9\", \"balance\": 84.4, \"bettime\": \"2024-09-11T21:55:12.737-04:00\", \"bettype\": [], \"jackpot\": 0, \"roomfee\": 0, \"tableid\": \"\", \"currency\": \"CNY\", \"gamecode\": \"20\", \"gamehall\": \"cq9\", \"gameplat\": \"web\", \"gamerole\": \"\", \"gametype\": \"slot\", \"isdonate\": false, \"validbet\": 0, \"tabletype\": \"\", \"bankertype\": \"\", \"createtime\": \"2024-09-11T21:55:15.456-04:00\", \"gameresult\": {\"cards\": [], \"points\": []}, \"jackpottype\": \"\", \"roundnumber\": \"\", \"endroundtime\": \"2024-09-11T21:55:15.555-04:00\", \"singlerowbet\": false, \"jackpotcontribution\": []}"),
+			ExtendedData: new JsonObject { });
+		_ = fakeGameBetsClient.GameBetMajorGetAsync(
 			externalCreatedOn: Arg.Is(command.ExternalClosedOn.AddDays(-45)),
+			id: Arg.Is(command.RoundId),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(gameBetInfo);
 
@@ -465,9 +472,9 @@ public class GameRoundResettleCommandServiceUnitTest
 			AdjustAmount: adjustAmount
 		);
 
-		_ = fakeGameBetsClient.GameBetGetAsync(
-			id: Arg.Is(command.RoundId),
+		_ = fakeGameBetsClient.GameBetMajorGetAsync(
 			externalCreatedOn: Arg.Is(command.ExternalClosedOn.AddDays(-45)),
+			id: Arg.Is(command.RoundId),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(ValueTask.FromResult<GameBets.Common.ViewModels.GameBetInfoViewModel>(null));
 
