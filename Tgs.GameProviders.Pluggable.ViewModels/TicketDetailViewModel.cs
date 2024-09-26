@@ -1,16 +1,22 @@
-﻿using System.ComponentModel;
+﻿using System;
 
 namespace Tgs.GameProviders.Pluggable.ViewModels;
 
 public record TicketDetailViewModel
 {
-	public required string GameProviderCode { get; init; }
+	public required string GameProviderCode { get; set; } 
 
-	public required string PlayerCode { get; init; }
+	public required string PlayerCode { get; set; } 
 
-	public required long ExternalId { get; set; }
+	public required string ExternalRoundId { get; set; }
 
-	public string? Language { get; init; }
+	public int GameId { get; set; }
+
+	public DateTime SettleDate { get; set; }
+
+	public string? ResultId { get; set; }
+
+	public string? Language { get; set; }
 
 	public string? BaseCurrency { get; set; }
 

@@ -54,14 +54,14 @@ internal class GameProvidersBackofficePluggableClient(HttpClient httpClient) : I
 		_ = response.EnsureSuccessStatusCode();
 	}
 
-	public async ValueTask<Uri?> TicketDetailUrlAsync(TicketDetailViewModel viewModel, CancellationToken cancellationToken = default)
+	public async ValueTask<JsonDocument?> TicketDetailAsync(TicketDetailViewModel viewModel, CancellationToken cancellationToken = default)
 	{
 		var requestContent = new StringContent(JsonSerializer.Serialize(viewModel, _SerializerOptions));
 		requestContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Json);
 
 		var response = await httpClient
 		   .PostAsync(
-			requestUri: $"/bo/round/ticketdetailurl",
+			requestUri: $"/bo/round/ticketdetail",
 			content: requestContent,
 			cancellationToken)
 		   .ConfigureAwait(false);
@@ -73,7 +73,7 @@ internal class GameProvidersBackofficePluggableClient(HttpClient httpClient) : I
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
-		return JsonSerializer.Deserialize<Uri>(contentJson, _SerializerOptions);
+		return JsonSerializer.Deserialize<JsonDocument>(contentJson, _SerializerOptions);
 	}
 
 	public async ValueTask FundInAsync(string playerCode, string gameProviderCode, CancellationToken cancellationToken = default)
@@ -139,7 +139,6 @@ internal class GameProvidersBackofficePluggableClient(HttpClient httpClient) : I
 		   .ConfigureAwait(false);
 
 		_ = response.EnsureSuccessStatusCode();
-
 	}
 
 	public async ValueTask<JsonDocument?> GameRoundDetailGetAsync(Guid roundId, string language, CancellationToken cancellationToken = default)

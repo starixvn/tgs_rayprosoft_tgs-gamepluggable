@@ -9,7 +9,7 @@ namespace Tgs.GameProviders.Pluggable.Client;
 
 public interface IGameProvidersBackofficePluggableClient
 {
-	ValueTask<Uri?> TicketDetailUrlAsync(TicketDetailViewModel viewModel, CancellationToken cancellationToken = default);
+	ValueTask<JsonDocument?> TicketDetailAsync(TicketDetailViewModel viewModel, CancellationToken cancellationToken = default);
 
 	ValueTask AddCompanyRoundAsync(AddCompanyRoundViewModel viewModel, CancellationToken cancellationToken = default);
 

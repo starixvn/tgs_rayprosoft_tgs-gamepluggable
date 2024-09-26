@@ -203,9 +203,9 @@ public class RoundController : ControllerBase
 	///
 	///     PostAsync /bo/round/ticketdetailurl
 	/// </remarks>
-	[HttpPost("ticketdetailurl")]
-	public async ValueTask<Uri?> GameRoundTicketDetailGetAsync(
-		[FromServices] IGetService<GetRoundTicketDetailQuery, Uri?> service,
+	[HttpPost("ticketdetail")]
+	public async ValueTask<JsonDocument?> GameRoundTicketDetailGetAsync(
+		[FromServices] IGetService<GetRoundTicketDetailQuery, JsonDocument?> service,
 		[FromBody] GetRoundTicketDetailQuery query)
 		=> await service.GetAsync(query).ConfigureAwait(false);
 

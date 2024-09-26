@@ -6,7 +6,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<Version>1.0.6</Version>
+		<Version>1.0.8</Version>
 		<Authors>Raypro</Authors>
 		<PackageProjectUrl>https://gitlab.com/rayprosoft/tgs-gameproviders-pluggableservice</PackageProjectUrl>
 		<RepositoryUrl>https://gitlab.com/rayprosoft/tgs-gameproviders-pluggableservice.git</RepositoryUrl>
