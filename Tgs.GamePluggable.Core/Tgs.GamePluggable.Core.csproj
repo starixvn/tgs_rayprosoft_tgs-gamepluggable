@@ -12,10 +12,10 @@
     <PackageReference Include="PhoenixToolkits.MessageQueue" Version="2.2.0" />
     <PackageReference Include="PhoenixToolkits.MessageQueue.Nats" Version="2.2.0" />
     <PackageReference Include="PhoenixToolkits.Protobuf.ExtendTypes" Version="0.0.7" />
-    <PackageReference Include="Scrutor" Version="4.2.2" />
+    <PackageReference Include="Scrutor" Version="5.0.1" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />    
     <PackageReference Include="Tgs.CashService.Client" Version="0.2.9" />    
-    <PackageReference Include="Tgs.GameBets.Client" Version="1.0.7" />    
+    <PackageReference Include="Tgs.GameBets.Client" Version="1.0.8" />    
     <PackageReference Include="Tgs.GameBets.RapidTest.Worker.Client" Version="1.0.3" />    
     <PackageReference Include="Tgs.GameFundTransfer.Client" Version="1.0.7" />    
     <PackageReference Include="Tgs.GamePlayerLogOut.Client" Version="1.0.1" />
