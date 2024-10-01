@@ -31,7 +31,7 @@ public class GameRoundResettleCommandServiceUnitTest
 		var commission = 0.0m;
 		var turnover = 0.8m;
 		var companyWinLoss = 0.4m;
-		var clientStatus = GameRounds.Common.Enums.RoundClientStatus.Win;
+		var clientStatus = Enums.RoundClientStatus.Win;
 		var externalClosedOn = DateTimeOffset.Parse("2024-09-12T09:55:15+08:00");
 		var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
 		var remark = "測試Resettle調整";
@@ -225,7 +225,7 @@ public class GameRoundResettleCommandServiceUnitTest
 		var commission = 0.0m;
 		var turnover = 0.8m;
 		var companyWinLoss = 0.4m;
-		var clientStatus = GameRounds.Common.Enums.RoundClientStatus.Win;
+		var clientStatus = Enums.RoundClientStatus.Win;
 		var externalClosedOn = DateTimeOffset.Parse("2024-09-12T09:55:15+08:00");
 		var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
 		var remark = "測試Resettle調整";
@@ -338,7 +338,7 @@ public class GameRoundResettleCommandServiceUnitTest
 		var commission = 0.0m;
 		var turnover = 0.8m;
 		var companyWinLoss = 0.4m;
-		var clientStatus = GameRounds.Common.Enums.RoundClientStatus.Win;
+		var clientStatus = Enums.RoundClientStatus.Win;
 		var externalClosedOn = DateTimeOffset.Parse("2024-09-12T09:55:15+08:00");
 		var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
 		var remark = "測試Resettle調整";
@@ -451,7 +451,7 @@ public class GameRoundResettleCommandServiceUnitTest
 		var commission = 0.0m;
 		var turnover = 0.8m;
 		var companyWinLoss = 0.4m;
-		var clientStatus = GameRounds.Common.Enums.RoundClientStatus.Win;
+		var clientStatus = Enums.RoundClientStatus.Win;
 		var externalClosedOn = DateTimeOffset.Parse("2024-09-12T09:55:15+08:00");
 		var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");
 		var remark = "測試Resettle調整";

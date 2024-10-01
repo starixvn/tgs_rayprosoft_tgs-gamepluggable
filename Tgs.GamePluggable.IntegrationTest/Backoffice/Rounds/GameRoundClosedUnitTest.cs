@@ -43,7 +43,7 @@ public class GameRoundClosedUnitTest
 					  Commission: model.Commission,
 					  Turnover: model.Turnover,
 					  CompanyWinLoss: model.WinLoss,
-					  ClientStatus: (GameRounds.Common.Enums.RoundClientStatus)model.ClientRoundStatus,
+					  ClientStatus: (Core.Enums.RoundClientStatus)model.ClientRoundStatus,
 					  ExternalClosedOn: model.ExternalClosedOn,
 					  OperatorId: model.OperatorId,
 					  Remark: model.Remark,

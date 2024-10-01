@@ -29,7 +29,7 @@ public class GameRoundGetUnitTest
 					PlayerCode: "4uf6j0t01809",
 					GameId: 1000015,
 					CurrencyCode: "CNY",
-					Status: GameRounds.Common.Enums.RoundStatus.Open,
+					Status: Core.Enums.RoundStatus.Open,
 					GameProviderConfigurationId: Guid.Parse("fa0d7706-f910-4e98-bf71-bd7084140304"),
 					WalletId: Guid.Parse("b5d49e20-d027-4abb-aec2-08d99a806de9"),
 					CreatedOn: DateTimeOffset.Parse("2021-11-08 12:25:09.973 +0800"),
@@ -45,7 +45,7 @@ public class GameRoundGetUnitTest
 					Turnover: null,
 					WinLoss: null,
 					TieBetAdjustment: null,
-					ClientStatus: GameRounds.Common.Enums.RoundClientStatus.Open);
+					ClientStatus: Core.Enums.RoundClientStatus.Open);
 				_ = fakeGameRoundGetService
 				.GetAsync(
 					query: Arg.Is(query),
