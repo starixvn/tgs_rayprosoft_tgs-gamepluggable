@@ -1,5 +1,4 @@
 ﻿using System;
-using Tgs.GameRounds.Common;
 
 namespace Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 
@@ -10,7 +9,7 @@ public record GameRoundResult(
 	string PlayerCode,
 	int GameId,
 	string CurrencyCode,
-	GameRounds.Common.Enums.RoundStatus Status,
+	Enums.RoundStatus Status,
 	Guid GameProviderConfigurationId,
 	Guid WalletId,
 	DateTimeOffset CreatedOn,
@@ -26,4 +25,4 @@ public record GameRoundResult(
 	decimal? Turnover,
 	decimal? WinLoss,
 	decimal? TieBetAdjustment,
-	GameRounds.Common.Enums.RoundClientStatus ClientStatus);
+	Enums.RoundClientStatus ClientStatus);

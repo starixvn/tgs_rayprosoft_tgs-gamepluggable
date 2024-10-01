@@ -34,10 +34,10 @@ internal class GameRoundClosedCommandService(
 
 		var betState = command.ClientStatus switch
 		{
-			GameRounds.Common.Enums.RoundClientStatus.Void => GameBets.RapidTest.Worker.Common.Protos.BetState.Void,
-			GameRounds.Common.Enums.RoundClientStatus.Win => GameBets.RapidTest.Worker.Common.Protos.BetState.Win,
-			GameRounds.Common.Enums.RoundClientStatus.Loss => GameBets.RapidTest.Worker.Common.Protos.BetState.Loss,
-			GameRounds.Common.Enums.RoundClientStatus.Draw => GameBets.RapidTest.Worker.Common.Protos.BetState.Draw,
+			Enums.RoundClientStatus.Void => GameBets.RapidTest.Worker.Common.Protos.BetState.Void,
+			Enums.RoundClientStatus.Win => GameBets.RapidTest.Worker.Common.Protos.BetState.Win,
+			Enums.RoundClientStatus.Loss => GameBets.RapidTest.Worker.Common.Protos.BetState.Loss,
+			Enums.RoundClientStatus.Draw => GameBets.RapidTest.Worker.Common.Protos.BetState.Draw,
 			_ => GameBets.RapidTest.Worker.Common.Protos.BetState.Running
 		};
 

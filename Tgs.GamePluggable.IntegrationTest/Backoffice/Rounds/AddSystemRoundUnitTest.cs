@@ -23,7 +23,7 @@ public class AddSystemRoundUnitTest
 		var commission = 0.0m;
 		var turnover = 0.06m;
 		var winLoss = -0.06m;
-		var clientRoundStatus = GameRounds.Common.Enums.RoundClientStatus.Loss;
+		var clientRoundStatus = Core.Enums.RoundClientStatus.Loss;
 		var externalCreatedOn = DateTimeOffset.Parse("2021-06-01 13:57:05.000 +0800");
 		var externalClosedOn = DateTimeOffset.Parse("2021-06-03 13:57:05.000 +0800");
 		var operatorId = Guid.Parse("ff73bf6f-637e-4575-3cfd-08d9262ce1a5");

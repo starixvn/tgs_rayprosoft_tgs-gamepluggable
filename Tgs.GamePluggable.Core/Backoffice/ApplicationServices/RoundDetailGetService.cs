@@ -2,38 +2,39 @@
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Tgs.GameBets.Client;
 using Tgs.GameProviders.Client;
 using Tgs.GameProviders.Domains.RoundDetail;
-using Tgs.GameRounds.Client;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GamePluggable.Core.Backoffice.ApplicationServices;
 
 internal class RoundDetailGetService(
-	IGameRoundsClient gameRoundsClient,
+	TimeProvider timeProvider,
+	IGameBetsClient client,
 	IGameProvidersClient gameProvidersClient,
 	IGameProviderRepository gameProvider) : IGetService<RoundDetailQuery, JsonDocument>
 {
 	public async ValueTask<JsonDocument> GetAsync(RoundDetailQuery query, CancellationToken cancellationToken = default)
 	{
-		var round = await gameRoundsClient.RoundGetAsync(
-			roundId: query.RoundId,
+		var currentTime = timeProvider.GetUtcNow();
+		var info = await client.GameBetMajorGetAsync(
+			externalCreatedOn: currentTime.AddMonths(-6),
+			id: query.RoundId,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false)
 			?? throw new ArgumentNullException(query.RoundId.ToString(), $"This game bet does not exist.");
 
-		if (round.Status is GameRounds.Common.Enums.RoundStatus.Open or GameRounds.Common.Enums.RoundStatus.New
-			||
-			round.ClientStatus is GameRounds.Common.Enums.RoundClientStatus.Open)
+		if (info.BetState is GameBets.Common.Enums.BetState.Waiting or GameBets.Common.Enums.BetState.Running)
 		{
 			return JsonDocument.Parse(JsonSerializer.Serialize(new RoundDetailDataJson()
 			{
-				Value = round.AdditionalData.ToString()
+				Value = info.AdditionalData.ToString()
 			}));
 		}
 
 		var gameProviderModel = await gameProvider.GetAsync(
-			id: round.GameProviderId,
+			id: info.GameProviderId,
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 
@@ -41,18 +42,18 @@ internal class RoundDetailGetService(
 		{
 			var roundDetailResult = await gameProvidersClient.RoundDetailAsync(
 				gameProviderCode: gameProviderModel!.GameProviderCode,
-				roundId: round.RoundId,
+				roundId: info.Id,
 				language: query.Language,
-				externalCreatedOn: round.ExternalCreatedOn ?? round.CreatedOn,
+				externalCreatedOn: info.ExternalCreatedOn,
 				cancellationToken: cancellationToken)
 				.ConfigureAwait(false);
 			return JsonDocument.Parse(JsonSerializer.Serialize(roundDetailResult));
 		}
 		catch
 		{
-			return JsonDocument.Parse(JsonSerializer.Serialize(new RoundDetailDataText()
+			return JsonDocument.Parse(JsonSerializer.Serialize(new RoundDetailDataJson()
 			{
-				Value = "Game result not yet, please wait!(遊戲結果尚未，請稍後!)"
+				Value = info.AdditionalData.ToString()
 			}));
 		}
 	}

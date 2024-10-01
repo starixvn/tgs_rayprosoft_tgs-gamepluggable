@@ -48,6 +48,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 builder.Services
 	.AddMemoryCache()
+	.AddSingleton(TimeProvider.System)
 	.AddGameProvidersClient((options, sp) =>
 	{
 		var configuration = sp.GetRequiredService<IConfiguration>();
@@ -62,11 +63,6 @@ builder.Services
 	{
 		var config = sp.GetRequiredService<IConfiguration>();
 		http.BaseAddress = config.GetValue<Uri>("GamePluggableConnectionStrings:GameFundTransferClientBaseUrl");
-	}))
-	.AddGameRoundsClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
-	{
-		var config = sp.GetRequiredService<IConfiguration>();
-		http.BaseAddress = config.GetValue<Uri>("GamePluggableConnectionStrings:GameRoundsClientBaseUrl");
 	}))
 	.AddGamePlayerLogOutClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
 	{

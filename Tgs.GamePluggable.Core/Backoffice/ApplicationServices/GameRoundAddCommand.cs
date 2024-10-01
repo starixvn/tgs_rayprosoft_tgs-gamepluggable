@@ -18,6 +18,6 @@ public record GameRoundAddCommand(
 	decimal Commission,
 	decimal Turnover,
 	decimal CompanyWinLoss,
-	GameRounds.Common.Enums.RoundClientStatus ClientStatus,
+	Enums.RoundClientStatus ClientStatus,
 	Guid OperatorId,
 	string? Remark);

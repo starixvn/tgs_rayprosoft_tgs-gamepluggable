@@ -40,7 +40,7 @@ public class GameRoundAddCommandServiceUnitTest
 			Commission: 0.0m,
 			Turnover: 5,
 			CompanyWinLoss: 0.25m,
-			ClientStatus: GameRounds.Common.Enums.RoundClientStatus.Win,
+			ClientStatus: Enums.RoundClientStatus.Win,
 			OperatorId: Guid.NewGuid(),
 			Remark: "手動建立");
 
@@ -189,7 +189,7 @@ public class GameRoundAddCommandServiceUnitTest
 			Commission: 0.0m,
 			Turnover: 5,
 			CompanyWinLoss: 0.25m,
-			ClientStatus: GameRounds.Common.Enums.RoundClientStatus.Win,
+			ClientStatus: Enums.RoundClientStatus.Win,
 			OperatorId: Guid.NewGuid(),
 			Remark: "手動建立");
 
